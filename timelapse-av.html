@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronología Artes Vivas CDMX</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --accent: #ff4757;
+            --highlight: #00d2ff;
+            --bg: #0a0c0e;
+            --panel-bg: rgba(18, 22, 25, 0.96);
+            --card-bg: #1e272e;
+            --text-main: #ffffff;
+            --text-dim: #a4b0be;
+        }
+
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+        /* Dashboard de Control */
+        #sidebar {
+            width: 380px; height: 100%; z-index: 2000;
+            background: var(--panel-bg); backdrop-filter: blur(25px);
+            border-right: 1px solid rgba(255,255,255,0.08);
+            display: flex; flex-direction: column; padding: 30px;
+            overflow-y: auto; scrollbar-width: none;
+        }
+        #sidebar::-webkit-scrollbar { display: none; }
+
+        #map { flex-grow: 1; height: 100%; position: relative; background: #000; }
+
+        /* Estética Vibe Coding */
+        h1 { font-size: 1.2rem; font-weight: 900; margin: 0 0 5px 0; letter-spacing: -0.5px; }
+        .subtitle { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; display: block; }
+
+        .search-box {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            padding: 14px; border-radius: 12px; color: white; width: 100%; margin-bottom: 20px;
+            font-family: inherit; transition: 0.3s;
+        }
+        .search-box:focus { border-color: var(--highlight); outline: none; background: rgba(255,255,255,0.08); }
+
+        /* Contador Dinámico */
+        .big-stats { text-align: center; margin-bottom: 30px; padding: 25px; background: #000; border-radius: 20px; border: 1px solid #222; }
+        #total-count { font-size: 4.5rem; font-weight: 900; color: var(--highlight); line-height: 0.9; }
+        .stat-label { font-size: 0.8rem; color: var(--text-dim); margin-top: 10px; font-weight: 600; }
+
+        /* Widgets Analíticos */
+        .widget { margin-top: 15px; border-radius: 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); }
+        .widget-header { padding: 16px; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; color: var(--text-dim); }
+        .widget.open .widget-content { display: block; }
+        .widget-content { display: none; padding: 0 16px 16px 16px; }
+
+        .stat-row { margin-bottom: 10px; cursor: pointer; padding: 4px 0; }
+        .stat-row.active { color: var(--accent); }
+        .stat-info { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+        .stat-bar { background: rgba(255,255,255,0.05); height: 4px; border-radius: 10px; overflow: hidden; }
+        .stat-bar-fill { height: 100%; transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+
+        /* TIMELINE CONTROLLER (CARTO STYLE) */
+        #timeline-ui {
+            position: absolute; bottom: 40px; left: 420px; right: 40px;
+            background: rgba(15, 18, 20, 0.95); padding: 20px 35px; border-radius: 100px;
+            z-index: 1500; border: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; gap: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+        }
+
+        .play-btn {
+            background: var(--highlight); border: none; width: 55px; height: 55px;
+            border-radius: 50%; cursor: pointer; font-size: 1.5rem; display: flex;
+            align-items: center; justify-content: center; transition: 0.3s;
+        }
+        .play-btn:hover { transform: scale(1.15); box-shadow: 0 0 25px rgba(0,210,255,0.4); }
+
+        #year-focus { font-family: 'JetBrains Mono', monospace; font-size: 2.8rem; color: var(--highlight); min-width: 140px; }
+
+        input[type=range] { flex-grow: 1; accent-color: var(--accent); cursor: pointer; height: 6px; }
+
+        /* Leaflet Overrides */
+        .leaflet-popup-content-wrapper { background: #fff; color: #000; border-radius: 15px; padding: 5px; }
+        .p-title { font-weight: 900; color: var(--accent); border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 10px; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+    <aside id="sidebar">
+        <h1>OBSERVATORIO</h1>
+        <span class="subtitle">Infraestructura Cultural CDMX</span>
+
+        <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar espacio por nombre..." oninput="updateSearch()">
+
+        <div class="big-stats">
+            <div id="total-count">0</div>
+            <div class="stat-label">ESPACIOS ACTIVOS EN <span id="label-year" style="color:var(--accent)">-</span></div>
+            <div id="pct-count" style="color: #ff9ff3; font-weight: 800; font-size: 1.2rem; margin-top:10px;">0%</div>
+        </div>
+
+        <div id="stats-container"></div>
+    </aside>
+
+    <main id="map">
+        <div id="timeline-ui">
+            <button class="play-btn" id="play-btn" onclick="togglePlayback()">▶</button>
+            <div id="year-focus">2024</div>
+            <input type="range" id="time-slider" oninput="handleTimeChange(this.value)">
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+    <script>
+        // --- CONFIG & PALETTE ---
+        const discColors = { 'Música': '#E67E22', 'Teatro': '#D72638', 'Multidisciplina': '#5B21B6', 'Artes escénicas': '#065F46', 'Otras disciplinas': '#374151', 'Artes vivas': '#8E24AA', 'Danza': '#1E3A8A', 'Sin información': '#9CA3AF' };
+        const labelMap = { 'disciplina': 'Disciplina', 'alcaldia': 'Alcaldía', 'sostenimiento': 'Sostenimiento', 'estatus': 'Estatus' };
+
+        let allData = [], activeFilters = { disciplina: [], alcaldia: [], sostenimiento: [], estatus: [] };
+        let currentYear = 2024, searchQuery = "", isPlaying = false, animationTimer = null;
+        let timelinePoints = [];
+        let curC = 0;
+
+        const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false, doubleClickZoom: false });
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}').addTo(map);
+        map.createPane('markers').style.zIndex = 600;
+        const markersLayer = L.layerGroup().addTo(map);
+
+        // --- DATA LOAD ---
+        Papa.parse('https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv', {
+            download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
+            complete: r => { 
+                allData = r.data.map(d => ({
+                    ...d,
+                    ano_ap: parseInt(d.ano_ap) || 0,
+                    ano_cl: parseInt(d.ano_cl) || 0
+                }));
+                initTimeline();
+                renderView();
+            }
+        });
+
+        // --- TIMELINE ENGINE ---
+        function initTimeline() {
+            const yearsInCSV = [...new Set(allData.flatMap(d => [d.ano_ap, d.ano_cl]))]
+                               .filter(y => y > 1850).sort((a,b) => a-b);
+            
+            // Creamos hitos cada año con datos + rellenos de 5 años
+            let steps = [];
+            for(let i = yearsInCSV[0]; i <= 2026; i++) {
+                if(yearsInCSV.includes(i) || i % 5 === 0) steps.push(i);
+            }
+            timelinePoints = steps;
+
+            const slider = document.getElementById('time-slider');
+            slider.min = 0;
+            slider.max = timelinePoints.length - 1;
+            slider.value = timelinePoints.length - 1;
+            updateYearDisplay(timelinePoints[slider.value]);
+        }
+
+        function handleTimeChange(index) {
+            currentYear = timelinePoints[index];
+            updateYearDisplay(currentYear);
+            renderView();
+        }
+
+        function updateYearDisplay(y) {
+            document.getElementById('year-focus').textContent = y;
+            document.getElementById('label-year').textContent = y;
+        }
+
+        function togglePlayback() {
+            isPlaying = !isPlaying;
+            const btn = document.getElementById('play-btn');
+            if(isPlaying) {
+                btn.textContent = "⏸";
+                const slider = document.getElementById('time-slider');
+                if(parseInt(slider.value) >= timelinePoints.length - 1) slider.value = 0;
+                
+                animationTimer = setInterval(() => {
+                    slider.value = parseInt(slider.value) + 1;
+                    handleTimeChange(slider.value);
+                    if(parseInt(slider.value) >= timelinePoints.length - 1) togglePlayback();
+                }, 400);
+            } else {
+                btn.textContent = "▶";
+                clearInterval(animationTimer);
+            }
+        }
+
+        // --- RENDER & FILTERS ---
+        function renderView() {
+            const filtered = allData.filter(d => {
+                const matchesFilters = Object.entries(activeFilters).every(([col, sel]) => sel.length === 0 || sel.includes(String(d[col])));
+                const matchesSearch = d.nombre.toLowerCase().includes(searchQuery.toLowerCase());
+                
+                // Lógica de Existencia (Torque logic)
+                const opened = d.ano_ap <= currentYear || d.ano_ap === 0;
+                const active = !d.ano_cl || d.ano_cl === 0 || d.ano_cl > currentYear;
+
+                return matchesFilters && matchesSearch && opened && active;
+            });
+
+            animateCounter(filtered.length);
+            markersLayer.clearLayers();
+
+            filtered.forEach(p => {
+                const marker = L.circleMarker([p.latitud, p.longitud], {
+                    pane: 'markers', radius: 7, weight: 2, color: 'white',
+                    fillColor: discColors[p.disciplina] || '#999', fillOpacity: 1
+                });
+                
+                marker.bindPopup(`<div class="p-title">${p.nombre}</div><div style="font-size:11px;color:#666"><b>${p.disciplina}</b><br>Inaugurado en ${p.ano_ap || 'Legado'}</div>`, { autoPan: false });
+                
+                marker.on('mouseover', function() { if(!this._pinned) this.openPopup(); });
+                marker.on('mouseout', function() { if(!this._pinned) this.closePopup(); });
+                marker.on('click', function() { 
+                    markersLayer.eachLayer(m => m._pinned = false); 
+                    this._pinned = true; this.openPopup(); 
+                });
+                
+                marker.addTo(markersLayer);
+            });
+
+            renderWidgets(filtered);
+        }
+
+        function renderWidgets(data) {
+            const container = document.getElementById('stats-container');
+            const openWidgets = Array.from(document.querySelectorAll('.widget.open')).map(w => w.dataset.col);
+            container.innerHTML = '';
+
+            Object.keys(activeFilters).forEach(col => {
+                const counts = {};
+                data.forEach(d => { 
+                    let v = d[col] || "Sin dato";
+                    counts[v] = (counts[v] || 0) + 1; 
+                });
+
+                const widget = document.createElement('div');
+                widget.className = `widget ${openWidgets.includes(col) || (Object.values(activeFilters).flat().length === 0 && col === 'disciplina') ? 'open' : ''}`;
+                widget.dataset.col = col;
+
+                let h = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')">${labelMap[col]} ▾</div><div class="widget-content">`;
+                Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
+                    const isActive = activeFilters[col].includes(String(val));
+                    const barP = (count / data.length * 100).toFixed(0);
+                    const barC = col === 'disciplina' ? discColors[val] : '#00d2ff';
+
+                    h += `<div class="stat-row ${isActive ? 'active' : ''}" onclick="toggleMultiFilter('${col}', '${val}')">
+                            <div class="stat-info"><span>${val}</span><strong>${count}</strong></div>
+                            <div class="stat-bar"><div class="stat-bar-fill" style="width:${barP}%; background:${barC}"></div></div>
+                        </div>`;
+                });
+                widget.innerHTML = h + `</div>`;
+                container.appendChild(widget);
+            });
+        }
+
+        function toggleMultiFilter(col, val) {
+            const idx = activeFilters[col].indexOf(String(val));
+            if(idx > -1) activeFilters[col].splice(idx, 1);
+            else activeFilters[col].push(String(val));
+            renderView();
+        }
+
+        function animateCounter(target) {
+            const el = document.getElementById('total-count');
+            const pct = document.getElementById('pct-count');
+            const start = curC;
+            const dur = 400;
+            let st = null;
+            function step(t) {
+                if(!st) st = t;
+                const prog = Math.min((t - st) / dur, 1);
+                curC = prog * (target - start) + start;
+                el.textContent = Math.floor(curC);
+                pct.textContent = (allData.length > 0 ? (curC/allData.length*100) : 0).toFixed(1) + "%";
+                if(prog < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+
+        function updateSearch() { searchQuery = document.getElementById('search-input').value; renderView(); }
+        function clearAllFilters() { Object.keys(activeFilters).forEach(k => activeFilters[k] = []); searchQuery = ""; document.getElementById('search-input').value = ""; renderView(); }
+    </script>
+</body>
+</html>
