@@ -3,82 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artes Vivas CDMX | </title>
+    <title>Artes Vivas CDMX | Dashboard Fix</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --accent: #ff4757; --bg: #f1f2f6; --panel: rgba(255,255,255,0.98); }
-        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); display: flex; height: 100vh; color: #2f3542; }
+        :root { --accent: #ff4757; --bg: #f1f2f6; --panel: #ffffff; }
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); display: flex; height: 100vh; width: 100vw; overflow: hidden; }
         
-        /* Sidebar */
+        /* Dashboard - Ajuste Safari */
         #dashboard {
             width: 380px; height: 100%; z-index: 1000;
-            background: var(--panel); backdrop-filter: blur(15px);
+            background: var(--panel); position: relative;
             box-shadow: 4px 0 25px rgba(0,0,0,0.1);
             display: flex; flex-direction: column; padding: 30px;
-            overflow-y: auto; box-sizing: border-box; border-right: 1px solid #dfe4ea;
+            overflow-y: auto; flex-shrink: 0;
         }
 
         #map { flex-grow: 1; height: 100%; position: relative; background: #ced6e0; }
 
-        h1 { font-size: 1.2rem; margin: 0; font-weight: 900; letter-spacing: -0.5px; border-bottom: 4px solid var(--accent); display: inline-block; padding-bottom: 5px; }
+        h1 { font-size: 1.2rem; margin: 0; font-weight: 900; border-bottom: 4px solid var(--accent); display: inline-block; padding-bottom: 5px; }
         
-        /* Contador con Sazón */
+        /* Contador */
         .counter-section { 
             margin: 30px 0; text-align: center; background: #2f3542; color: white;
-            padding: 25px 20px; border-radius: 16px; position: relative; overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
         .total-counter { font-size: 4rem; font-weight: 900; color: var(--accent); line-height: 1; }
-        .percentage-badge { font-size: 1.2rem; font-weight: 800; color: #ced6e0; margin-top: 5px; display: block; opacity: 0.9; }
+        .percentage-badge { font-size: 1.2rem; font-weight: 800; color: #ced6e0; margin-top: 5px; display: block; }
         .total-label { font-size: 0.65rem; text-transform: uppercase; color: #a4b0be; letter-spacing: 2px; margin-top: 15px; font-weight: 600; }
         
-        .pulse { animation: countPulse 0.4s ease-out; }
-        @keyframes countPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.08); }
-            100% { transform: scale(1); }
-        }
-
-        /* Widgets Acordeón */
-        .widget { margin-top: 12px; border: 1px solid #f1f2f6; border-radius: 10px; background: #fff; overflow: hidden; transition: box-shadow 0.3s; }
-        .widget:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        /* Acordeón */
+        .widget { margin-top: 12px; border: 1px solid #f1f2f6; border-radius: 10px; background: #fff; overflow: hidden; }
         .widget-header { 
             padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
             font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #57606f; 
         }
-        .widget-header::after { content: '＋'; font-size: 14px; color: var(--accent); transition: transform 0.3s; }
-        .widget.open .widget-header::after { content: '－'; transform: rotate(180deg); }
-        
         .widget-content { display: none; padding: 5px 18px 15px 18px; }
         .widget.open .widget-content { display: block; }
 
-        .stat-row { margin-bottom: 12px; cursor: pointer; transition: 0.2s; }
-        .stat-info { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 5px; color: #2f3542; }
+        .stat-row { margin-bottom: 12px; cursor: pointer; }
+        .stat-info { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 5px; }
         .stat-bar-bg { background: #f1f2f6; height: 6px; border-radius: 10px; overflow: hidden; }
-        .stat-bar-fill { height: 100%; transition: width 0.8s cubic-bezier(0.19, 1, 0.22, 1); opacity: 0.8; }
+        .stat-bar-fill { height: 100%; background: var(--accent); transition: width 0.8s ease; }
         .stat-row.active { color: var(--accent); font-weight: 700; }
 
-        #clear-btn { 
-            display: none; margin-top: 15px; padding: 12px; background: #ff4757; color: white; border: none; 
-            border-radius: 8px; font-size: 0.75rem; cursor: pointer; width: 100%; font-weight: 800;
-        }
+        #clear-btn { display: none; margin-top: 15px; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-weight: 800; }
     </style>
 </head>
 <body>
 
     <div id="dashboard">
         <h1>ARTES VIVAS CDMX</h1>
-        
         <div class="counter-section" id="counter-card">
             <div class="total-counter" id="total-count">0</div>
-            <div class="percentage-badge" id="pct-count">100%</div>
+            <div class="percentage-badge" id="pct-count">0%</div>
             <div class="total-label">Representación Territorial</div>
             <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
         </div>
-        
         <div id="stats-container"></div>
     </div>
 
@@ -88,7 +72,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // --- CONFIG ---
+        // Paleta de colores
         const colors = {
             'Teatro': '#ff4757', 'Danza': '#3742fa', 'Música': '#ffa502', 
             'Performance': '#8e44ad', 'Interdisciplina': '#2ed573', 'Otros': '#747d8c'
@@ -99,69 +83,56 @@
         let markersLayer = L.layerGroup();
         const columnas = ['disciplina', 'alcaldia', 'sostenimiento', 'estatus', 'clausuras', 'aforo'];
 
+        // Inicializar mapa
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { 
-            attribution: '© CARTO | CDMX Open Data' 
+            attribution: '© CARTO' 
         }).addTo(map);
 
         markersLayer.addTo(map);
         map.createPane('alcPane').style.zIndex = 200;
 
-        // --- 1. CARGA DEL GEOJSON (Delimitación Territorial) ---
+        // Cargar Alcaldías (GeoJSON)
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/CDMX%20Alcaldias.geojson')
             .then(r => r.json())
-            .then(geojsonData => {
-                L.geoJSON(geojsonData, {
+            .then(data => {
+                L.geoJSON(data, {
                     pane: 'alcPane',
-                    style: {
-                        fillColor: '#2f3542',
-                        weight: 1.5,
-                        color: '#fff',
-                        fillOpacity: 0.12,
-                        opacity: 0.5
-                    },
-                    onEachFeature: (feature, layer) => {
-                        const name = feature.properties.nomgeo || feature.properties.NOMGEO || feature.properties.ALCALDIA || "Alcaldía";
-                        layer.bindTooltip(name, { sticky: true });
-                    }
+                    style: { fillColor: '#2f3542', weight: 1.5, color: '#fff', fillOpacity: 0.1, opacity: 0.4 }
                 }).addTo(map);
-            })
-            .catch(err => console.error("Error cargando el GeoJSON:", err));
+            });
 
-        // --- 2. CARGA DE PUNTOS (CSV) ---
+        // Cargar Puntos (CSV)
         Papa.parse('https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv', {
             download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
             complete: r => { 
-                allData = r.data; 
-                updateView(); 
+                allData = r.data || []; 
+                // Forzar redimensionado para Safari
+                setTimeout(() => { map.invalidateSize(); updateView(); }, 100);
             }
         });
 
-        // --- LÓGICA DE ACTUALIZACIÓN ---
         function updateView() {
+            if (allData.length === 0) return;
+
             const filtered = allData.filter(d => Object.entries(activeFilters).every(([c, v]) => d[c] === v));
-            const pct = ((filtered.length / allData.length) * 100).toFixed(1);
+            const pct = allData.length > 0 ? ((filtered.length / allData.length) * 100).toFixed(1) : 0;
 
-            animateValue('total-count', filtered.length, 800);
-            animatePct('pct-count', pct, 800);
+            // Actualizar textos sin animación si hay riesgo de NaN
+            animateValue('total-count', filtered.length);
+            animatePct('pct-count', pct);
             
-            document.getElementById('counter-card').classList.add('pulse');
-            setTimeout(() => document.getElementById('counter-card').classList.remove('pulse'), 400);
-
             markersLayer.clearLayers();
             filtered.forEach(p => {
                 const lat = p.latitud || p.lat;
                 const lng = p.longitud || p.lng;
-                if (lat && lng) {
+                if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
                     L.circleMarker([lat, lng], {
-                        radius: 7, 
-                        fillColor: colors[p.disciplina] || colors['Otros'],
-                        color: "#fff", 
-                        weight: 1.5, 
-                        fillOpacity: 0.9
-                    }).bindPopup(createPopup(p)).addTo(markersLayer);
+                        radius: 7, fillColor: colors[p.disciplina] || colors['Otros'],
+                        color: "#fff", weight: 1.5, fillOpacity: 0.9
+                    }).bindPopup(`<b>${p.nombre}</b><br><small>${p.disciplina}</small>`).addTo(markersLayer);
                 }
             });
 
@@ -169,17 +140,35 @@
             renderWidgets(filtered);
         }
 
-        function createPopup(p) {
-            let html = `<div style="max-height:200px; overflow-y:auto; min-width:180px;">`;
-            html += `<b style="color:var(--accent); font-size:14px;">${p.nombre || 'Espacio'}</b><hr style="border:0; border-top:1px solid #eee; margin:8px 0;">`;
-            Object.keys(p).forEach(key => {
-                const val = p[key];
-                if (!['lat','lng','latitud','longitud'].includes(key.toLowerCase()) && val) {
-                    html += `<div style="font-size:10px; margin-bottom:3px;"><b style="text-transform:capitalize;">${key.replace(/_/g,' ')}:</b> ${val}</div>`;
-                }
-            });
-            html += `</div>`;
-            return html;
+        // Animación segura para Safari
+        function animateValue(id, target) {
+            const obj = document.getElementById(id);
+            const start = parseInt(obj.innerHTML) || 0;
+            if (start === target) return;
+            
+            let startTime = null;
+            function step(t) {
+                if (!startTime) startTime = t;
+                const progress = Math.min((t - startTime) / 400, 1);
+                const current = Math.floor(progress * (target - start) + start);
+                obj.innerHTML = isNaN(current) ? target : current;
+                if (progress < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+
+        function animatePct(id, target) {
+            const obj = document.getElementById(id);
+            const start = parseFloat(obj.innerHTML) || 0;
+            let startTime = null;
+            function step(t) {
+                if (!startTime) startTime = t;
+                const progress = Math.min((t - startTime) / 400, 1);
+                const current = (progress * (target - start) + start).toFixed(1);
+                obj.innerHTML = (isNaN(current) ? target : current) + '%';
+                if (progress < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
         }
 
         function renderWidgets(data) {
@@ -195,7 +184,7 @@
                 widget.className = `widget ${openWidgets.includes(col) || (Object.keys(activeFilters).length === 0 && col === 'disciplina') ? 'open' : ''}`;
                 widget.dataset.col = col;
 
-                let html = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')">${col.replace(/_/g,' ')}</div>`;
+                let html = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')">${col.replace(/_/g,' ')} <span>＋</span></div>`;
                 html += `<div class="widget-content">`;
                 
                 Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
@@ -213,34 +202,6 @@
                 widget.innerHTML = html;
                 container.appendChild(widget);
             });
-        }
-
-        // --- ANIMACIONES ---
-        function animateValue(id, target, duration) {
-            const obj = document.getElementById(id);
-            let start = parseInt(obj.innerText);
-            let startTime = null;
-            function step(t) {
-                if (!startTime) startTime = t;
-                const progress = Math.min((t - startTime) / duration, 1);
-                obj.innerText = Math.floor(progress * (target - start) + start);
-                if (progress < 1) requestAnimationFrame(step);
-            }
-            requestAnimationFrame(step);
-        }
-
-        function animatePct(id, target, duration) {
-            const obj = document.getElementById(id);
-            let start = parseFloat(obj.innerText);
-            let startTime = null;
-            function step(t) {
-                if (!startTime) startTime = t;
-                const progress = Math.min((t - startTime) / duration, 1);
-                const current = (progress * (target - start) + start).toFixed(1);
-                obj.innerText = current + '%';
-                if (progress < 1) requestAnimationFrame(step);
-            }
-            requestAnimationFrame(step);
         }
 
         function toggleFilter(c, v) {
