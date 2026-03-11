@@ -3,52 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artes Vivas CDMX | Dashboard</title>
+    <title>Artes Vivas CDMX | Visualizador Pro</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --accent: #ff4757; --bg: #f4f7f6; --panel: #ffffff; }
+        :root { --accent: #ff4757; --panel: #ffffff; --map-bg: #e0e0e0; }
         * { box-sizing: border-box; }
-        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); display: flex; height: 100vh; width: 100vw; overflow: hidden; }
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: #f0f0f0; display: flex; height: 100vh; width: 100vw; overflow: hidden; }
         
         #dashboard {
             width: 380px; height: 100%; z-index: 1000;
-            background: var(--panel); box-shadow: 5px 0 20px rgba(0,0,0,0.05);
+            background: var(--panel); box-shadow: 10px 0 30px rgba(0,0,0,0.05);
             display: flex; flex-direction: column; padding: 25px;
             overflow-y: auto; flex-shrink: 0; border-right: 1px solid #eee;
         }
 
-        #map { flex-grow: 1; height: 100%; position: relative; background: #e0e0e0; }
+        #map { flex-grow: 1; height: 100%; position: relative; background: var(--map-bg); }
 
         h1 { font-size: 1.1rem; margin: 0; font-weight: 900; color: #2d3436; border-bottom: 4px solid var(--accent); display: inline-block; padding-bottom: 5px; }
         
-        /* Sección del Contador */
+        /* Dashboard - Counter Section */
         .counter-section { 
-            margin: 25px 0; text-align: center; background: #2d3436; color: white;
-            padding: 20px; border-radius: 12px; box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            margin: 25px 0; text-align: center; background: #1e272e; color: white;
+            padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
-        .total-counter { font-size: 3.5rem; font-weight: 900; color: var(--accent); line-height: 1; margin: 0; }
-        .percentage-badge { font-size: 1.1rem; font-weight: 700; color: #dfe6e9; margin-top: 5px; display: block; }
-        .total-label { font-size: 0.6rem; text-transform: uppercase; color: #b2bec3; letter-spacing: 2px; margin-top: 12px; font-weight: 600; }
+        .total-counter { font-size: 3.8rem; font-weight: 900; color: #00d2ff; line-height: 1; margin: 0; }
+        .percentage-badge { font-size: 1.2rem; font-weight: 700; color: #ff9ff3; margin-top: 8px; display: block; }
+        .total-label { font-size: 0.6rem; text-transform: uppercase; color: #a4b0be; letter-spacing: 2px; margin-top: 15px; font-weight: 600; }
         
-        /* Widgets */
-        .widget { margin-top: 10px; border: 1px solid #f1f2f6; border-radius: 8px; background: #fff; overflow: hidden; }
+        /* Widgets - Acordeón */
+        .widget { margin-top: 12px; border: 1px solid #f1f2f6; border-radius: 12px; background: #fff; overflow: hidden; }
         .widget-header { 
-            padding: 12px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-            font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #636e72; background: #fdfdfd;
+            padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #57606f; background: #fafafa;
         }
-        .widget-content { display: none; padding: 10px 15px; border-top: 1px solid #f1f2f6; }
+        .widget-content { display: none; padding: 10px 18px 15px 18px; }
         .widget.open .widget-content { display: block; }
 
-        .stat-row { margin-bottom: 10px; cursor: pointer; }
-        .stat-info { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px; }
-        .stat-bar-bg { background: #f1f2f6; height: 5px; border-radius: 10px; overflow: hidden; }
-        .stat-bar-fill { height: 100%; background: var(--accent); transition: width 0.6s ease; opacity: 0.8; }
-        .stat-row.active { color: var(--accent); font-weight: 700; }
+        .stat-row { margin-bottom: 12px; cursor: pointer; }
+        .stat-info { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px; color: #2f3542; }
+        .stat-bar-bg { background: #f1f2f6; height: 6px; border-radius: 10px; overflow: hidden; }
+        .stat-bar-fill { height: 100%; transition: width 0.7s ease; opacity: 0.8; }
+        .stat-row.active { color: var(--accent); font-weight: 800; }
 
-        #clear-btn { display: none; margin-top: 15px; padding: 10px; background: var(--accent); color: white; border: none; border-radius: 6px; width: 100%; cursor: pointer; font-weight: 800; font-size: 0.7rem; }
+        #clear-btn { display: none; margin-top: 15px; padding: 12px; background: #57606f; color: white; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -56,9 +56,9 @@
     <div id="dashboard">
         <h1>ARTES VIVAS CDMX</h1>
         <div class="counter-section">
-            <p id="total-count" class="total-counter">0</p>
-            <span id="pct-count" class="percentage-badge">0%</span>
-            <div class="total-label">Filtro Territorial / Total</div>
+            <div id="total-count" class="total-counter">0</div>
+            <div id="pct-count" class="percentage-badge">0%</div>
+            <div class="total-label">Filtro / Universo Total</div>
             <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
         </div>
         <div id="stats-container"></div>
@@ -73,13 +73,28 @@
         // --- VARIABLES DE ESTADO ---
         let allData = [];
         let activeFilters = {}; 
-        let lastCount = 0; // Para evitar NaN leyendo del DOM
-        let lastPct = 0;   // Para evitar NaN leyendo del DOM
+        let currentRawCount = 0; // Para evitar leer el DOM en Safari
+        let currentRawPct = 0;
         
-        const colors = {
+        const pointColors = {
             'Teatro': '#ff4757', 'Danza': '#3742fa', 'Música': '#ffa502', 
             'Performance': '#8e44ad', 'Interdisciplina': '#2ed573', 'Otros': '#747d8c'
         };
+
+        // Paleta Neón para Alcaldías (Contrastante y sin rojo/azul/naranja)
+        const alcPalette = ['#00d2ff', '#ff9ff3', '#18dcff', '#7efff5', '#c56cf0', '#7d5fff'];
+        function getAlcStyle(name) {
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            const color = alcPalette[Math.abs(hash) % alcPalette.length];
+            return {
+                fillColor: color,
+                weight: 2,
+                opacity: 0.8,
+                color: color, // Borde brillante
+                fillOpacity: 0.15 // Transparencia contrastante
+            };
+        }
 
         const columnas = ['disciplina', 'alcaldia', 'sostenimiento', 'estatus', 'clausuras', 'aforo'];
 
@@ -87,10 +102,9 @@
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        // NUEVA CAPA BASE: Esri World Gray (Más compatible)
+        // Capa Esri World Gray (Máxima compatibilidad)
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
-            maxZoom: 16
+            attribution: 'Esri', maxZoom: 16
         }).addTo(map);
 
         const markersLayer = L.layerGroup().addTo(map);
@@ -102,43 +116,38 @@
             .then(data => {
                 L.geoJSON(data, {
                     pane: 'alcPane',
-                    style: { fillColor: '#2d3436', weight: 1, color: '#fff', fillOpacity: 0.35, opacity: 0.3 }
+                    style: (f) => getAlcStyle(f.properties.nomgeo || "X"),
+                    onEachFeature: (f, l) => l.bindTooltip(f.properties.nomgeo || "Alcaldía")
                 }).addTo(map);
-            }).catch(e => console.log("Error GeoJSON:", e));
+            }).catch(e => console.log("GeoJSON Error"));
 
         // --- CARGAR DATOS ---
         Papa.parse('https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv', {
             download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
             complete: r => { 
                 allData = r.data || []; 
-                // Pequeño delay para asegurar que Safari reconozca el tamaño del div
-                setTimeout(() => { map.invalidateSize(); updateView(); }, 200);
+                setTimeout(() => { map.invalidateSize(); updateView(); }, 300);
             }
         });
 
         function updateView() {
             const filtered = allData.filter(d => {
-                return Object.entries(activeFilters).every(([col, val]) => d[col] === val);
+                return Object.entries(activeFilters).every(([c, v]) => d[c] === v);
             });
 
-            const newCount = filtered.length;
-            const newPct = allData.length > 0 ? ((newCount / allData.length) * 100) : 0;
+            const targetCount = filtered.length;
+            const targetPct = allData.length > 0 ? (targetCount / allData.length * 100) : 0;
 
-            // Animación segura (Usando variables, no leyendo del DOM)
-            animateNumeric('total-count', lastCount, newCount, false);
-            animateNumeric('pct-count', lastPct, newPct, true);
-            
-            lastCount = newCount;
-            lastPct = newPct;
+            // Animación Blindada
+            animateNumbers(targetCount, targetPct);
 
-            // Actualizar Marcadores
             markersLayer.clearLayers();
             filtered.forEach(p => {
                 const lat = parseFloat(p.latitud || p.lat);
                 const lng = parseFloat(p.longitud || p.lng);
                 if (!isNaN(lat) && !isNaN(lng)) {
                     L.circleMarker([lat, lng], {
-                        radius: 6, fillColor: colors[p.disciplina] || colors['Otros'],
+                        radius: 6, fillColor: pointColors[p.disciplina] || pointColors['Otros'],
                         color: "#fff", weight: 1.5, fillOpacity: 0.9
                     }).bindPopup(`<b>${p.nombre}</b><br><small>${p.disciplina}</small>`).addTo(markersLayer);
                 }
@@ -148,22 +157,24 @@
             renderWidgets(filtered);
         }
 
-        // --- ANIMACIÓN ROBUSTA ANTI-NaN ---
-        function animateNumeric(id, start, end, isPct) {
-            const obj = document.getElementById(id);
-            const duration = 500;
+        // --- ANIMACIÓN ROBUSTA (Sin leer del DOM) ---
+        function animateNumbers(tCount, tPct) {
+            const countEl = document.getElementById('total-count');
+            const pctEl = document.getElementById('pct-count');
+            const startC = currentRawCount;
+            const startP = currentRawPct;
+            const duration = 600;
             let startTime = null;
 
             function step(timestamp) {
                 if (!startTime) startTime = timestamp;
                 const progress = Math.min((timestamp - startTime) / duration, 1);
-                const current = progress * (end - start) + start;
                 
-                if (isPct) {
-                    obj.textContent = current.toFixed(1) + "%";
-                } else {
-                    obj.textContent = Math.floor(current);
-                }
+                currentRawCount = progress * (tCount - startC) + startC;
+                currentRawPct = progress * (tPct - startP) + startP;
+
+                countEl.textContent = Math.floor(currentRawCount);
+                pctEl.textContent = currentRawPct.toFixed(1) + "%";
 
                 if (progress < 1) requestAnimationFrame(step);
             }
@@ -186,11 +197,10 @@
                 let html = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')"><span>${col.replace(/_/g,' ')}</span> <span>▾</span></div>`;
                 html += `<div class="widget-content">`;
                 
-                const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-                sorted.forEach(([val, count]) => {
+                Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
                     const barPct = data.length > 0 ? (count / data.length * 100) : 0;
                     const isActive = activeFilters[col] === val;
-                    const barColor = col === 'disciplina' ? colors[val] || colors['Otros'] : '#ff4757';
+                    const barColor = col === 'disciplina' ? pointColors[val] || pointColors['Otros'] : '#ff4757';
 
                     html += `
                         <div class="stat-row ${isActive ? 'active' : ''}" onclick="toggleFilter('${col}', '${val}')">
