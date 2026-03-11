@@ -3,31 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cartografía Artes Vivas con Alcaldías</title>
+    <title>Dashboard | Cartografía Artes Vivas CDMX</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
     <style>
-        body { margin: 0; padding: 0; font-family: sans-serif; }
-        #map { height: 100vh; width: 100%; background: #f8f9fa; }
+        :root { --accent: #e74c3c; --bg: #f8f9fa; --panel-bg: rgba(255,255,255,0.9); }
+        body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); overflow: hidden; }
+        
+        #map { height: 100vh; width: 100%; }
 
-        .info-panel {
-            position: absolute; top: 20px; left: 20px; z-index: 1000;
-            background: white; padding: 15px; border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 250px;
+        /* Panel Lateral (Dashboard) */
+        #dashboard {
+            position: absolute; top: 0; left: 0; bottom: 0;
+            width: 320px; z-index: 1000;
+            background: var(--panel-bg);
+            backdrop-filter: blur(10px);
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column;
+            padding: 20px; overflow-y: auto;
         }
 
-        /* Estilo de la leyenda */
-        .legend-alcaldias { margin-top: 10px; font-size: 10px; color: #555; border-top: 1px solid #eee; padding-top: 5px; }
+        h1 { font-size: 1.2rem; margin: 0; color: #333; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        .total-counter { font-size: 2.5rem; font-weight: bold; color: var(--accent); margin: 15px 0 5px 0; }
+        .total-label { font-size: 0.8rem; text-transform: uppercase; color: #777; letter-spacing: 1px; }
+
+        /* Widgets de Categoría */
+        .widget { margin-top: 25px; }
+        .widget-title { font-size: 0.85rem; font-weight: bold; color: #444; text-transform: uppercase; margin-bottom: 10px; display: block; border-left: 3px solid #ccc; padding-left: 8px; }
+        
+        .stat-row { margin-bottom: 8px; font-size: 0.8rem; }
+        .stat-info { display: flex; justify-content: space-between; margin-bottom: 3px; }
+        .stat-bar-bg { background: #eee; height: 6px; border-radius: 3px; overflow: hidden; }
+        .stat-bar-fill { background: var(--accent); height: 100%; transition: width 0.5s ease; opacity: 0.7; }
+
+        /* Estilo Leaflet */
+        .leaflet-container { background: #e0e0e0; }
+        .custom-popup .leaflet-popup-content-wrapper { border-radius: 4px; padding: 0; }
     </style>
 </head>
 <body>
 
-    <div class="info-panel">
-        <h2 style="margin:0; font-size:18px;">Artes Vivas CDMX</h2>
-        <p style="font-size:11px; color:#666;">Puntos y Delimitación Territorial</p>
-        <div id="legend-points"></div>
-        <div class="legend-alcaldias">Colores por Alcaldía (Delimitación Territorial)</div>
+    <div id="dashboard">
+        <h1>Artes Vivas CDMX</h1>
+        <div class="total-counter" id="total-count">0</div>
+        <div class="total-label">Espacios Totales Mapeados</div>
+        
+        <div id="stats-container">
+            <p style="color:#888; font-size: 12px; margin-top: 20px;">Cargando datos del observatorio...</p>
+        </div>
     </div>
 
     <div id="map"></div>
@@ -37,91 +61,103 @@
     <script src="https://unpkg.com/wellknown@0.5.0/wellknown.js"></script>
 
     <script>
-        // 1. Inicializar Mapa y Panes (Capas de profundidad)
-        const map = L.map('map', { center: [19.35, -99.14], zoom: 10 });
+        const map = L.map('map', { center: [19.38, -99.14], zoom: 11, zoomControl: false });
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        // Capa base limpia
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '© CARTO'
         }).addTo(map);
 
-        // Creamos paneles para controlar quién va arriba
-        map.createPane('alcaldiasPane');
-        map.getPane('alcaldiasPane').style.zIndex = 400; // Fondo
+        // Panes para orden de capas
+        map.createPane('alcaldiasPane').style.zIndex = 400;
+        map.createPane('puntosPane').style.zIndex = 600;
 
-        map.createPane('puntosPane');
-        map.getPane('puntosPane').style.zIndex = 600; // Frente
+        // Configuración de columnas a analizar
+        const columnasInteres = [
+            'disciplina', 'circuito', 'condicion_mobiliaria', 
+            'sostenimiento', 'estatus', 'clausuras', 'aforo', 'alcaldia'
+        ];
 
-        // 2. Función para generar color aleatorio pero consistente por nombre de Alcaldía
-        function getAlcaldiaColor(name) {
-            let hash = 0;
-            for (let i = 0; i < name.length; i++) {
-                hash = name.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            return `hsl(${Math.abs(hash) % 360}, 60%, 70%)`;
-        }
-
-        // 3. CARGAR ALCALDÍAS (CSV con WKT)
+        // 1. CARGAR ALCALDÍAS (Fondo)
         const urlAlcaldias = 'https://raw.githubusercontent.com/observatoriopoliticas/mapascdmx/main/alcaldias_cdmx.csv';
-        
         Papa.parse(urlAlcaldias, {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) {
                 results.data.forEach(row => {
-                    // Buscamos la columna de geometría (suele llamarse geometry o WKT)
-                    const wktString = row.geometry || row.WKT || row.wkt;
-                    const nombre = row.nomgeo || row.ALCALDIA || "Alcaldía";
-
-                    if (wktString) {
-                        const geojson = wellknown.parse(wktString); // Convertir WKT a GeoJSON
-                        L.geoJSON(geojson, {
+                    const wkt = row.geometry || row.WKT || row.wkt;
+                    if (wkt) {
+                        L.geoJSON(wellknown.parse(wkt), {
                             pane: 'alcaldiasPane',
-                            style: {
-                                fillColor: getAlcaldiaColor(nombre),
-                                weight: 1.5,
-                                opacity: 0.8,
-                                color: 'white',
-                                fillOpacity: 0.4 // Transparencia solicitada
-                            }
-                        }).bindTooltip(nombre, { sticky: true }).addTo(map);
+                            style: { fillColor: '#ddd', weight: 1, color: '#fff', fillOpacity: 0.3 }
+                        }).addTo(map);
                     }
                 });
             }
         });
 
-        // 4. CARGAR PUNTOS DE ARTES VIVAS
+        // 2. CARGAR PUNTOS Y CALCULAR ESTADÍSTICAS
         const urlPuntos = 'https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv';
-
+        
         Papa.parse(urlPuntos, {
             download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
             complete: function(results) {
-                results.data.forEach(punto => {
+                const data = results.data;
+                document.getElementById('total-count').innerText = data.length;
+
+                // Objeto para guardar conteos: { columna: { valor: cuenta } }
+                let stats = {};
+                columnasInteres.forEach(col => stats[col] = {});
+
+                data.forEach(punto => {
+                    // 1. Dibujar en mapa
                     const lat = punto.latitud || punto.lat;
                     const lng = punto.longitud || punto.lng;
-
                     if (lat && lng) {
-                        const marker = L.circleMarker([lat, lng], {
-                            pane: 'puntosPane', // Mantener arriba
-                            radius: 7,
-                            fillColor: '#e74c3c',
-                            color: '#fff',
-                            weight: 1.5,
-                            fillOpacity: 1
-                        }).addTo(map);
-
-                        // Popup dinámico con todos los datos
-                        let content = `<div style="max-height:200px; overflow-y:auto;"><b>${punto.nombre || 'Sin nombre'}</b><hr>`;
-                        Object.keys(punto).forEach(key => {
-                            if (!['lat','lng','latitud','longitud','geometry','WKT'].includes(key.toLowerCase()) && punto[key]) {
-                                content += `<div style="font-size:10px;"><b>${key}:</b> ${punto[key]}</div>`;
-                            }
-                        });
-                        content += `</div>`;
-                        marker.bindPopup(content);
+                        L.circleMarker([lat, lng], {
+                            pane: 'puntosPane', radius: 6,
+                            fillColor: '#e74c3c', color: '#fff', weight: 1, fillOpacity: 0.9
+                        }).bindPopup(`<b>${punto.nombre}</b><br><small>${punto.tipo || ''}</small>`).addTo(map);
                     }
+
+                    // 2. Contar para Dashboard
+                    columnasInteres.forEach(col => {
+                        let val = punto[col] || "No especificado";
+                        stats[col][val] = (stats[col][val] || 0) + 1;
+                    });
                 });
+
+                renderStats(stats, data.length);
             }
         });
+
+        function renderStats(stats, total) {
+            const container = document.getElementById('stats-container');
+            container.innerHTML = ''; // Limpiar mensaje de carga
+
+            Object.keys(stats).forEach(colName => {
+                let widgetHtml = `<div class="widget"><span class="widget-title">${colName.replace(/_/g, ' ')}</span>`;
+                
+                // Ordenar valores de mayor a menor
+                const sortedValues = Object.entries(stats[colName]).sort((a, b) => b[1] - a[1]);
+
+                sortedValues.forEach(([val, count]) => {
+                    const pct = (count / total * 100).toFixed(1);
+                    widgetHtml += `
+                        <div class="stat-row">
+                            <div class="stat-info">
+                                <span>${val}</span>
+                                <strong>${count}</strong>
+                            </div>
+                            <div class="stat-bar-bg">
+                                <div class="stat-bar-fill" style="width: ${pct}%"></div>
+                            </div>
+                        </div>`;
+                });
+
+                widgetHtml += `</div>`;
+                container.innerHTML += widgetHtml;
+            });
+        }
     </script>
 </body>
 </html>
