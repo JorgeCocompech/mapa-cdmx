@@ -102,7 +102,7 @@
             .then(data => {
                 L.geoJSON(data, {
                     pane: 'alcPane',
-                    style: { fillColor: '#2d3436', weight: 1, color: '#fff', fillOpacity: 0.1, opacity: 0.3 }
+                    style: { fillColor: '#2d3436', weight: 1, color: '#fff', fillOpacity: 0.35, opacity: 0.3 }
                 }).addTo(map);
             }).catch(e => console.log("Error GeoJSON:", e));
 
