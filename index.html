@@ -22,6 +22,11 @@
 
         #map { flex-grow: 1; height: 100%; position: relative; background: #dcdde1; }
 
+        /* ELIMINAR EL RECUADRO AZUL AL HACER CLIC EN ALCALDÍAS */
+        path.leaflet-interactive:focus {
+            outline: none !important;
+        }
+
         .search-box {
             margin-bottom: 15px; padding: 12px; width: 100%;
             border: 2px solid #f1f2f6; border-radius: 8px;
@@ -254,7 +259,7 @@
             let html = `<div class="popup-container"><span class="p-title">${p.nombre}</span>`;
             Object.entries(labelMap).forEach(([key, label]) => {
                 if (p[key] && p[key] !== 0 && p[key] !== "0") {
-                    html += `<div class="p-row"><span class="p-label">${label}</span>${p[key]}</div>`;
+                    html += `<div class="p-row"><span class="p-label">${label}</span><span>${p[key]}</span></div>`;
                 }
             });
             return html + `</div>`;
