@@ -44,8 +44,9 @@
         .stat-row { margin-bottom: 8px; cursor: pointer; padding: 4px; border-radius: 4px; transition: 0.2s; }
         .stat-row.active { color: var(--accent); font-weight: 800; }
         .stat-bar-bg { background: #eee; height: 4px; border-radius: 10px; margin-top: 4px; }
-        .stat-bar-fill { height: 100%; transition: width 0.5s ease; }
+        .stat-bar-fill { height: 100%; transition: width 0.7s ease; }
 
+        /* Estilo del Popup */
         .popup-container { max-height: 280px; overflow-y: auto; font-size: 11px; color: #333; width: 240px; }
         .p-title { color: var(--accent); font-weight: 900; font-size: 15px; display: block; margin-bottom: 10px; border-bottom: 2px solid #f1f2f6; padding-bottom: 5px; }
         .p-row { border-bottom: 1px solid #f9f9f9; padding: 5px 0; display: flex; flex-direction: column; }
@@ -126,7 +127,8 @@
                 L.geoJSON(data, {
                     pane: 'alcPane',
                     style: (f) => {
-                        const color = alcPalette[f.properties.NOMGEO] || "#ccc";
+                        const name = f.properties.NOMGEO || "X";
+                        const color = alcPalette[name] || "#ccc";
                         return { fillColor: color, weight: 1.5, color: "white", fillOpacity: 0.12, opacity: 0.5 };
                     },
                     onEachFeature: (f, l) => {
@@ -147,7 +149,6 @@
 
         function updateView() {
             const filtered = allData.filter(d => {
-                // Filtro flexible (compara números con strings si es necesario)
                 const matchesFilters = Object.entries(activeFilters).every(([c, v]) => String(d[c]) === String(v));
                 const matchesSearch = d.nombre.toLowerCase().includes(searchQuery.toLowerCase());
                 return matchesFilters && matchesSearch;
@@ -166,7 +167,19 @@
                         fillColor: discColors[p.disciplina] || discColors['Otros'],
                         color: "#fff", weight: 2, fillOpacity: 1
                     });
+
                     marker.bindPopup(createFormattedPopup(p));
+
+                    // --- ACCIÓN HOVER ---
+                    marker.on('mouseover', function (e) {
+                        this.openPopup();
+                        this.setStyle({ weight: 4, color: '#f1c40f' }); // Feedback visual al posarse
+                    });
+                    marker.on('mouseout', function (e) {
+                        this.closePopup();
+                        this.setStyle({ weight: 2, color: '#fff' }); // Regresa al estado original
+                    });
+
                     marker.addTo(markersLayer);
                 }
             });
@@ -179,7 +192,6 @@
             let html = `<div class="popup-container"><span class="p-title">${p.nombre}</span>`;
             Object.keys(labelMap).forEach(key => {
                 const val = p[key];
-                // Mostramos solo si hay valor y no es "0" para años vacíos
                 if (val && val !== "" && val !== 0 && val !== "0") {
                     html += `<div class="p-row"><span class="p-label">${labelMap[key]}</span><span>${val}</span></div>`;
                 }
@@ -228,12 +240,11 @@
                 const counts = {};
                 data.forEach(d => { 
                     let v = d[col];
-                    // Limpieza para años: si es 0 o vacío, no contar
-                    if (v === 0 || v === "0" || v === "") v = null;
+                    if (v === 0 || v === "0" || v === "" || v === null) v = null;
                     if (v) counts[v] = (counts[v] || 0) + 1; 
                 });
 
-                if (Object.keys(counts).length === 0) return; // No crear widget si no hay datos
+                if (Object.keys(counts).length === 0) return;
 
                 const widget = document.createElement('div');
                 widget.className = `widget ${openWidgets.includes(col) ? 'open' : ''}`;
