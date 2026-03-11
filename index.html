@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artes Vivas CDMX | Dashboard Inteligente</title>
+    <title>Artes Vivas CDMX | Dashboard Final</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -36,7 +36,6 @@
         .registered-label { font-size: 0.85rem; color: #a4b0be; margin-top: 5px; font-weight: 600; }
         .percentage-badge { font-size: 1.2rem; font-weight: 800; color: #ff9ff3; margin-top: 5px; }
 
-        /* Widgets */
         .widget { margin-top: 10px; border: 1px solid #f1f2f6; border-radius: 10px; overflow: hidden; }
         .widget-header { padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; background: #fafafa; color: #57606f; }
         .widget-content { display: none; padding: 10px; }
@@ -46,17 +45,15 @@
         .stat-row:hover { background: #f1f2f6; }
         .stat-row.active { color: var(--accent); font-weight: 800; }
         .stat-bar-bg { background: #eee; height: 4px; border-radius: 10px; margin-top: 4px; }
-        .stat-bar-fill { height: 100%; transition: width 0.7s ease; }
+        .stat-bar-fill { height: 100%; transition: width 0.7s ease; background: var(--accent); }
 
-        /* Popups Personalizados */
-        .leaflet-popup-content-wrapper { border-radius: 12px; padding: 5px; }
         .popup-container { max-height: 280px; overflow-y: auto; font-size: 11px; color: #333; width: 240px; line-height: 1.5; }
-        .p-title { color: var(--accent); font-weight: 900; font-size: 14px; display: block; margin-bottom: 8px; border-bottom: 2px solid #f1f2f6; padding-bottom: 5px; }
+        .p-title { color: var(--accent); font-weight: 900; font-size: 15px; display: block; margin-bottom: 10px; border-bottom: 2px solid #f1f2f6; padding-bottom: 5px; }
         .p-row { border-bottom: 1px solid #f9f9f9; padding: 5px 0; display: flex; flex-direction: column; }
-        .p-label { font-weight: 800; color: #888; text-transform: uppercase; font-size: 9px; margin-bottom: 1px; }
+        .p-label { font-weight: 800; color: #888; text-transform: uppercase; font-size: 9px; }
         .p-value { color: #2f3542; font-size: 11px; }
 
-        #clear-btn { display: none; margin-top: 10px; padding: 10px; background: #57606f; color: white; border: none; border-radius: 6px; width: 100%; cursor: pointer; font-weight: 800; text-transform: uppercase; font-size: 10px; }
+        #clear-btn { display: none; margin-top: 10px; padding: 12px; background: #ff4757; color: white; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-weight: 800; text-transform: uppercase; font-size: 10px; }
     </style>
 </head>
 <body>
@@ -81,7 +78,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // --- MAPEO DE ETIQUETAS SOLICITADAS ---
+        // --- CONFIGURACIÓN DE ETIQUETAS ---
         const labelMap = {
             'disciplina': 'Disciplina',
             'circuito': 'Circuito',
@@ -126,7 +123,7 @@
 
         const markersLayer = L.layerGroup().addTo(map);
 
-        // --- 1. CARGA DE ALCALDÍAS ---
+        // 1. Alcaldías
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/cdmx-alcaldias.geojson')
             .then(res => res.json())
             .then(data => {
@@ -144,7 +141,7 @@
                 }).addTo(map);
             });
 
-        // --- 2. CARGA DE PUNTOS ---
+        // 2. Puntos CSV
         Papa.parse('https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv', {
             download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
             complete: r => { 
@@ -177,15 +174,10 @@
 
                     marker.bindPopup(createFormattedPopup(p));
 
-                    // LÓGICA DE INTERACCIÓN DUAL (HOVER + CLICK)
-                    marker.on('mouseover', function(e) {
-                        if (!this._pinned) this.openPopup();
-                    });
-                    marker.on('mouseout', function(e) {
-                        if (!this._pinned) this.closePopup();
-                    });
+                    // Interacción Dual
+                    marker.on('mouseover', function(e) { if (!this._pinned) this.openPopup(); });
+                    marker.on('mouseout', function(e) { if (!this._pinned) this.closePopup(); });
                     marker.on('click', function(e) {
-                        // Desmarcar otros
                         markersLayer.eachLayer(m => m._pinned = false);
                         this._pinned = true;
                         this.openPopup();
@@ -199,10 +191,7 @@
             renderWidgets(filtered);
         }
 
-        // Desmarcar al hacer clic en el mapa
-        map.on('click', function() {
-            markersLayer.eachLayer(m => m._pinned = false);
-        });
+        map.on('click', function() { markersLayer.eachLayer(m => m._pinned = false); });
 
         function createFormattedPopup(p) {
             let html = `<div class="popup-container"><span class="p-title">${p.nombre}</span>`;
@@ -251,7 +240,8 @@
 
         function renderWidgets(data) {
             const container = document.getElementById('stats-container');
-            const cols = ['disciplina', 'alcaldia', 'condicion_mobiliaria', 'circuito', 'ano_ap', 'ano_cl', 'sostenimiento', 'estatus'];
+            // Agregado Aforo a la lista de widgets
+            const cols = ['disciplina', 'alcaldia', 'condicion_mobiliaria', 'circuito', 'aforo', 'ano_ap', 'ano_cl', 'sostenimiento', 'estatus'];
             const openWidgets = Array.from(document.querySelectorAll('.widget.open')).map(w => w.dataset.col);
             container.innerHTML = '';
 
