@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artes Vivas CDMX | Dashboard Inteligente</title>
+    <title>Artes Vivas CDMX | Dashboard Observatorio</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     
     <style>
@@ -15,7 +13,6 @@
         * { box-sizing: border-box; }
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: #f0f0f0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Dashboard */
         #dashboard {
             width: 380px; height: 100%; z-index: 1000;
             background: var(--panel); box-shadow: 10px 0 30px rgba(0,0,0,0.1);
@@ -25,51 +22,52 @@
 
         #map { flex-grow: 1; height: 100%; position: relative; background: #dcdde1; }
 
-        /* Buscador Estilo CARTO */
         .search-box {
-            margin-bottom: 15px; padding: 10px; width: 100%;
+            margin-bottom: 15px; padding: 12px; width: 100%;
             border: 2px solid #f1f2f6; border-radius: 8px;
             font-family: inherit; font-size: 0.9rem; outline: none;
-            transition: border-color 0.3s;
         }
-        .search-box:focus { border-color: var(--accent); }
 
         .counter-section { 
             text-align: center; background: var(--dark); color: white;
             padding: 20px; border-radius: 16px; margin-bottom: 20px;
         }
-        .total-counter { font-size: 3.5rem; font-weight: 900; color: #00d2ff; line-height: 1; }
-        .registered-label { font-size: 0.8rem; color: #a4b0be; margin-top: 5px; }
+        .total-counter { font-size: 4rem; font-weight: 900; color: #00d2ff; line-height: 1; }
+        .registered-label { font-size: 0.85rem; color: #a4b0be; margin-top: 5px; font-weight: 600; }
+        .percentage-badge { font-size: 1.2rem; font-weight: 800; color: #ff9ff3; margin-top: 5px; }
 
-        /* Widgets Acordeón */
+        /* Widgets */
         .widget { margin-top: 10px; border: 1px solid #f1f2f6; border-radius: 10px; overflow: hidden; }
-        .widget-header { padding: 12px 15px; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; background: #fafafa; }
+        .widget-header { padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; background: #fafafa; color: #57606f; }
         .widget-content { display: none; padding: 10px; }
         .widget.open .widget-content { display: block; }
 
         .stat-row { margin-bottom: 8px; cursor: pointer; padding: 4px; border-radius: 4px; transition: 0.2s; }
-        .stat-row:hover { background: #f1f2f6; }
         .stat-row.active { color: var(--accent); font-weight: 800; }
         .stat-bar-bg { background: #eee; height: 4px; border-radius: 10px; margin-top: 4px; }
         .stat-bar-fill { height: 100%; transition: width 0.5s ease; }
 
-        /* Tooltips y Popups */
-        .leaflet-tooltip { background: var(--dark); color: white; border: none; font-size: 11px; font-weight: bold; border-radius: 4px; }
-        .popup-container { max-height: 200px; overflow-y: auto; font-size: 11px; min-width: 180px; }
+        /* Popups con Formato Solicitado */
+        .leaflet-popup-content-wrapper { border-radius: 12px; padding: 8px; }
+        .popup-container { max-height: 280px; overflow-y: auto; font-size: 11px; color: #333; width: 240px; line-height: 1.5; }
+        .p-title { color: var(--accent); font-weight: 900; font-size: 15px; display: block; margin-bottom: 10px; border-bottom: 2px solid #f1f2f6; padding-bottom: 5px; line-height: 1.2; }
+        .p-row { border-bottom: 1px solid #f9f9f9; padding: 5px 0; display: flex; flex-direction: column; }
+        .p-label { font-weight: 800; color: #888; text-transform: uppercase; font-size: 9px; margin-bottom: 1px; }
+        .p-value { color: #2f3542; font-size: 11px; }
 
-        #clear-btn { display: none; margin-top: 10px; padding: 10px; background: var(--accent); color: white; border: none; border-radius: 6px; width: 100%; cursor: pointer; font-weight: 800; font-size: 10px; }
+        #clear-btn { display: none; margin-top: 10px; padding: 10px; background: var(--accent); color: white; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-weight: 800; font-size: 10px; }
     </style>
 </head>
 <body>
 
     <div id="dashboard">
         <h1>ARTES VIVAS CDMX</h1>
-        <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar espacio por nombre..." oninput="updateSearch()">
+        <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar por nombre..." oninput="updateSearch()">
         
         <div class="counter-section">
             <div id="total-count" class="total-counter">0</div>
-            <div class="registered-label">de 293 espacios registrados</div>
-            <div id="pct-count" style="color:#ff9ff3; font-weight:800;">0%</div>
+            <div class="registered-label">de <span id="universe-total">293</span> espacios registrados</div>
+            <div id="pct-count" class="percentage-badge">0%</div>
             <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
         </div>
         
@@ -79,16 +77,23 @@
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // --- CONFIGURACIÓN ---
-        let allData = [];
-        let activeFilters = {}; 
-        let searchQuery = "";
-        let curC = 0, curP = 0;
-        let boroughLayers = {}; // Para tooltips dinámicos
+        // --- CONFIGURACIÓN DE TRADUCCIÓN Y COLORES ---
+        const labelMap = {
+            'disciplina': 'Disciplina',
+            'circuito': 'Circuito',
+            'ano_ap': 'Año Apertura',
+            'ano_cl': 'Año Clausura',
+            'condicion_mobiliaria': 'Condición mobiliaria',
+            'sostenimiento': 'Sostenimiento',
+            'estatus': 'Estatus',
+            'clausuras': 'Clausuras',
+            'aforo': 'Aforo',
+            'alcaldia': 'Alcaldía',
+            'contacto': 'Contacto'
+        };
 
         const discColors = {
             'Teatro': '#D72638', 'Danza': '#3F88C5', 'Música': '#F49D37', 
@@ -104,6 +109,12 @@
             "Venustiano Carranza": "#FF69B4"
         };
 
+        let allData = [];
+        let activeFilters = {}; 
+        let searchQuery = "";
+        let curC = 0, curP = 0;
+        let boroughLayers = {};
+
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
@@ -112,12 +123,7 @@
         map.createPane('alcPane').style.zIndex = 200;
         map.createPane('markerPane').style.zIndex = 650;
 
-        // Grupo de Clustering
-        const clusterGroup = L.markerClusterGroup({
-            clusterPane: 'markerPane',
-            showCoverageOnHover: false,
-            spiderfyOnMaxZoom: true
-        }).addTo(map);
+        const markersLayer = L.layerGroup().addTo(map);
 
         // --- 1. CARGA DE ALCALDÍAS ---
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/cdmx-alcaldias.geojson')
@@ -131,7 +137,7 @@
                     },
                     onEachFeature: (f, l) => {
                         boroughLayers[f.properties.NOMGEO] = l;
-                        l.bindTooltip(f.properties.NOMGEO, { sticky: true });
+                        l.bindTooltip(f.properties.NOMGEO);
                     }
                 }).addTo(map);
             });
@@ -146,7 +152,6 @@
         });
 
         function updateView() {
-            // Lógica de Filtrado (Categorías + Buscador)
             const filtered = allData.filter(d => {
                 const matchesFilters = Object.entries(activeFilters).every(([c, v]) => d[c] === v);
                 const matchesSearch = d.nombre.toLowerCase().includes(searchQuery.toLowerCase());
@@ -156,19 +161,19 @@
             animateCounters(filtered.length, allData.length);
             updateBoroughTooltips(filtered);
 
-            clusterGroup.clearLayers();
+            markersLayer.clearLayers();
             filtered.forEach(p => {
                 const lat = parseFloat(p.latitud), lng = parseFloat(p.longitud);
                 if (!isNaN(lat) && !isNaN(lng)) {
                     const marker = L.circleMarker([lat, lng], {
+                        pane: 'markerPane',
                         radius: 8, 
                         fillColor: discColors[p.disciplina] || discColors['Otros'],
-                        color: "#fff", weight: 2, fillOpacity: 0.9,
-                        className: `m-type-${(p.disciplina || 'Otros').replace(/\s/g, '')}` // Para highlight
+                        color: "#fff", weight: 2, fillOpacity: 0.9
                     });
                     
-                    marker.bindPopup(createPopup(p));
-                    clusterGroup.addLayer(marker);
+                    marker.bindPopup(createFormattedPopup(p));
+                    marker.addTo(markersLayer);
                 }
             });
 
@@ -176,47 +181,41 @@
             renderWidgets(filtered);
         }
 
-        // --- HIGHLIGHT CRUZADO ---
-        function highlightInMap(type, state) {
-            const className = `.m-type-${type.replace(/\s/g, '')}`;
-            document.querySelectorAll(className).forEach(el => {
-                el.style.strokeWidth = state ? "6px" : "2px";
-                el.style.stroke = state ? "yellow" : "white";
-                if(state) el.setAttribute('r', '12'); else el.setAttribute('r', '8');
-            });
-        }
-
-        // --- BUSCADOR ---
-        function updateSearch() {
-            searchQuery = document.getElementById('search-input').value;
-            updateView();
-        }
-
-        // --- TOOLTIPS ENRIQUECIDOS ---
-        function updateBoroughTooltips(data) {
-            const counts = {};
-            data.forEach(d => { counts[d.alcaldia] = (counts[d.alcaldia] || 0) + 1; });
+        function createFormattedPopup(p) {
+            let html = `<div class="popup-container">`;
+            html += `<span class="p-title">${p.nombre}</span>`;
             
-            Object.keys(boroughLayers).forEach(name => {
-                const total = counts[name] || 0;
-                boroughLayers[name].setTooltipContent(`<b>${name}</b><br>${total} espacios filtrados`);
-            });
-        }
-
-        function createPopup(p) {
-            let html = `<div class="popup-container"><span class="p-title">${p.nombre}</span>`;
-            Object.keys(p).forEach(k => {
-                if(!['latitud','longitud','carto_id'].includes(k.toLowerCase()) && p[k]) {
-                    html += `<div class="p-row"><span class="p-label">${k.replace(/_/g,' ')}</span>${p[k]}</div>`;
+            // Recorremos el labelMap para asegurar el orden y nombres correctos
+            Object.keys(labelMap).forEach(key => {
+                const val = p[key];
+                if (val && val !== "" && val !== 0) {
+                    html += `<div class="p-row">
+                                <span class="p-label">${labelMap[key]}</span>
+                                <span class="p-value">${val}</span>
+                             </div>`;
                 }
             });
             return html + `</div>`;
         }
 
+        function updateSearch() {
+            searchQuery = document.getElementById('search-input').value;
+            updateView();
+        }
+
+        function updateBoroughTooltips(data) {
+            const counts = {};
+            data.forEach(d => { counts[d.alcaldia] = (counts[d.alcaldia] || 0) + 1; });
+            Object.keys(boroughLayers).forEach(name => {
+                const total = counts[name] || 0;
+                boroughLayers[name].setTooltipContent(`<b>${name}</b>: ${total} espacios`);
+            });
+        }
+
         function animateCounters(targetC, universeTotal) {
             const cEl = document.getElementById('total-count'), pEl = document.getElementById('pct-count');
             const targetP = universeTotal > 0 ? (targetC / universeTotal * 100) : 0;
-            const sC = curC, sP = curP, dur = 400;
+            const startC = curC, startP = curP, dur = 400;
             let startT = null;
             function step(t) {
                 if (!startT) startT = t;
@@ -232,27 +231,27 @@
 
         function renderWidgets(data) {
             const container = document.getElementById('stats-container');
-            const cols = ['disciplina', 'alcaldia', 'sostenimiento', 'estatus'];
+            // Widgets solicitados
+            const cols = ['disciplina', 'alcaldia', 'condicion_mobiliaria', 'circuito', 'ano_ap', 'ano_cl', 'sostenimiento', 'estatus'];
             const openWidgets = Array.from(document.querySelectorAll('.widget.open')).map(w => w.dataset.col);
             container.innerHTML = '';
 
             cols.forEach(col => {
                 const counts = {};
-                data.forEach(d => { let v = d[col] || "N/A"; counts[v] = (counts[v] || 0) + 1; });
+                data.forEach(d => { let v = d[col] || "No disponible"; counts[v] = (counts[v] || 0) + 1; });
                 const widget = document.createElement('div');
-                widget.className = `widget ${openWidgets.includes(col) || (Object.keys(activeFilters).length === 0 && col === 'disciplina') ? 'open' : ''}`;
+                widget.className = `widget ${openWidgets.includes(col) ? 'open' : ''}`;
                 widget.dataset.col = col;
 
-                let html = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')"><span>${col}</span> ▾</div><div class="widget-content">`;
+                const labelDisplay = labelMap[col] || col;
+                let html = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')"><span>${labelDisplay}</span> ▾</div><div class="widget-content">`;
+                
                 Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
                     const barP = data.length > 0 ? (count / data.length * 100) : 0;
                     const isActive = activeFilters[col] === val;
                     const barC = col === 'disciplina' ? discColors[val] || discColors['Otros'] : '#ff4757';
                     
-                    html += `<div class="stat-row ${isActive ? 'active' : ''}" 
-                                  onclick="toggleFilter('${col}', '${val}')"
-                                  onmouseover="if('${col}'==='disciplina') highlightInMap('${val}', true)"
-                                  onmouseout="if('${col}'==='disciplina') highlightInMap('${val}', false)">
+                    html += `<div class="stat-row ${isActive ? 'active' : ''}" onclick="toggleFilter('${col}', '${val}')">
                         <div style="display:flex;justify-content:space-between;font-size:12px"><span>${val}</span><strong>${count}</strong></div>
                         <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${barP}%; background:${barC}"></div></div>
                     </div>`;
