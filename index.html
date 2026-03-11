@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --accent: #ff4757; --panel: #ffffff; --dark: #1e272e; }
+        :root { --accent: #ff4757; --panel: #ffffff; --dark: #1e272e; --highlight: #f1c40f; }
         * { box-sizing: border-box; }
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: #f0f0f0; display: flex; height: 100vh; overflow: hidden; }
         
@@ -42,25 +42,23 @@
         .widget.open .widget-content { display: block; }
 
         .stat-row { margin-bottom: 8px; cursor: pointer; padding: 4px; border-radius: 4px; transition: 0.2s; }
-        .stat-row:hover { background: #f1f2f6; }
         .stat-row.active { color: var(--accent); font-weight: 800; }
         .stat-bar-bg { background: #eee; height: 4px; border-radius: 10px; margin-top: 4px; }
-        .stat-bar-fill { height: 100%; transition: width 0.7s ease; background: var(--accent); }
+        .stat-bar-fill { height: 100%; transition: width 0.7s ease; }
 
         .popup-container { max-height: 280px; overflow-y: auto; font-size: 11px; color: #333; width: 240px; line-height: 1.5; }
         .p-title { color: var(--accent); font-weight: 900; font-size: 15px; display: block; margin-bottom: 10px; border-bottom: 2px solid #f1f2f6; padding-bottom: 5px; }
         .p-row { border-bottom: 1px solid #f9f9f9; padding: 5px 0; display: flex; flex-direction: column; }
         .p-label { font-weight: 800; color: #888; text-transform: uppercase; font-size: 9px; }
-        .p-value { color: #2f3542; font-size: 11px; }
 
-        #clear-btn { display: none; margin-top: 10px; padding: 12px; background: #ff4757; color: white; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-weight: 800; text-transform: uppercase; font-size: 10px; }
+        #clear-btn { display: none; margin-top: 10px; padding: 10px; background: #ff4757; color: white; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-weight: 800; text-transform: uppercase; font-size: 10px; }
     </style>
 </head>
 <body>
 
     <div id="dashboard">
         <h1>ARTES VIVAS CDMX</h1>
-        <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar espacio por nombre..." oninput="updateSearch()">
+        <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar por nombre..." oninput="updateSearch()">
         
         <div class="counter-section">
             <div id="total-count" class="total-counter">0</div>
@@ -78,24 +76,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // --- CONFIGURACIÓN DE ETIQUETAS ---
         const labelMap = {
-            'disciplina': 'Disciplina',
-            'circuito': 'Circuito',
-            'ano_ap': 'Año Apertura',
-            'ano_cl': 'Año Clausura',
-            'condicion_mobiliaria': 'Condición mobiliaria',
-            'sostenimiento': 'Sostenimiento',
-            'estatus': 'Estatus',
-            'clausuras': 'Clausuras',
-            'aforo': 'Aforo',
-            'alcaldia': 'Alcaldía',
-            'contacto': 'Contacto'
+            'disciplina': 'Disciplina', 'circuito': 'Circuito', 'ano_ap': 'Año Apertura',
+            'ano_cl': 'Año Clausura', 'condicion_mobiliaria': 'Condición mobiliaria',
+            'sostenimiento': 'Sostenimiento', 'estatus': 'Estatus', 'clausuras': 'Clausuras',
+            'aforo': 'Aforo', 'alcaldia': 'Alcaldía', 'contacto': 'Contacto'
         };
 
+        // --- PALETA DE DISCIPLINAS ACTUALIZADA ---
         const discColors = {
-            'Teatro': '#D72638', 'Danza': '#3F88C5', 'Música': '#F49D37', 
-            'Performance': '#623CEA', 'Interdisciplina': '#05B2DC', 'Otros': '#515052'
+            'Música': '#E67E22',          // Naranja Quemado
+            'Teatro': '#D72638',          // Rojo Intenso
+            'Multidisciplina': '#5B21B6', // Morado Real
+            'Artes escénicas': '#065F46', // Verde Selva
+            'Otras disciplinas': '#374151',// Gris Carbón
+            'Artes vivas': '#8E24AA',      // Violeta Vibrante
+            'Danza': '#1E3A8A',           // Azul Cobalto
+            'Sin información': '#9CA3AF'  // Gris Claro
         };
 
         const alcPalette = {
@@ -123,7 +120,6 @@
 
         const markersLayer = L.layerGroup().addTo(map);
 
-        // 1. Alcaldías
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/cdmx-alcaldias.geojson')
             .then(res => res.json())
             .then(data => {
@@ -141,7 +137,6 @@
                 }).addTo(map);
             });
 
-        // 2. Puntos CSV
         Papa.parse('https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv', {
             download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
             complete: r => { 
@@ -168,18 +163,34 @@
                     const marker = L.circleMarker([lat, lng], {
                         pane: 'markerPane',
                         radius: 8, 
-                        fillColor: discColors[p.disciplina] || discColors['Otros'],
+                        fillColor: discColors[p.disciplina] || discColors['Sin información'],
                         color: "#fff", weight: 2, fillOpacity: 1
                     });
 
                     marker.bindPopup(createFormattedPopup(p));
 
-                    // Interacción Dual
-                    marker.on('mouseover', function(e) { if (!this._pinned) this.openPopup(); });
-                    marker.on('mouseout', function(e) { if (!this._pinned) this.closePopup(); });
+                    // --- INTERACCIÓN DUAL ---
+                    marker.on('mouseover', function(e) {
+                        if (!this._pinned) {
+                            this.openPopup();
+                            this.setStyle({ radius: 11, weight: 4, color: 'var(--highlight)' });
+                        }
+                    });
+
+                    marker.on('mouseout', function(e) {
+                        if (!this._pinned) {
+                            this.closePopup();
+                            this.setStyle({ radius: 8, weight: 2, color: '#fff' });
+                        }
+                    });
+
                     marker.on('click', function(e) {
-                        markersLayer.eachLayer(m => m._pinned = false);
+                        markersLayer.eachLayer(m => {
+                            m._pinned = false;
+                            m.setStyle({ radius: 8, weight: 2, color: '#fff' });
+                        });
                         this._pinned = true;
+                        this.setStyle({ radius: 12, weight: 5, color: 'var(--highlight)' });
                         this.openPopup();
                     });
 
@@ -191,7 +202,12 @@
             renderWidgets(filtered);
         }
 
-        map.on('click', function() { markersLayer.eachLayer(m => m._pinned = false); });
+        map.on('click', function() { 
+            markersLayer.eachLayer(m => {
+                m._pinned = false;
+                m.setStyle({ radius: 8, weight: 2, color: '#fff' });
+            });
+        });
 
         function createFormattedPopup(p) {
             let html = `<div class="popup-container"><span class="p-title">${p.nombre}</span>`;
@@ -240,7 +256,6 @@
 
         function renderWidgets(data) {
             const container = document.getElementById('stats-container');
-            // Agregado Aforo a la lista de widgets
             const cols = ['disciplina', 'alcaldia', 'condicion_mobiliaria', 'circuito', 'aforo', 'ano_ap', 'ano_cl', 'sostenimiento', 'estatus'];
             const openWidgets = Array.from(document.querySelectorAll('.widget.open')).map(w => w.dataset.col);
             container.innerHTML = '';
@@ -265,7 +280,7 @@
                 Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
                     const barP = data.length > 0 ? (count / data.length * 100) : 0;
                     const isActive = String(activeFilters[col]) === String(val);
-                    const barC = col === 'disciplina' ? discColors[val] || discColors['Otros'] : '#ff4757';
+                    const barC = col === 'disciplina' ? discColors[val] || discColors['Sin información'] : '#ff4757';
                     
                     html += `<div class="stat-row ${isActive ? 'active' : ''}" onclick="toggleFilter('${col}', '${val}')">
                         <div style="display:flex;justify-content:space-between;font-size:12px"><span>${val}</span><strong>${count}</strong></div>
