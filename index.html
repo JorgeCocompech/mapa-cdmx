@@ -3,59 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa Artes Vivas CDMX</title>
-    
+    <title>Cartografía Artes Vivas CDMX - Full Data</title>
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
     <style>
-        body { margin: 0; padding: 0; }
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         #map { height: 100vh; width: 100%; }
-        .info-panel { position: absolute; top: 10px; right: 10px; z-index: 1000; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 15px rgba(0,0,0,0.2); font-family: sans-serif; }
+
+        /* Panel lateral de info */
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            max-width: 280px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Estilos del Popup dinámico */
+        .leaflet-popup-content {
+            min-width: 220px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .popup-row {
+            margin-bottom: 6px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 3px;
+            font-size: 12px;
+        }
+        .popup-label {
+            font-weight: bold;
+            color: #555;
+            text-transform: uppercase;
+            font-size: 10px;
+            display: block;
+        }
+        .popup-value {
+            color: #222;
+            word-break: break-word;
+        }
+        h2 { margin: 0 0 5px 0; color: #e74c3c; font-size: 20px; }
     </style>
 </head>
 <body>
 
     <div class="info-panel">
-        <h3>Artes Vivas CDMX</h3>
-        <p>Datos cargados desde GitHub CSV</p>
+        <h2>Artes Vivas CDMX</h2>
+        <p style="font-size: 12px; color: #666;">Explora todos los detalles de la cartografía directamente desde el marcador.</p>
+        <div id="legend" style="font-size: 11px;"></div>
     </div>
+
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // 1. Configuración inicial del mapa centrado en CDMX
-        const map = L.map('map').setView([19.4326, -99.1332], 11);
+        const map = L.map('map', { center: [19.41, -99.14], zoom: 11, zoomControl: false });
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        // 2. Capa base (OpenStreetMap)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© CARTO'
         }).addTo(map);
 
-        // 3. Cargar y procesar el CSV
+        const colorPalette = {
+            'Teatro': '#e74c3c',
+            'Danza': '#3498db',
+            'Música': '#f1c40f',
+            'Performance': '#9b59b6',
+            'Otros': '#95a5a6'
+        };
+
         const csvUrl = 'https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv';
 
         Papa.parse(csvUrl, {
             download: true,
             header: true,
             dynamicTyping: true,
+            skipEmptyLines: true,
             complete: function(results) {
-                const data = results.data;
-                
-                data.forEach(punto => {
-                    // Verificamos que tenga coordenadas (ajusta los nombres si el CSV usa 'lat' o 'latitude')
+                results.data.forEach(punto => {
                     const lat = punto.latitud || punto.lat;
-                    const lng = punto.longitud || punto.lng || punto.lon;
+                    const lng = punto.longitud || punto.lng;
 
                     if (lat && lng) {
-                        const marker = L.marker([lat, lng]).addTo(map);
+                        const marker = L.circleMarker([lat, lng], {
+                            radius: 8,
+                            fillColor: colorPalette[punto.tipo] || colorPalette['Otros'],
+                            color: "#fff",
+                            weight: 2,
+                            opacity: 1,
+                            fillOpacity: 0.9
+                        }).addTo(map);
+
+                        // --- GENERACIÓN DINÁMICA DEL POPUP ---
+                        let popupHTML = `<div style="padding: 5px;">`;
                         
-                        // Crear un popup con la información disponible
-                        let popupContent = `<b>${punto.nombre || 'Sin nombre'}</b><br>`;
-                        if (punto.alcaldia) popupContent += `Alcaldía: ${punto.alcaldia}<br>`;
-                        if (punto.tipo) popupContent += `Tipo: ${punto.tipo}`;
-                        
-                        marker.bindPopup(popupContent);
+                        // Buscamos si existe un nombre para ponerlo de encabezado
+                        const titulo = punto.nombre || punto.Nombre || "Punto de Interés";
+                        popupHTML += `<strong style="font-size:14px; color:#e74c3c; display:block; margin-bottom:10px;">${titulo}</strong>`;
+
+                        // Iteramos sobre todas las columnas del CSV
+                        Object.keys(punto).forEach(key => {
+                            const val = punto[key];
+                            const lowKey = key.toLowerCase();
+
+                            // Excluimos coordenadas y valores vacíos/nulos
+                            const esCoordenada = ['latitud', 'longitud', 'lat', 'lng', 'x', 'y'].includes(lowKey);
+                            const tieneValor = val !== null && val !== undefined && val !== "";
+                            const esNombre = lowKey === 'nombre'; // Ya lo pusimos arriba
+
+                            if (!esCoordenada && tieneValor && !esNombre) {
+                                popupHTML += `
+                                    <div class="popup-row">
+                                        <span class="popup-label">${key.replace(/_/g, ' ')}</span>
+                                        <span class="popup-value">${val}</span>
+                                    </div>`;
+                            }
+                        });
+
+                        popupHTML += `</div>`;
+                        marker.bindPopup(popupHTML);
+
+                        // Interacción visual
+                        marker.on('mouseover', function(e) { this.setRadius(12); });
+                        marker.on('mouseout', function(e) { this.setRadius(8); });
                     }
                 });
             }
