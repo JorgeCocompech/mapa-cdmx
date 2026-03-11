@@ -3,64 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artes Vivas CDMX | Dashboard Fix</title>
+    <title>Artes Vivas CDMX | Dashboard</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --accent: #ff4757; --bg: #f1f2f6; --panel: #ffffff; }
+        :root { --accent: #ff4757; --bg: #f4f7f6; --panel: #ffffff; }
         * { box-sizing: border-box; }
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); display: flex; height: 100vh; width: 100vw; overflow: hidden; }
         
-        /* Dashboard - Ajuste Safari */
         #dashboard {
             width: 380px; height: 100%; z-index: 1000;
-            background: var(--panel); position: relative;
-            box-shadow: 4px 0 25px rgba(0,0,0,0.1);
-            display: flex; flex-direction: column; padding: 30px;
-            overflow-y: auto; flex-shrink: 0;
+            background: var(--panel); box-shadow: 5px 0 20px rgba(0,0,0,0.05);
+            display: flex; flex-direction: column; padding: 25px;
+            overflow-y: auto; flex-shrink: 0; border-right: 1px solid #eee;
         }
 
-        #map { flex-grow: 1; height: 100%; position: relative; background: #ced6e0; }
+        #map { flex-grow: 1; height: 100%; position: relative; background: #e0e0e0; }
 
-        h1 { font-size: 1.2rem; margin: 0; font-weight: 900; border-bottom: 4px solid var(--accent); display: inline-block; padding-bottom: 5px; }
+        h1 { font-size: 1.1rem; margin: 0; font-weight: 900; color: #2d3436; border-bottom: 4px solid var(--accent); display: inline-block; padding-bottom: 5px; }
         
-        /* Contador */
+        /* Sección del Contador */
         .counter-section { 
-            margin: 30px 0; text-align: center; background: #2f3542; color: white;
-            padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            margin: 25px 0; text-align: center; background: #2d3436; color: white;
+            padding: 20px; border-radius: 12px; box-shadow: 0 8px 15px rgba(0,0,0,0.1);
         }
-        .total-counter { font-size: 4rem; font-weight: 900; color: var(--accent); line-height: 1; }
-        .percentage-badge { font-size: 1.2rem; font-weight: 800; color: #ced6e0; margin-top: 5px; display: block; }
-        .total-label { font-size: 0.65rem; text-transform: uppercase; color: #a4b0be; letter-spacing: 2px; margin-top: 15px; font-weight: 600; }
+        .total-counter { font-size: 3.5rem; font-weight: 900; color: var(--accent); line-height: 1; margin: 0; }
+        .percentage-badge { font-size: 1.1rem; font-weight: 700; color: #dfe6e9; margin-top: 5px; display: block; }
+        .total-label { font-size: 0.6rem; text-transform: uppercase; color: #b2bec3; letter-spacing: 2px; margin-top: 12px; font-weight: 600; }
         
-        /* Acordeón */
-        .widget { margin-top: 12px; border: 1px solid #f1f2f6; border-radius: 10px; background: #fff; overflow: hidden; }
+        /* Widgets */
+        .widget { margin-top: 10px; border: 1px solid #f1f2f6; border-radius: 8px; background: #fff; overflow: hidden; }
         .widget-header { 
-            padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-            font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #57606f; 
+            padding: 12px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #636e72; background: #fdfdfd;
         }
-        .widget-content { display: none; padding: 5px 18px 15px 18px; }
+        .widget-content { display: none; padding: 10px 15px; border-top: 1px solid #f1f2f6; }
         .widget.open .widget-content { display: block; }
 
-        .stat-row { margin-bottom: 12px; cursor: pointer; }
-        .stat-info { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 5px; }
-        .stat-bar-bg { background: #f1f2f6; height: 6px; border-radius: 10px; overflow: hidden; }
-        .stat-bar-fill { height: 100%; background: var(--accent); transition: width 0.8s ease; }
+        .stat-row { margin-bottom: 10px; cursor: pointer; }
+        .stat-info { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px; }
+        .stat-bar-bg { background: #f1f2f6; height: 5px; border-radius: 10px; overflow: hidden; }
+        .stat-bar-fill { height: 100%; background: var(--accent); transition: width 0.6s ease; opacity: 0.8; }
         .stat-row.active { color: var(--accent); font-weight: 700; }
 
-        #clear-btn { display: none; margin-top: 15px; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-weight: 800; }
+        #clear-btn { display: none; margin-top: 15px; padding: 10px; background: var(--accent); color: white; border: none; border-radius: 6px; width: 100%; cursor: pointer; font-weight: 800; font-size: 0.7rem; }
     </style>
 </head>
 <body>
 
     <div id="dashboard">
         <h1>ARTES VIVAS CDMX</h1>
-        <div class="counter-section" id="counter-card">
-            <div class="total-counter" id="total-count">0</div>
-            <div class="percentage-badge" id="pct-count">0%</div>
-            <div class="total-label">Representación Territorial</div>
+        <div class="counter-section">
+            <p id="total-count" class="total-counter">0</p>
+            <span id="pct-count" class="percentage-badge">0%</span>
+            <div class="total-label">Filtro Territorial / Total</div>
             <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
         </div>
         <div id="stats-container"></div>
@@ -72,65 +70,75 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // Paleta de colores
+        // --- VARIABLES DE ESTADO ---
+        let allData = [];
+        let activeFilters = {}; 
+        let lastCount = 0; // Para evitar NaN leyendo del DOM
+        let lastPct = 0;   // Para evitar NaN leyendo del DOM
+        
         const colors = {
             'Teatro': '#ff4757', 'Danza': '#3742fa', 'Música': '#ffa502', 
             'Performance': '#8e44ad', 'Interdisciplina': '#2ed573', 'Otros': '#747d8c'
         };
 
-        let allData = [];
-        let activeFilters = {}; 
-        let markersLayer = L.layerGroup();
         const columnas = ['disciplina', 'alcaldia', 'sostenimiento', 'estatus', 'clausuras', 'aforo'];
 
-        // Inicializar mapa
+        // --- INICIALIZAR MAPA ---
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { 
-            attribution: '© CARTO' 
+        // NUEVA CAPA BASE: Esri World Gray (Más compatible)
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+            maxZoom: 16
         }).addTo(map);
 
-        markersLayer.addTo(map);
+        const markersLayer = L.layerGroup().addTo(map);
         map.createPane('alcPane').style.zIndex = 200;
 
-        // Cargar Alcaldías (GeoJSON)
+        // --- CARGAR GEOMETRÍA ---
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/CDMX%20Alcaldias.geojson')
             .then(r => r.json())
             .then(data => {
                 L.geoJSON(data, {
                     pane: 'alcPane',
-                    style: { fillColor: '#2f3542', weight: 1.5, color: '#fff', fillOpacity: 0.1, opacity: 0.4 }
+                    style: { fillColor: '#2d3436', weight: 1, color: '#fff', fillOpacity: 0.1, opacity: 0.3 }
                 }).addTo(map);
-            });
+            }).catch(e => console.log("Error GeoJSON:", e));
 
-        // Cargar Puntos (CSV)
+        // --- CARGAR DATOS ---
         Papa.parse('https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv', {
             download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
             complete: r => { 
                 allData = r.data || []; 
-                // Forzar redimensionado para Safari
-                setTimeout(() => { map.invalidateSize(); updateView(); }, 100);
+                // Pequeño delay para asegurar que Safari reconozca el tamaño del div
+                setTimeout(() => { map.invalidateSize(); updateView(); }, 200);
             }
         });
 
         function updateView() {
-            if (allData.length === 0) return;
+            const filtered = allData.filter(d => {
+                return Object.entries(activeFilters).every(([col, val]) => d[col] === val);
+            });
 
-            const filtered = allData.filter(d => Object.entries(activeFilters).every(([c, v]) => d[c] === v));
-            const pct = allData.length > 0 ? ((filtered.length / allData.length) * 100).toFixed(1) : 0;
+            const newCount = filtered.length;
+            const newPct = allData.length > 0 ? ((newCount / allData.length) * 100) : 0;
 
-            // Actualizar textos sin animación si hay riesgo de NaN
-            animateValue('total-count', filtered.length);
-            animatePct('pct-count', pct);
+            // Animación segura (Usando variables, no leyendo del DOM)
+            animateNumeric('total-count', lastCount, newCount, false);
+            animateNumeric('pct-count', lastPct, newPct, true);
             
+            lastCount = newCount;
+            lastPct = newPct;
+
+            // Actualizar Marcadores
             markersLayer.clearLayers();
             filtered.forEach(p => {
-                const lat = p.latitud || p.lat;
-                const lng = p.longitud || p.lng;
-                if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+                const lat = parseFloat(p.latitud || p.lat);
+                const lng = parseFloat(p.longitud || p.lng);
+                if (!isNaN(lat) && !isNaN(lng)) {
                     L.circleMarker([lat, lng], {
-                        radius: 7, fillColor: colors[p.disciplina] || colors['Otros'],
+                        radius: 6, fillColor: colors[p.disciplina] || colors['Otros'],
                         color: "#fff", weight: 1.5, fillOpacity: 0.9
                     }).bindPopup(`<b>${p.nombre}</b><br><small>${p.disciplina}</small>`).addTo(markersLayer);
                 }
@@ -140,32 +148,23 @@
             renderWidgets(filtered);
         }
 
-        // Animación segura para Safari
-        function animateValue(id, target) {
+        // --- ANIMACIÓN ROBUSTA ANTI-NaN ---
+        function animateNumeric(id, start, end, isPct) {
             const obj = document.getElementById(id);
-            const start = parseInt(obj.innerHTML) || 0;
-            if (start === target) return;
-            
+            const duration = 500;
             let startTime = null;
-            function step(t) {
-                if (!startTime) startTime = t;
-                const progress = Math.min((t - startTime) / 400, 1);
-                const current = Math.floor(progress * (target - start) + start);
-                obj.innerHTML = isNaN(current) ? target : current;
-                if (progress < 1) requestAnimationFrame(step);
-            }
-            requestAnimationFrame(step);
-        }
 
-        function animatePct(id, target) {
-            const obj = document.getElementById(id);
-            const start = parseFloat(obj.innerHTML) || 0;
-            let startTime = null;
-            function step(t) {
-                if (!startTime) startTime = t;
-                const progress = Math.min((t - startTime) / 400, 1);
-                const current = (progress * (target - start) + start).toFixed(1);
-                obj.innerHTML = (isNaN(current) ? target : current) + '%';
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = Math.min((timestamp - startTime) / duration, 1);
+                const current = progress * (end - start) + start;
+                
+                if (isPct) {
+                    obj.textContent = current.toFixed(1) + "%";
+                } else {
+                    obj.textContent = Math.floor(current);
+                }
+
                 if (progress < 1) requestAnimationFrame(step);
             }
             requestAnimationFrame(step);
@@ -184,11 +183,12 @@
                 widget.className = `widget ${openWidgets.includes(col) || (Object.keys(activeFilters).length === 0 && col === 'disciplina') ? 'open' : ''}`;
                 widget.dataset.col = col;
 
-                let html = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')">${col.replace(/_/g,' ')} <span>＋</span></div>`;
+                let html = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')"><span>${col.replace(/_/g,' ')}</span> <span>▾</span></div>`;
                 html += `<div class="widget-content">`;
                 
-                Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
-                    const barPct = (count / data.length * 100).toFixed(0);
+                const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+                sorted.forEach(([val, count]) => {
+                    const barPct = data.length > 0 ? (count / data.length * 100) : 0;
                     const isActive = activeFilters[col] === val;
                     const barColor = col === 'disciplina' ? colors[val] || colors['Otros'] : '#ff4757';
 
