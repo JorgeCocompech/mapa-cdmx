@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artes Vivas CDMX | Dashboard Pro</title>
+    <title>Artes Vivas CDMX | </title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -12,6 +12,7 @@
         :root { --accent: #ff4757; --bg: #f1f2f6; --panel: rgba(255,255,255,0.98); }
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); display: flex; height: 100vh; color: #2f3542; }
         
+        /* Sidebar */
         #dashboard {
             width: 380px; height: 100%; z-index: 1000;
             background: var(--panel); backdrop-filter: blur(15px);
@@ -24,28 +25,24 @@
 
         h1 { font-size: 1.2rem; margin: 0; font-weight: 900; letter-spacing: -0.5px; border-bottom: 4px solid var(--accent); display: inline-block; padding-bottom: 5px; }
         
-        /* Contador con Porcentaje y Sazón */
+        /* Contador con Sazón */
         .counter-section { 
             margin: 30px 0; text-align: center; background: #2f3542; color: white;
             padding: 25px 20px; border-radius: 16px; position: relative; overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
         .total-counter { font-size: 4rem; font-weight: 900; color: var(--accent); line-height: 1; }
-        .percentage-badge { 
-            font-size: 1.2rem; font-weight: 800; color: #ced6e0; margin-top: 5px;
-            display: block; opacity: 0.9;
-        }
+        .percentage-badge { font-size: 1.2rem; font-weight: 800; color: #ced6e0; margin-top: 5px; display: block; opacity: 0.9; }
         .total-label { font-size: 0.65rem; text-transform: uppercase; color: #a4b0be; letter-spacing: 2px; margin-top: 15px; font-weight: 600; }
         
-        /* Animación Pulse */
         .pulse { animation: countPulse 0.4s ease-out; }
         @keyframes countPulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.08); color: #fff; }
+            50% { transform: scale(1.08); }
             100% { transform: scale(1); }
         }
 
-        /* Acordeón de Widgets */
+        /* Widgets Acordeón */
         .widget { margin-top: 12px; border: 1px solid #f1f2f6; border-radius: 10px; background: #fff; overflow: hidden; transition: box-shadow 0.3s; }
         .widget:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .widget-header { 
@@ -63,12 +60,10 @@
         .stat-bar-bg { background: #f1f2f6; height: 6px; border-radius: 10px; overflow: hidden; }
         .stat-bar-fill { height: 100%; transition: width 0.8s cubic-bezier(0.19, 1, 0.22, 1); opacity: 0.8; }
         .stat-row.active { color: var(--accent); font-weight: 700; }
-        .stat-row.active .stat-bar-fill { opacity: 1; }
 
         #clear-btn { 
             display: none; margin-top: 15px; padding: 12px; background: #ff4757; color: white; border: none; 
             border-radius: 8px; font-size: 0.75rem; cursor: pointer; width: 100%; font-weight: 800;
-            box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
         }
     </style>
 </head>
@@ -81,7 +76,7 @@
             <div class="total-counter" id="total-count">0</div>
             <div class="percentage-badge" id="pct-count">100%</div>
             <div class="total-label">Representación Territorial</div>
-            <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Filtros</button>
+            <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
         </div>
         
         <div id="stats-container"></div>
@@ -91,9 +86,9 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-    <script src="https://unpkg.com/wellknown@0.5.0/wellknown.js"></script>
 
     <script>
+        // --- CONFIG ---
         const colors = {
             'Teatro': '#ff4757', 'Danza': '#3742fa', 'Música': '#ffa502', 
             'Performance': '#8e44ad', 'Interdisciplina': '#2ed573', 'Otros': '#747d8c'
@@ -107,59 +102,84 @@
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' }).addTo(map);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { 
+            attribution: '© CARTO | CDMX Open Data' 
+        }).addTo(map);
+
         markersLayer.addTo(map);
         map.createPane('alcPane').style.zIndex = 200;
 
-        // 1. Alcaldías (Fondo)
-        fetch('https://raw.githubusercontent.com/observatoriopoliticas/mapascdmx/refs/heads/main/alcaldias_cdmx.csv')
-            .then(r => r.text())
-            .then(csv => {
-                Papa.parse(csv, { header: true, complete: r => {
-                    r.data.forEach(row => {
-                        const wkt = row.geometry || row.WKT;
-                        if (wkt) {
-                            L.geoJSON(wellknown.parse(wkt), {
-                                pane: 'alcPane',
-                                style: { fillColor: '#2f3542', weight: 1, color: '#fff', fillOpacity: 0.12 }
-                            }).bindTooltip(row.nomgeo).addTo(map);
-                        }
-                    });
-                }});
-            });
+        // --- 1. CARGA DEL GEOJSON (Delimitación Territorial) ---
+        fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/CDMX%20Alcaldias.geojson')
+            .then(r => r.json())
+            .then(geojsonData => {
+                L.geoJSON(geojsonData, {
+                    pane: 'alcPane',
+                    style: {
+                        fillColor: '#2f3542',
+                        weight: 1.5,
+                        color: '#fff',
+                        fillOpacity: 0.12,
+                        opacity: 0.5
+                    },
+                    onEachFeature: (feature, layer) => {
+                        const name = feature.properties.nomgeo || feature.properties.NOMGEO || feature.properties.ALCALDIA || "Alcaldía";
+                        layer.bindTooltip(name, { sticky: true });
+                    }
+                }).addTo(map);
+            })
+            .catch(err => console.error("Error cargando el GeoJSON:", err));
 
-        // 2. Cargar Puntos
+        // --- 2. CARGA DE PUNTOS (CSV) ---
         Papa.parse('https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv', {
             download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
-            complete: r => { allData = r.data; updateView(); }
+            complete: r => { 
+                allData = r.data; 
+                updateView(); 
+            }
         });
 
+        // --- LÓGICA DE ACTUALIZACIÓN ---
         function updateView() {
             const filtered = allData.filter(d => Object.entries(activeFilters).every(([c, v]) => d[c] === v));
             const pct = ((filtered.length / allData.length) * 100).toFixed(1);
 
-            // Sazón: Animación sincronizada
             animateValue('total-count', filtered.length, 800);
             animatePct('pct-count', pct, 800);
             
             document.getElementById('counter-card').classList.add('pulse');
             setTimeout(() => document.getElementById('counter-card').classList.remove('pulse'), 400);
 
-            // Mapa
             markersLayer.clearLayers();
             filtered.forEach(p => {
                 const lat = p.latitud || p.lat;
                 const lng = p.longitud || p.lng;
                 if (lat && lng) {
                     L.circleMarker([lat, lng], {
-                        radius: 7, fillColor: colors[p.disciplina] || colors['Otros'],
-                        color: "#fff", weight: 1.5, fillOpacity: 0.9
-                    }).bindPopup(`<b>${p.nombre}</b><br><small>${p.disciplina}</small>`).addTo(markersLayer);
+                        radius: 7, 
+                        fillColor: colors[p.disciplina] || colors['Otros'],
+                        color: "#fff", 
+                        weight: 1.5, 
+                        fillOpacity: 0.9
+                    }).bindPopup(createPopup(p)).addTo(markersLayer);
                 }
             });
 
             document.getElementById('clear-btn').style.display = Object.keys(activeFilters).length > 0 ? 'block' : 'none';
             renderWidgets(filtered);
+        }
+
+        function createPopup(p) {
+            let html = `<div style="max-height:200px; overflow-y:auto; min-width:180px;">`;
+            html += `<b style="color:var(--accent); font-size:14px;">${p.nombre || 'Espacio'}</b><hr style="border:0; border-top:1px solid #eee; margin:8px 0;">`;
+            Object.keys(p).forEach(key => {
+                const val = p[key];
+                if (!['lat','lng','latitud','longitud'].includes(key.toLowerCase()) && val) {
+                    html += `<div style="font-size:10px; margin-bottom:3px;"><b style="text-transform:capitalize;">${key.replace(/_/g,' ')}:</b> ${val}</div>`;
+                }
+            });
+            html += `</div>`;
+            return html;
         }
 
         function renderWidgets(data) {
@@ -195,32 +215,32 @@
             });
         }
 
-        // --- ANIMADORES ---
+        // --- ANIMACIONES ---
         function animateValue(id, target, duration) {
             const obj = document.getElementById(id);
             let start = parseInt(obj.innerText);
             let startTime = null;
-            function step(timestamp) {
-                if (!startTime) startTime = timestamp;
-                const progress = Math.min((timestamp - startTime) / duration, 1);
+            function step(t) {
+                if (!startTime) startTime = t;
+                const progress = Math.min((t - startTime) / duration, 1);
                 obj.innerText = Math.floor(progress * (target - start) + start);
-                if (progress < 1) window.requestAnimationFrame(step);
+                if (progress < 1) requestAnimationFrame(step);
             }
-            window.requestAnimationFrame(step);
+            requestAnimationFrame(step);
         }
 
         function animatePct(id, target, duration) {
             const obj = document.getElementById(id);
             let start = parseFloat(obj.innerText);
             let startTime = null;
-            function step(timestamp) {
-                if (!startTime) startTime = timestamp;
-                const progress = Math.min((timestamp - startTime) / duration, 1);
+            function step(t) {
+                if (!startTime) startTime = t;
+                const progress = Math.min((t - startTime) / duration, 1);
                 const current = (progress * (target - start) + start).toFixed(1);
                 obj.innerText = current + '%';
-                if (progress < 1) window.requestAnimationFrame(step);
+                if (progress < 1) requestAnimationFrame(step);
             }
-            window.requestAnimationFrame(step);
+            requestAnimationFrame(step);
         }
 
         function toggleFilter(c, v) {
