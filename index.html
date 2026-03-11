@@ -3,101 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Artes Vivas CDMX</title>
+    <title>Observatorio Artes Vivas | CDMX</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --accent: #ff4757;
-            --panel: rgba(255, 255, 255, 0.95);
-            --text: #2d3436;
-            --bg: #f0f0f0;
-            --highlight: #f1c40f;
-            --header-bg: #fafafa;
-        }
-
-        body.dark-mode {
-            --panel: rgba(30, 39, 46, 0.9);
-            --text: #ecf0f1;
-            --bg: #1e272e;
-            --header-bg: #2f3542;
+            --panel: rgba(24, 28, 31, 0.95);
+            --text: #ffffff;
+            --highlight: #00d2ff;
+            --card-bg: #2d3436;
         }
 
         * { box-sizing: border-box; }
-        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); display: flex; height: 100vh; overflow: hidden; transition: background 0.3s; }
+        body { 
+            margin: 0; padding: 0; font-family: 'Inter', sans-serif; 
+            background: #111; display: flex; height: 100vh; overflow: hidden; color: var(--text); 
+        }
         
-        /* Dashboard */
+        /* Dashboard Lateral */
         #dashboard {
             width: 380px; height: 100%; z-index: 2000;
-            background: var(--panel); backdrop-filter: blur(10px);
-            box-shadow: 10px 0 30px rgba(0,0,0,0.1);
-            display: flex; flex-direction: column; padding: 25px;
-            overflow-y: auto; flex-shrink: 0; border-right: 1px solid rgba(0,0,0,0.05);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+            background: var(--panel); backdrop-filter: blur(20px);
+            display: flex; flex-direction: column; padding: 20px;
+            overflow-y: auto; flex-shrink: 0; border-right: 1px solid #333;
         }
 
         #map { flex-grow: 1; height: 100%; position: relative; }
 
-        /* Controles Flotantes */
-        .map-controls { position: absolute; top: 15px; right: 15px; z-index: 1500; display: flex; flex-direction: column; gap: 10px; }
-        .control-btn { 
-            background: var(--panel); border: none; padding: 12px; border-radius: 50%; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer; color: var(--text);
-            display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; transition: 0.2s;
+        /* BUSCADOR */
+        .search-box {
+            margin-bottom: 20px; padding: 12px 15px; width: 100%;
+            border: 1px solid #444; border-radius: 12px;
+            background: rgba(255,255,255,0.05); color: white;
+            font-size: 0.9rem; outline: none; transition: 0.3s;
         }
-        .control-btn:hover { transform: scale(1.1); }
-        #mobile-close { display: none; margin-bottom: 20px; width: 100%; border-radius: 8px; }
+        .search-box:focus { border-color: var(--highlight); box-shadow: 0 0 10px rgba(0,210,255,0.2); }
 
-        /* Estética Vibe Coding */
-        h1 { font-size: 1.1rem; margin: 0 0 15px 0; font-weight: 900; color: var(--text); border-bottom: 4px solid var(--accent); display: inline-block; padding-bottom: 5px; }
-        .search-box { margin-bottom: 15px; padding: 12px; width: 100%; border: 2px solid rgba(0,0,0,0.05); border-radius: 10px; background: var(--header-bg); color: var(--text); font-family: inherit; }
+        /* CONTADOR */
+        .counter-section { 
+            text-align: center; background: #000; padding: 25px; 
+            border-radius: 20px; margin-bottom: 20px; border: 1px solid #222;
+        }
+        .total-counter { font-size: 4rem; font-weight: 900; color: var(--highlight); line-height: 1; }
+        .pct-label { font-size: 1.1rem; color: #ff9ff3; font-weight: 800; margin-top: 5px; }
 
-        .counter-section { text-align: center; background: #1e272e; color: white; padding: 20px; border-radius: 16px; margin-bottom: 15px; }
-        .total-counter { font-size: 3.5rem; font-weight: 900; color: #00d2ff; line-height: 1; }
-        .percentage-badge { font-size: 1.2rem; font-weight: 800; color: #ff9ff3; margin-top: 5px; }
-
-        /* Widgets */
-        .widget { margin-top: 10px; border: 1px solid rgba(0,0,0,0.05); border-radius: 12px; background: var(--header-bg); overflow: hidden; }
-        .widget-header { padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text); }
-        .widget-content { display: none; padding: 10px 18px; background: transparent; }
+        /* WIDGETS */
+        #stats-container { display: flex; flex-direction: column; gap: 12px; }
+        .widget { border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid #333; overflow: hidden; }
+        .widget-header { 
+            padding: 12px 15px; cursor: pointer; display: flex; justify-content: space-between; 
+            font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #aaa; background: rgba(0,0,0,0.2);
+        }
         .widget.open .widget-content { display: block; }
+        .widget-content { display: none; padding: 10px; }
 
-        .stat-row { margin-bottom: 10px; cursor: pointer; transition: 0.2s; color: var(--text); }
-        .stat-row.active { color: var(--accent); font-weight: 800; }
-        .stat-bar-bg { background: rgba(0,0,0,0.1); height: 6px; border-radius: 10px; margin-top: 4px; overflow: hidden; }
-
-        /* Popups */
-        .popup-container { max-height: 250px; overflow-y: auto; font-size: 11px; }
-        .p-title { color: var(--accent); font-weight: 900; font-size: 14px; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 4px; display: block; }
-
-        /* Responsividad Móvil */
-        @media (max-width: 768px) {
-            #dashboard { position: absolute; left: 0; top: 0; width: 85%; transform: translateX(-100%); }
-            #dashboard.active { transform: translateX(0); }
-            #mobile-close { display: flex; }
+        .stat-row { 
+            margin-bottom: 8px; cursor: pointer; padding: 8px; border-radius: 8px; 
+            transition: 0.2s; border: 1px solid transparent; 
         }
+        .stat-row:hover { background: rgba(255,255,255,0.05); }
+        .stat-row.active { background: rgba(0,210,255,0.1); border-color: var(--highlight); color: var(--highlight); }
+        .stat-info { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+        .stat-bar-bg { background: rgba(255,255,255,0.1); height: 4px; border-radius: 10px; overflow: hidden; }
+
+        /* TIMELINE CARTO VIBE */
+        #timeline-container {
+            position: absolute; bottom: 30px; left: 410px; right: 30px;
+            background: rgba(15, 15, 15, 0.9); padding: 15px 25px; border-radius: 50px;
+            z-index: 1500; border: 1px solid #333; display: flex; align-items: center; gap: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+        .play-btn {
+            background: var(--highlight); border: none; color: #000;
+            width: 45px; height: 45px; border-radius: 50%; cursor: pointer;
+            font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+        }
+        #year-display { font-family: 'JetBrains Mono', monospace; font-size: 2rem; color: var(--highlight); min-width: 100px; }
+        input[type=range] { flex-grow: 1; accent-color: var(--highlight); }
+
+        /* POPUPS */
+        .leaflet-popup-content-wrapper { background: #fff; color: #333; border-radius: 12px; }
+        .p-title { color: var(--accent); font-weight: 900; border-bottom: 1px solid #eee; margin-bottom: 8px; display: block; }
+        .p-row { font-size: 10px; margin-bottom: 3px; display: flex; flex-direction: column; }
+        .p-label { font-weight: 800; color: #888; text-transform: uppercase; }
+
+        #clear-btn { display: none; background: var(--accent); border: none; color: white; padding: 10px; border-radius: 8px; margin-top: 10px; width: 100%; cursor: pointer; font-weight: 900; font-size: 10px; }
     </style>
 </head>
-<body class="dark-mode"> <div id="dashboard">
-        <button class="control-btn" id="mobile-close" onclick="toggleDashboard()">✕ CERRAR FILTROS</button>
+<body class="dark-theme">
+
+    <div id="dashboard">
         <h1>ARTES VIVAS CDMX</h1>
-        <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar espacio..." oninput="updateSearch()">
+        <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar por nombre..." oninput="updateSearch()">
         
         <div class="counter-section">
             <div id="total-count" class="total-counter">0</div>
-            <div style="font-size: 0.8rem; color: #a4b0be; margin-top: 5px;">de <span id="universe-total">293</span> registrados</div>
-            <div id="pct-count" class="percentage-badge">0%</div>
-            <button id="clear-btn" onclick="clearAllFilters()" style="margin-top:10px; padding:8px; width:100%; border-radius:6px; border:none; background:var(--accent); color:white; font-weight:bold; cursor:pointer;">✕ Limpiar</button>
+            <div style="font-size: 0.8rem; color: #888;">espacios activos en <span id="current-year-label" style="color:var(--highlight)">-</span></div>
+            <div id="pct-count" class="pct-label">0%</div>
+            <button id="clear-btn" onclick="clearAllFilters()">✕ REINICIAR DASHBOARD</button>
         </div>
+        
         <div id="stats-container"></div>
     </div>
 
     <div id="map">
-        <div class="map-controls">
-            <button class="control-btn" onclick="toggleTheme()" title="Cambiar Tema">🌓</button>
-            <button class="control-btn" id="mobile-toggle" onclick="toggleDashboard()" title="Filtros">📊</button>
+        <div id="timeline-container">
+            <button class="play-btn" id="play-pause-btn" onclick="togglePlay()">▶</button>
+            <div id="year-display">----</div>
+            <input type="range" id="year-slider" oninput="manualYearChange(this.value)">
         </div>
     </div>
 
@@ -105,80 +121,169 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // --- CONFIG ---
-        const labelMap = { 'disciplina': 'Disciplina', 'alcaldia': 'Alcaldía', 'circuito': 'Circuito', 'aforo': 'Aforo', 'ano_ap': 'Año Apertura', 'ano_cl': 'Año Clausura', 'sostenimiento': 'Sostenimiento', 'estatus': 'Estatus', 'condicion_mobiliaria': 'Condición Mobiliaria' };
-        const discColors = { 'Música': '#E67E22', 'Teatro': '#D72638', 'Multidisciplina': '#5B21B6', 'Artes escénicas': '#065F46', 'Otras disciplinas': '#374151', 'Artes vivas': '#8E24AA', 'Danza': '#1E3A8A', 'Sin información': '#9CA3AF' };
-        const alcPalette = { "Azcapotzalco": "#00CED1", "Coyoacán": "#FF1493", "Cuajimalpa de Morelos": "#7FFF00", "Gustavo A. Madero": "#00FA9A", "Iztacalco": "#FF00FF", "Iztapalapa": "#00BFFF", "La Magdalena Contreras": "#D2691E", "Milpa Alta": "#BDB76B", "Álvaro Obregón": "#20B2AA", "Tláhuac": "#EE82EE", "Tlalpan": "#CD853F", "Xochimilco": "#40E0D0", "Benito Juárez": "#BA55D3", "Cuauhtémoc": "#F08080", "Miguel Hidalgo": "#7B68EE", "Venustiano Carranza": "#FF69B4" };
+        // --- DATA MAPS & COLORS ---
+        const labelMap = {
+            'disciplina': 'Disciplina', 'alcaldia': 'Alcaldía', 'condicion_mobiliaria': 'Condición mobiliaria',
+            'circuito': 'Circuito', 'aforo': 'Aforo', 'ano_ap': 'Año Apertura',
+            'ano_cl': 'Año Clausura', 'sostenimiento': 'Sostenimiento', 'estatus': 'Estatus', 'contacto': 'Contacto'
+        };
 
-        let allData = [], activeFilters = {}, searchQuery = "", curC = 0, curP = 0;
-        let isDarkMode = true;
+        const discColors = {
+            'Música': '#E67E22', 'Teatro': '#D72638', 'Multidisciplina': '#5B21B6',
+            'Artes escénicas': '#065F46', 'Otras disciplinas': '#374151',
+            'Artes vivas': '#8E24AA', 'Danza': '#1E3A8A', 'Sin información': '#9CA3AF'
+        };
 
-        const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
-        L.control.zoom({ position: 'bottomright' }).addTo(map);
+        const alcPalette = {
+            "Azcapotzalco": "#00CED1", "Coyoacán": "#FF1493", "Cuajimalpa de Morelos": "#7FFF00",
+            "Gustavo A. Madero": "#00FA9A", "Iztacalco": "#FF00FF", "Iztapalapa": "#00BFFF",
+            "La Magdalena Contreras": "#D2691E", "Milpa Alta": "#BDB76B", "Álvaro Obregón": "#20B2AA",
+            "Tláhuac": "#EE82EE", "Tlalpan": "#CD853F", "Xochimilco": "#40E0D0",
+            "Benito Juárez": "#BA55D3", "Cuauhtémoc": "#F08080", "Miguel Hidalgo": "#7B68EE",
+            "Venustiano Carranza": "#FF69B4"
+        };
 
-        // Capas de Mapa
-        const lightMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', { attribution: 'Esri' });
-        const darkMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { attribution: 'Esri' }).addTo(map);
+        let allData = [], activeFilters = { disciplina: [], alcaldia: [], condicion_mobiliaria: [], circuito: [], aforo: [], ano_ap: [], ano_cl: [], sostenimiento: [], estatus: [] };
+        let searchQuery = "", currentYear = 2024, isPlaying = false, timer = null, timelineSteps = [];
+        let curC = 0, curP = 0;
 
-        map.createPane('alcPane').style.zIndex = 200;
+        const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false, doubleClickZoom: false });
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}').addTo(map);
         map.createPane('markerPane').style.zIndex = 650;
         const markersLayer = L.layerGroup().addTo(map);
 
-        // Cargar Geodata
+        // 1. Alcaldías
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/cdmx-alcaldias.geojson')
             .then(res => res.json()).then(data => {
-                L.geoJSON(data, { pane: 'alcPane', style: (f) => {
-                    const color = alcPalette[f.properties.NOMGEO] || "#ccc";
-                    return { fillColor: color, weight: 1.5, color: color, fillOpacity: 0.15, opacity: 0.5 };
-                }, onEachFeature: (f, l) => l.bindTooltip(f.properties.NOMGEO) }).addTo(map);
+                L.geoJSON(data, { style: (f) => ({ fillColor: alcPalette[f.properties.NOMGEO] || "#555", weight: 1.5, color: "white", fillOpacity: 0.12 }) }).addTo(map);
             });
 
+        // 2. CSV
         Papa.parse('https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv', {
             download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
-            complete: r => { allData = r.data || []; document.getElementById('universe-total').textContent = allData.length; updateView(); }
+            complete: r => { 
+                allData = r.data || [];
+                setupTimeline();
+                updateView();
+            }
         });
+
+        function setupTimeline() {
+            const years = [...new Set(allData.flatMap(d => [parseInt(d.ano_ap), parseInt(d.ano_cl)]))]
+                          .filter(y => y > 1850 && !isNaN(y)).sort((a,b) => a-b);
+            
+            // Lógica de Bloques: Si hay huecos, rellena cada 5 años
+            let steps = [];
+            for(let y = years[0]; y <= 2026; y++) {
+                if(years.includes(y) || y % 5 === 0) steps.push(y);
+            }
+            timelineSteps = steps;
+            
+            const slider = document.getElementById('year-slider');
+            slider.min = 0;
+            slider.max = timelineSteps.length - 1;
+            slider.value = timelineSteps.length - 1;
+            currentYear = timelineSteps[slider.value];
+            document.getElementById('year-display').textContent = currentYear;
+        }
 
         function updateView() {
             const filtered = allData.filter(d => {
-                const matchesFilters = Object.entries(activeFilters).every(([c, v]) => !v || String(d[c]) === String(v));
-                return matchesFilters && d.nombre.toLowerCase().includes(searchQuery.toLowerCase());
+                const matchesFilters = Object.entries(activeFilters).every(([col, sel]) => sel.length === 0 || sel.map(String).includes(String(d[col])));
+                const matchesSearch = d.nombre.toLowerCase().includes(searchQuery.toLowerCase());
+                const opened = !d.ano_ap || d.ano_ap <= currentYear || d.ano_ap == 0;
+                const notClosed = !d.ano_cl || d.ano_cl > currentYear || d.ano_cl == 0;
+                return matchesFilters && matchesSearch && opened && notClosed;
             });
 
             animateCounters(filtered.length, allData.length);
             markersLayer.clearLayers();
             filtered.forEach(p => {
-                const lat = parseFloat(p.latitud), lng = parseFloat(p.longitud);
-                if (!isNaN(lat) && !isNaN(lng)) {
-                    const marker = L.circleMarker([lat, lng], { pane: 'markerPane', radius: 8, fillColor: discColors[p.disciplina] || discColors['Sin información'], color: "#fff", weight: 2, fillOpacity: 1 });
-                    marker.bindPopup(createPopup(p));
-                    marker.on('mouseover', function() { if(!this._pinned) this.openPopup(); });
-                    marker.on('mouseout', function() { if(!this._pinned) this.closePopup(); });
-                    marker.on('click', function() { markersLayer.eachLayer(m => m._pinned = false); this._pinned = true; this.openPopup(); });
-                    marker.addTo(markersLayer);
-                }
+                const marker = L.circleMarker([p.latitud, p.longitud], {
+                    pane: 'markerPane', radius: 7, fillColor: discColors[p.disciplina] || '#999',
+                    color: "white", weight: 1.5, fillOpacity: 1
+                });
+                marker.bindPopup(createPopup(p), { autoPan: false });
+                marker.on('mouseover', function() { if(!this._pinned) this.openPopup(); });
+                marker.on('mouseout', function() { if(!this._pinned) this.closePopup(); });
+                marker.on('click', function() { markersLayer.eachLayer(m => m._pinned = false); this._pinned = true; this.openPopup(); });
+                marker.addTo(markersLayer);
             });
-            renderWidgets(filtered);
+            renderAllWidgets(filtered);
+            document.getElementById('clear-btn').style.display = (searchQuery || Object.values(activeFilters).some(a=>a.length)) ? 'block' : 'none';
         }
 
-        // --- FUNCIONES DE INTERFAZ ---
-        function toggleTheme() {
-            isDarkMode = !isDarkMode;
-            if (isDarkMode) { darkMap.addTo(map); map.removeLayer(lightMap); document.body.classList.add('dark-mode'); }
-            else { lightMap.addTo(map); map.removeLayer(darkMap); document.body.classList.remove('dark-mode'); }
+        function renderAllWidgets(data) {
+            const container = document.getElementById('stats-container');
+            const openWidgets = Array.from(document.querySelectorAll('.widget.open')).map(w => w.dataset.col);
+            container.innerHTML = '';
+            
+            const cols = ['disciplina', 'alcaldia', 'condicion_mobiliaria', 'circuito', 'aforo', 'sostenimiento', 'estatus'];
+            cols.forEach(col => {
+                const counts = {};
+                data.forEach(d => { 
+                    let v = d[col]; 
+                    if(v === 0 || v === "" || v === "0") v = "Sin dato";
+                    counts[v] = (counts[v] || 0) + 1; 
+                });
+                if(Object.keys(counts).length === 0) return;
+
+                const widget = document.createElement('div');
+                widget.className = `widget ${openWidgets.includes(col) || (col === 'disciplina' && searchQuery==="") ? 'open' : ''}`;
+                widget.dataset.col = col;
+                let h = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')"><span>${labelMap[col]}</span> ▾</div><div class="widget-content">`;
+                Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
+                    const isActive = activeFilters[col].includes(val);
+                    const barP = (count / data.length * 100).toFixed(0);
+                    h += `<div class="stat-row ${isActive ? 'active' : ''}" onclick="toggleMultiFilter('${col}', '${val}')">
+                            <div class="stat-info"><span>${val}</span><strong>${count}</strong></div>
+                            <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${barP}%; background:${discColors[val] || '#00d2ff'}"></div></div>
+                        </div>`;
+                });
+                widget.innerHTML = h + `</div>`;
+                container.appendChild(widget);
+            });
         }
 
-        function toggleDashboard() { document.getElementById('dashboard').classList.toggle('active'); }
+        // --- ACCIONES ---
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const btn = document.getElementById('play-pause-btn');
+            if(isPlaying) {
+                btn.textContent = "⏸";
+                timer = setInterval(() => {
+                    const s = document.getElementById('year-slider');
+                    if(parseInt(s.value) >= timelineSteps.length - 1) s.value = 0;
+                    else s.value = parseInt(s.value) + 1;
+                    manualYearChange(s.value);
+                }, 400);
+            } else { btn.textContent = "▶"; clearInterval(timer); }
+        }
+
+        function manualYearChange(idx) {
+            currentYear = timelineSteps[idx];
+            document.getElementById('year-display').textContent = currentYear;
+            document.getElementById('current-year-label').textContent = currentYear;
+            updateView();
+        }
+
+        function toggleMultiFilter(col, val) {
+            const idx = activeFilters[col].indexOf(val);
+            if(idx > -1) activeFilters[col].splice(idx, 1); else activeFilters[col].push(val);
+            updateView();
+        }
 
         function createPopup(p) {
             let h = `<div class="popup-container"><span class="p-title">${p.nombre}</span>`;
-            Object.entries(labelMap).forEach(([k,v]) => { if(p[k] && p[k] !== "0") h += `<div class="p-row"><span class="p-label">${v}</span><span>${p[k]}</span></div>`; });
-            return h + `</div>`;
+            Object.entries(labelMap).forEach(([k,v]) => { if(p[k] && p[k] !== "0") h += `<div class="p-row"><span class="p-label">${v}</span>${p[k]}</div>`; });
+            return h + "</div>";
         }
 
+        function updateSearch() { searchQuery = document.getElementById('search-input').value; updateView(); }
         function animateCounters(tC, univ) {
             const tP = univ > 0 ? (tC / univ * 100) : 0;
             const cEl = document.getElementById('total-count'), pEl = document.getElementById('pct-count');
-            const sC = curC, sP = curP, dur = 400; let start = null;
+            const sC = curC, sP = curP, dur = 300; let start = null;
             function step(t) {
                 if(!start) start = t; const prog = Math.min((t-start)/dur, 1);
                 curC = prog*(tC-sC)+sC; curP = prog*(tP-sP)+sP;
@@ -187,36 +292,7 @@
             }
             requestAnimationFrame(step);
         }
-
-        function renderWidgets(data) {
-            const container = document.getElementById('stats-container');
-            const cols = ['disciplina', 'alcaldia', 'circuito', 'aforo', 'sostenimiento', 'estatus'];
-            const openWidgets = Array.from(document.querySelectorAll('.widget.open')).map(w => w.dataset.col);
-            container.innerHTML = '';
-            cols.forEach(col => {
-                const counts = {};
-                data.forEach(d => { let v = d[col] || "Sin dato"; counts[v] = (counts[v] || 0) + 1; });
-                const widget = document.createElement('div');
-                widget.className = `widget ${openWidgets.includes(col) || (Object.keys(activeFilters).length === 0 && col === 'disciplina') ? 'open' : ''}`;
-                widget.dataset.col = col;
-                let h = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')"><span>${labelMap[col]}</span> ▾</div><div class="widget-content">`;
-                Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
-                    const barP = (count / data.length * 100).toFixed(0);
-                    const isActive = activeFilters[col] === val;
-                    const barC = col === 'disciplina' ? discColors[val] : (isDarkMode ? '#00d2ff' : '#ff4757');
-                    h += `<div class="stat-row ${isActive ? 'active' : ''}" onclick="toggleFilter('${col}', '${val}')">
-                        <div style="display:flex;justify-content:space-between;font-size:11.5px"><span>${val}</span><strong>${count}</strong></div>
-                        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${barP}%; background:${barC}"></div></div>
-                    </div>`;
-                });
-                widget.innerHTML = h + `</div>`;
-                container.appendChild(widget);
-            });
-        }
-
-        function updateSearch() { searchQuery = document.getElementById('search-input').value; updateView(); }
-        function toggleFilter(c, v) { if(activeFilters[c] === v) delete activeFilters[c]; else activeFilters[c] = v; updateView(); }
-        function clearAllFilters() { activeFilters = {}; searchQuery = ""; document.getElementById('search-input').value = ""; updateView(); }
+        function clearAllFilters() { Object.keys(activeFilters).forEach(k => activeFilters[k] = []); document.getElementById('search-input').value = ""; searchQuery = ""; updateView(); }
     </script>
 </body>
 </html>
