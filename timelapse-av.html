@@ -3,96 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timelapse | Artes Vivas CDMX</title>
+    <title>Timelapse Analítico | Artes Vivas CDMX</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --accent: #ff4757;
-            --panel: rgba(20, 24, 28, 0.95);
-            --text: #ecf0f1;
-            --dark: #0f1215;
             --highlight: #00d2ff;
+            --bg: #0a0c0e;
+            --panel-bg: rgba(18, 22, 25, 0.96);
+            --card-bg: #1e272e;
+            --text-main: #ffffff;
+            --text-dim: #a4b0be;
+            --click-glow: #f1c40f;
         }
 
         * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: #000; display: flex; height: 100vh; overflow: hidden; color: var(--text); }
-        
-        /* Dashboard Lateral */
-        #dashboard {
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+        /* Dashboard de Control */
+        #sidebar {
             width: 380px; height: 100%; z-index: 2000;
-            background: var(--panel); backdrop-filter: blur(20px);
-            display: flex; flex-direction: column; padding: 20px;
-            overflow-y: auto; flex-shrink: 0; border-right: 1px solid rgba(255,255,255,0.05);
+            background: var(--panel-bg); backdrop-filter: blur(25px);
+            border-right: 1px solid rgba(255,255,255,0.08);
+            display: flex; flex-direction: column; padding: 30px;
+            overflow-y: auto; scrollbar-width: none;
         }
-        #dashboard::-webkit-scrollbar { display: none; }
+        #sidebar::-webkit-scrollbar { display: none; }
 
         #map { flex-grow: 1; height: 100%; position: relative; background: #000; }
 
-        /* Buscador y Contadores */
+        /* Estética Vibe Coding */
+        h1 { font-size: 1.2rem; font-weight: 900; margin: 0 0 5px 0; letter-spacing: -0.5px; }
+        .subtitle { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; display: block; }
+
         .search-box {
-            margin-bottom: 15px; padding: 12px; width: 100%;
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
-            background: rgba(255,255,255,0.05); color: white; outline: none; transition: 0.3s;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            padding: 14px; border-radius: 12px; color: white; width: 100%; margin-bottom: 20px;
+            font-family: inherit; transition: 0.3s;
         }
-        .search-box:focus { border-color: var(--highlight); }
+        .search-box:focus { border-color: var(--highlight); outline: none; background: rgba(255,255,255,0.08); }
 
-        .counter-section { 
-            text-align: center; background: var(--dark); padding: 20px; 
-            border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05);
-        }
-        .total-counter { font-size: 3.5rem; font-weight: 900; color: var(--highlight); line-height: 1; font-family: 'JetBrains Mono', monospace; }
-        .registered-label { font-size: 0.8rem; color: #888; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        /* Contador Dinámico */
+        .big-stats { text-align: center; margin-bottom: 30px; padding: 25px; background: #000; border-radius: 20px; border: 1px solid #222; }
+        #total-count { font-size: 4.5rem; font-weight: 900; color: var(--highlight); line-height: 0.9; font-family: 'JetBrains Mono', monospace; }
+        .stat-label { font-size: 0.8rem; color: var(--text-dim); margin-top: 10px; font-weight: 600; text-transform: uppercase; }
 
-        /* Widgets */
-        .widget { margin-top: 10px; border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; background: rgba(0,0,0,0.3); }
-        .widget-header { padding: 12px 15px; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #aaa; }
-        .widget-content { display: none; padding: 8px; }
+        /* Widgets Analíticos */
+        .widget { margin-top: 15px; border-radius: 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); }
+        .widget-header { padding: 16px; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase;}
         .widget.open .widget-content { display: block; }
+        .widget-content { display: none; padding: 0 16px 16px 16px; }
 
-        .stat-row { margin-bottom: 6px; cursor: pointer; padding: 6px 8px; border-radius: 6px; transition: 0.2s; border: 1px solid transparent; }
-        .stat-row:hover { background: rgba(255,255,255,0.05); }
-        .stat-row.active { background: rgba(0, 210, 255, 0.1); border-color: var(--highlight); color: var(--highlight); font-weight: 700; }
-        .stat-info { display: flex; justify-content: space-between; font-size: 11.5px; margin-bottom: 3px; }
-        .stat-bar-bg { background: rgba(255,255,255,0.1); height: 4px; border-radius: 10px; }
-        .stat-bar-fill { height: 100%; transition: width 0.4s ease; border-radius: 10px; }
+        .stat-row { margin-bottom: 10px; cursor: pointer; padding: 4px 0; border-radius: 4px;}
+        .stat-row.active { color: var(--accent); font-weight: bold;}
+        .stat-info { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+        .stat-bar { background: rgba(255,255,255,0.05); height: 4px; border-radius: 10px; overflow: hidden; }
+        .stat-bar-fill { height: 100%; transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
 
-        /* Popups */
+        /* TIMELINE CONTROLLER (CARTO STYLE) */
+        #timeline-ui {
+            position: absolute; bottom: 40px; left: 420px; right: 40px;
+            background: rgba(15, 18, 20, 0.95); padding: 20px 35px; border-radius: 100px;
+            z-index: 1500; border: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; gap: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+        }
+
+        .ctrl-btn {
+            background: #222; border: none; color: white; width: 40px; height: 40px;
+            border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex;
+            align-items: center; justify-content: center; transition: 0.2s;
+        }
+        .ctrl-btn:hover { background: #444; }
+        
+        .play-btn {
+            background: var(--highlight); border: none; width: 55px; height: 55px; color: #000;
+            border-radius: 50%; cursor: pointer; font-size: 1.5rem; display: flex;
+            align-items: center; justify-content: center; transition: 0.3s;
+        }
+        .play-btn:hover { transform: scale(1.15); box-shadow: 0 0 25px rgba(0,210,255,0.4); background: #fff;}
+
+        #year-focus { font-family: 'JetBrains Mono', monospace; font-size: 2.8rem; font-weight:800; color: var(--highlight); min-width: 140px; text-align: center; }
+
+        .slider-container { flex-grow: 1; display: flex; flex-direction: column; }
+        input[type=range] { flex-grow: 1; accent-color: var(--highlight); cursor: pointer; height: 6px; background: rgba(255,255,255,0.2); outline: none; border-radius: 4px; }
+        .speed-ctrl { font-size: 10px; color: #888; text-transform: uppercase; font-weight: 800; cursor: pointer; margin-top: 8px; text-align: right; }
+        .speed-ctrl span { padding: 3px 8px; border-radius: 4px; transition: 0.2s; }
+        .speed-ctrl span.active { background: var(--highlight); color: #000; }
+
+        /* Leaflet Overrides y Popups */
         .leaflet-popup-content-wrapper { background: rgba(20, 24, 28, 0.95); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; backdrop-filter: blur(10px); }
         .leaflet-popup-tip { background: rgba(20, 24, 28, 0.95); border: 1px solid rgba(255,255,255,0.1); }
         .popup-container { max-height: 250px; overflow-y: auto; font-size: 11px; width: 220px; }
         .p-title { color: var(--highlight); font-weight: 900; font-size: 14px; display: block; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; }
         .p-row { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 4px 0; }
         .p-label { font-weight: 800; color: #888; text-transform: uppercase; font-size: 9px; display: block; }
-
-        /* TIMELINE VIBE UI */
-        #timeline-ui {
-            position: absolute; bottom: 30px; left: 410px; right: 30px;
-            background: rgba(15, 18, 21, 0.9); padding: 15px 25px; border-radius: 100px;
-            z-index: 1500; border: 1px solid rgba(255,255,255,0.1);
-            display: flex; align-items: center; gap: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8); backdrop-filter: blur(15px);
-        }
-
-        .ctrl-btn {
-            background: #2f3542; border: none; color: white; width: 40px; height: 40px;
-            border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex;
-            align-items: center; justify-content: center; transition: 0.2s;
-        }
-        .ctrl-btn:hover { background: #57606f; }
-        
-        .play-btn { background: var(--highlight); color: #000; width: 50px; height: 50px; font-size: 1.5rem; }
-        .play-btn:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); background: #fff; }
-
-        #year-focus { font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; color: #fff; min-width: 100px; text-align: center; font-weight: 900; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
-
-        .slider-container { flex-grow: 1; display: flex; flex-direction: column; }
-        input[type=range] { width: 100%; accent-color: var(--highlight); cursor: pointer; height: 4px; background: rgba(255,255,255,0.2); outline: none; border-radius: 4px; }
-        .speed-ctrl { font-size: 10px; color: #888; text-transform: uppercase; font-weight: 800; cursor: pointer; margin-top: 5px; text-align: right; }
-        .speed-ctrl span { padding: 2px 6px; border-radius: 4px; transition: 0.2s; }
-        .speed-ctrl span.active { background: var(--highlight); color: #000; }
 
         /* Animación Pulsar (Nacimiento de Espacio) */
         @keyframes pulse-ring {
@@ -107,23 +115,26 @@
 </head>
 <body>
 
-    <div id="dashboard">
-        <h1>ARTES VIVAS CDMX</h1>
-        <input type="text" class="search-box" id="search-input" placeholder="🔍 Filtrar por nombre..." oninput="updateSearch()">
-        
-        <div class="counter-section">
-            <div id="total-count" class="total-counter">0</div>
-            <div class="registered-label">Espacios activos en <span id="label-year" style="color:var(--highlight)">-</span></div>
-            <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Todo</button>
-        </div>
-        
-        <div id="stats-container"></div>
-    </div>
+    <aside id="sidebar">
+        <h1>OBSERVATORIO</h1>
+        <span class="subtitle">Artes Vivas CDMX</span>
 
-    <div id="map">
+        <input type="text" class="search-box" id="search-input" placeholder="🔍 Filtrar por nombre..." oninput="updateSearch()">
+
+        <div class="big-stats">
+            <div id="total-count">0</div>
+            <div class="stat-label">Espacios activos en <span id="label-year" style="color:var(--highlight)">-</span></div>
+            <div id="pct-count" style="color: #ff9ff3; font-weight: 800; font-size: 1.2rem; margin-top:10px;">0%</div>
+            <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
+        </div>
+
+        <div id="stats-container"></div>
+    </aside>
+
+    <main id="map">
         <div id="timeline-ui">
             <button class="ctrl-btn" onclick="stepTime(-1)">⏮</button>
-            <button class="ctrl-btn play-btn" id="play-btn" onclick="togglePlayback()">▶</button>
+            <button class="play-btn" id="play-btn" onclick="togglePlayback()">▶</button>
             <button class="ctrl-btn" onclick="stepTime(1)">⏭</button>
             
             <div id="year-focus">2024</div>
@@ -138,17 +149,17 @@
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // --- MAPEOS Y COLORES ---
+        // --- CONFIG & PALETTE ---
         const labelMap = {
             'disciplina': 'Disciplina', 'alcaldia': 'Alcaldía', 'condicion_mobiliaria': 'Condición mobiliaria',
             'circuito': 'Circuito', 'aforo': 'Aforo', 'ano_ap': 'Año Apertura',
-            'ano_cl': 'Año Clausura', 'sostenimiento': 'Sostenimiento', 'estatus': 'Estatus'
+            'ano_cl': 'Año Clausura', 'sostenimiento': 'Sostenimiento', 'estatus': 'Estatus', 'contacto': 'Contacto'
         };
 
         const discColors = {
@@ -166,14 +177,9 @@
             "Venustiano Carranza": "#FF69B4"
         };
 
-        let allData = [];
-        let activeFilters = { disciplina: [], alcaldia: [], condicion_mobiliaria: [], circuito: [], aforo: [], sostenimiento: [], estatus: [] }; 
-        
-        // Variables de Tiempo
-        let searchQuery = "";
-        let currentYear = 2024;
-        let timelineYears = [];
-        let isPlaying = false, timer = null, playSpeed = 800;
+        let allData = [], activeFilters = { disciplina: [], alcaldia: [], condicion_mobiliaria: [], circuito: [], aforo: [], sostenimiento: [], estatus: [] };
+        let currentYear = 2024, searchQuery = "", isPlaying = false, animationTimer = null, playSpeed = 800;
+        let timelinePoints = [];
         let curC = 0;
 
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false, doubleClickZoom: false });
@@ -192,7 +198,7 @@
                     pane: 'alcPane',
                     style: (f) => {
                         const color = alcPalette[f.properties.NOMGEO] || "#333";
-                        return { fillColor: color, weight: 1.5, color: color, fillOpacity: 0.1, opacity: 0.4 };
+                        return { fillColor: color, weight: 1.5, color: color, fillOpacity: 0.1, opacity: 0.3 };
                     },
                     onEachFeature: (f, l) => l.bindTooltip(f.properties.NOMGEO, {className: 'leaflet-tooltip'})
                 }).addTo(map);
@@ -202,7 +208,7 @@
         Papa.parse('https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv', {
             download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
             complete: r => { 
-                // Limpieza estricta de fechas al nacer
+                // Limpieza estricta de fechas para que la lógica matemática no falle
                 allData = r.data.map(d => {
                     return {
                         ...d,
@@ -217,26 +223,26 @@
 
         // --- MOTOR DE TIEMPO "ELASTIC" ---
         function initTimeEngine() {
-            // Extraer solo años válidos mayores a 1900
-            const validYears = allData.map(d => d._apertura).filter(y => y > 1900);
+            // Extraer solo años válidos mayores a 1850 para no tener siglos vacíos
+            const validYears = allData.map(d => d._apertura).filter(y => y > 1850);
             const minYear = validYears.length > 0 ? Math.min(...validYears) : 1950;
             const maxYear = new Date().getFullYear();
 
             // Rellenar array secuencial desde el más antiguo hasta hoy
             let seq = [];
             for(let y = minYear; y <= maxYear; y++) seq.push(y);
-            timelineYears = seq;
+            timelinePoints = seq;
 
             const slider = document.getElementById('time-slider');
             slider.min = 0;
-            slider.max = timelineYears.length - 1;
-            slider.value = timelineYears.length - 1;
+            slider.max = timelinePoints.length - 1;
+            slider.value = timelinePoints.length - 1;
             
-            updateYearDisplay(timelineYears[slider.value]);
+            updateYearDisplay(timelinePoints[slider.value]);
         }
 
         function handleTimeChange(index) {
-            currentYear = timelineYears[index];
+            currentYear = timelinePoints[index];
             updateYearDisplay(currentYear);
             updateView();
         }
@@ -250,7 +256,7 @@
             const slider = document.getElementById('time-slider');
             let newVal = parseInt(slider.value) + dir;
             if(newVal < 0) newVal = 0;
-            if(newVal > slider.max) newVal = slider.max;
+            if(newVal > parseInt(slider.max)) newVal = parseInt(slider.max);
             slider.value = newVal;
             handleTimeChange(newVal);
         }
@@ -259,7 +265,7 @@
             playSpeed = ms;
             document.querySelectorAll('.speed-ctrl span').forEach(el => el.classList.remove('active'));
             document.getElementById('sp-'+id).classList.add('active');
-            if(isPlaying) { togglePlayback(); togglePlayback(); } // Reset timer con nueva vel
+            if(isPlaying) { togglePlayback(); togglePlayback(); } // Reset timer
         }
 
         function togglePlayback() {
@@ -268,9 +274,9 @@
             if(isPlaying) {
                 btn.innerHTML = "⏸";
                 const slider = document.getElementById('time-slider');
-                if(parseInt(slider.value) >= parseInt(slider.max)) slider.value = 0; // Rewind auto
+                if(parseInt(slider.value) >= parseInt(slider.max)) { slider.value = 0; handleTimeChange(0); }
                 
-                timer = setInterval(() => {
+                animationTimer = setInterval(() => {
                     let nextVal = parseInt(slider.value) + 1;
                     if(nextVal > parseInt(slider.max)) { togglePlayback(); return; }
                     slider.value = nextVal;
@@ -278,7 +284,7 @@
                 }, playSpeed);
             } else {
                 btn.innerHTML = "▶";
-                clearInterval(timer);
+                clearInterval(animationTimer);
             }
         }
 
@@ -289,22 +295,22 @@
                 // Filtros de Widgets
                 const matchesFilters = Object.entries(activeFilters).every(([col, selecteds]) => {
                     if (selecteds.length === 0) return true;
-                    return selecteds.map(String).includes(String(d[col]));
+                    return selecteds.includes(String(d[col]));
                 });
                 
                 // Búsqueda Textual
                 const matchesSearch = d.nombre.toLowerCase().includes(searchQuery.toLowerCase());
                 
                 // Lógica de Existencia Temporal
-                // Un espacio existe si su año de apertura es menor o igual al actual O si no tiene fecha (legado).
-                // Y deja de existir si su año de clausura es mayor a 0 y es menor al año actual.
+                // Existe si (su año de apertura <= año actual) O (no tiene fecha registrada)
+                // Desaparece si (tiene clausura > 0) Y (su clausura es anterior al año actual)
                 const exists = (d._apertura <= currentYear || d._apertura === 0);
                 const notDead = (d._clausura === 0 || d._clausura > currentYear);
 
                 return matchesFilters && matchesSearch && exists && notDead;
             });
 
-            animateCounters(filtered.length);
+            animateCounter(filtered.length);
 
             markersLayer.clearLayers();
             filtered.forEach(p => {
@@ -322,6 +328,7 @@
                         className: cssClass
                     });
 
+                    // Evita el zoom loco desactivando el autoPan
                     marker.bindPopup(createPopup(p), { autoPan: false });
                     
                     marker.on('mouseover', function() { if(!this._pinned) this.openPopup(); });
@@ -329,7 +336,7 @@
                     marker.on('click', function() {
                         markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: '#fff', weight: 1.5}); });
                         this._pinned = true;
-                        this.setStyle({color: var(--highlight), weight: 4});
+                        this.setStyle({color: '#f1c40f', weight: 4}); // El color hex directamente, sin variables CSS problemáticas
                         this.openPopup();
                     });
                     
@@ -360,7 +367,7 @@
                 const baseForThisWidget = allData.filter(d => {
                     const matchesOther = Object.entries(tempFilters).every(([c, sel]) => {
                         if (sel.length === 0) return true;
-                        return sel.map(String).includes(String(d[c]));
+                        return sel.includes(String(d[c]));
                     });
                     const exists = (d._apertura <= currentYear || d._apertura === 0);
                     const notDead = (d._clausura === 0 || d._clausura > currentYear);
@@ -380,26 +387,26 @@
                 widget.className = `widget ${openWidgets.includes(col) || (col === 'disciplina' && !isAnyFilterActive()) ? 'open' : ''}`;
                 widget.dataset.col = col;
 
-                let html = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')"><span>${labelMap[col]}</span> ▾</div><div class="widget-content">`;
+                let h = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')"><span>${labelMap[col] || col}</span> ▾</div><div class="widget-content">`;
                 
                 Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
-                    const isActive = activeFilters[col].map(String).includes(String(val));
+                    const isActive = activeFilters[col].includes(String(val));
                     const barP = (count / baseForThisWidget.length * 100).toFixed(0);
-                    const barC = col === 'disciplina' ? (discColors[val] || '#fff') : 'var(--highlight)';
+                    const barC = col === 'disciplina' ? (discColors[val] || '#00d2ff') : '#00d2ff';
 
-                    html += `
+                    h += `
                         <div class="stat-row ${isActive ? 'active' : ''}" onclick="toggleMultiFilter('${col}', '${val}')">
                             <div class="stat-info"><span>${val}</span><strong>${count}</strong></div>
                             <div class="stat-bar"><div class="stat-bar-fill" style="width:${barP}%; background:${barC}"></div></div>
                         </div>`;
                 });
-                widget.innerHTML = html + `</div>`;
+                widget.innerHTML = h + `</div>`;
                 container.appendChild(widget);
             });
         }
 
         function toggleMultiFilter(col, val) {
-            const index = activeFilters[col].map(String).indexOf(String(val));
+            const index = activeFilters[col].indexOf(String(val));
             if (index > -1) activeFilters[col].splice(index, 1);
             else activeFilters[col].push(String(val));
             updateView();
@@ -418,15 +425,19 @@
 
         function updateSearch() { searchQuery = document.getElementById('search-input').value; updateView(); }
         
-        function animateCounters(targetC) {
-            const cEl = document.getElementById('total-count');
-            const startC = curC, dur = 300; let startT = null;
+        function animateCounter(target) {
+            const el = document.getElementById('total-count');
+            const pct = document.getElementById('pct-count');
+            const start = curC;
+            const dur = 300;
+            let st = null;
             function step(t) {
-                if (!startT) startT = t;
-                const prog = Math.min((t - startT) / dur, 1);
-                curC = prog * (targetC - startC) + startC;
-                cEl.textContent = Math.floor(curC);
-                if (prog < 1) requestAnimationFrame(step);
+                if(!st) st = t;
+                const prog = Math.min((t - st) / dur, 1);
+                curC = prog * (target - start) + start;
+                el.textContent = Math.floor(curC);
+                pct.textContent = (allData.length > 0 ? (curC/allData.length*100) : 0).toFixed(1) + "%";
+                if(prog < 1) requestAnimationFrame(step);
             }
             requestAnimationFrame(step);
         }
