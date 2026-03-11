@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Analítico | Artes Vivas CDMX</title>
+    <title>Timelapse Analítico | Artes Vivas CDMX</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
     <style>
         :root {
             --accent: #ff4757;
-            --panel: rgba(30, 39, 46, 0.95);
+            --panel: rgba(30, 39, 46, 0.98);
             --text: #ecf0f1;
             --bg: #1e272e;
             --highlight: #f1c40f;
@@ -21,89 +21,103 @@
         * { box-sizing: border-box; }
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); display: flex; height: 100vh; overflow: hidden; color: var(--text); }
         
+        /* Dashboard */
         #dashboard {
             width: 380px; height: 100%; z-index: 2000;
             background: var(--panel); backdrop-filter: blur(15px);
-            box-shadow: 10px 0 30px rgba(0,0,0,0.3);
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
             display: flex; flex-direction: column; padding: 25px;
-            overflow-y: auto; flex-shrink: 0; border-right: 1px solid rgba(255,255,255,0.05);
+            overflow-y: auto; flex-shrink: 0; border-right: 1px solid rgba(255,255,255,0.1);
         }
 
         #map { flex-grow: 1; height: 100%; position: relative; }
 
-        /* Timeline Superior Estilo CARTO */
-        #timeline-card {
+        /* Timeline Pro */
+        #timeline-container {
             position: absolute; bottom: 30px; left: 410px; right: 30px;
-            background: var(--panel); backdrop-filter: blur(10px);
-            padding: 15px 25px; border-radius: 16px; z-index: 1500;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            display: flex; align-items: center; gap: 20px;
+            background: var(--panel); padding: 20px; border-radius: 20px;
+            z-index: 1500; box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            display: flex; flex-direction: column; gap: 15px;
             border: 1px solid rgba(255,255,255,0.1);
         }
 
+        .timeline-controls { display: flex; align-items: center; gap: 20px; }
+        
+        .step-btn {
+            background: #3d4e5d; border: none; color: white;
+            width: 35px; height: 35px; border-radius: 8px; cursor: pointer;
+            font-weight: bold; transition: 0.2s;
+        }
+        .step-btn:hover { background: var(--accent); }
+
         .play-btn {
             background: var(--accent); border: none; color: white;
-            width: 45px; height: 45px; border-radius: 50%; cursor: pointer;
-            font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; transition: 0.2s;
+            width: 55px; height: 55px; border-radius: 50%; cursor: pointer;
+            font-size: 1.5rem; display: flex; align-items: center; justify-content: center;
+            transition: 0.3s;
         }
-        .play-btn:hover { transform: scale(1.1); box-shadow: 0 0 15px var(--accent); }
+        .play-btn:hover { transform: scale(1.1); box-shadow: 0 0 20px rgba(255, 71, 87, 0.4); }
 
-        #year-display { font-size: 1.8rem; font-weight: 900; color: var(--highlight); min-width: 90px; text-align: center; }
-        input[type=range] { flex-grow: 1; accent-color: var(--accent); cursor: pointer; }
+        #year-display { font-size: 2.5rem; font-weight: 900; color: var(--highlight); min-width: 120px; text-align: center; line-height: 1; }
+        
+        input[type=range] { flex-grow: 1; accent-color: var(--accent); height: 8px; border-radius: 5px; }
 
-        /* Dashboard Content */
+        /* Widgets y Stats */
         h1 { font-size: 1.1rem; margin: 0 0 15px 0; font-weight: 900; border-bottom: 4px solid var(--accent); display: inline-block; padding-bottom: 5px; }
         .search-box { margin-bottom: 15px; padding: 12px; width: 100%; border: none; border-radius: 10px; background: var(--header-bg); color: var(--text); outline: none; border: 1px solid rgba(255,255,255,0.1); }
         
-        .counter-section { text-align: center; background: #000; padding: 20px; border-radius: 16px; margin-bottom: 15px; }
-        .total-counter { font-size: 3.5rem; font-weight: 900; color: #00d2ff; line-height: 1; }
-        .registered-label { font-size: 0.8rem; color: #a4b0be; margin-top: 5px; }
+        .counter-section { text-align: center; background: #000; padding: 20px; border-radius: 16px; margin-bottom: 15px; border: 1px solid #333; }
+        .total-counter { font-size: 3.5rem; font-weight: 900; color: #00d2ff; }
 
-        /* Widgets BI */
         .widget { margin-top: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: var(--header-bg); }
-        .widget-header { padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+        .widget-header { padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
         .widget-content { display: none; padding: 12px; }
         .widget.open .widget-content { display: block; }
 
         .stat-row { margin-bottom: 8px; cursor: pointer; padding: 8px; border-radius: 8px; transition: 0.2s; border: 1px solid transparent; }
-        .stat-row:hover { background: rgba(255,255,255,0.05); }
-        .stat-row.active { background: rgba(255, 71, 87, 0.15); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+        .stat-row.active { background: rgba(255, 71, 87, 0.2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
         
         .stat-info { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
-        .stat-bar-bg { background: rgba(255,255,255,0.1); height: 5px; border-radius: 10px; overflow: hidden; }
-        .stat-bar-fill { height: 100%; transition: width 0.5s ease; }
+        .stat-bar-bg { background: rgba(255,255,255,0.1); height: 5px; border-radius: 10px; }
+        .stat-bar-fill { height: 100%; transition: width 0.4s ease; border-radius: 10px; }
 
-        /* Popups */
         .popup-container { max-height: 250px; overflow-y: auto; font-size: 11px; color: #333; width: 220px; }
         .p-title { color: var(--accent); font-weight: 900; font-size: 14px; display: block; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
-        .p-row { border-bottom: 1px solid #f5f5f5; padding: 4px 0; display: flex; flex-direction: column; }
-        .p-label { font-weight: 800; color: #999; text-transform: uppercase; font-size: 9px; }
+        .p-row { border-bottom: 1px solid #f5f5f5; padding: 4px 0; }
+        .p-label { font-weight: 800; color: #999; text-transform: uppercase; font-size: 9px; display: block; }
 
-        #clear-btn { display: none; margin-top: 10px; width: 100%; padding: 10px; border-radius: 8px; background: var(--accent); color: white; border: none; font-weight: bold; cursor: pointer; }
+        @media (max-width: 1000px) {
+            #dashboard { position: absolute; left: -380px; width: 85%; }
+            #timeline-container { left: 20px; right: 20px; }
+        }
     </style>
 </head>
 <body>
 
     <div id="dashboard">
         <h1>ARTES VIVAS CDMX</h1>
-        <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar espacio..." oninput="updateSearch()">
+        <input type="text" class="search-box" id="search-input" placeholder="🔍 Filtrar por nombre..." oninput="updateSearch()">
         
         <div class="counter-section">
             <div id="total-count" class="total-counter">0</div>
-            <div class="registered-label">activos en <span id="current-year-label" style="color:var(--highlight)">-</span></div>
-            <div id="pct-count" style="color: #ff9ff3; font-weight: 800; margin-top: 5px;">0%</div>
-            <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
+            <div id="year-label-context" style="font-size: 0.8rem; color: #a4b0be;">espacios activos en <span id="current-year-label" style="color:var(--highlight)">-</span></div>
+            <div id="pct-count" style="color: #ff9ff3; font-weight: 800; margin-top: 5px; font-size: 1.1rem;">0%</div>
+            <button id="clear-btn" onclick="clearAllFilters()" style="margin-top:10px; width:100%; padding:10px; border-radius:8px; background:var(--accent); color:white; border:none; font-weight:bold; cursor:pointer;">✕ REINICIAR MAPA</button>
         </div>
         
         <div id="stats-container"></div>
     </div>
 
     <div id="map">
-        <div id="timeline-card">
-            <button class="play-btn" id="play-pause-btn" onclick="togglePlay()">▶</button>
-            <div id="year-display">----</div>
-            <input type="range" id="year-slider" oninput="manualYearChange(this.value)">
+        <div id="timeline-container">
+            <div class="timeline-controls">
+                <button class="play-btn" id="play-pause-btn" onclick="togglePlay()">▶</button>
+                <div id="year-display">----</div>
+                <button class="step-btn" onclick="stepTimeline(-1)">❮</button>
+                <input type="range" id="year-slider" oninput="manualYearChange(this.value)">
+                <button class="step-btn" onclick="stepTimeline(1)">❯</button>
+            </div>
+            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #888; text-align: center;">Desliza para explorar la evolución cronológica de los espacios</div>
         </div>
     </div>
 
@@ -136,6 +150,7 @@
         // --- STATE ---
         let allData = [], activeFilters = { disciplina: [], alcaldia: [], condicion_mobiliaria: [], circuito: [], aforo: [], ano_ap: [], ano_cl: [], sostenimiento: [], estatus: [] };
         let searchQuery = "", isPlaying = false, timer = null, currentYear = 2024;
+        let timelineSteps = [];
         let curC = 0, curP = 0;
 
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
@@ -143,7 +158,7 @@
         map.createPane('markerPane').style.zIndex = 650;
         const markersLayer = L.layerGroup().addTo(map);
 
-        // 1. Alcaldías
+        // Cargar Geodata Alcaldías
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/cdmx-alcaldias.geojson')
             .then(res => res.json()).then(data => {
                 L.geoJSON(data, { style: (f) => {
@@ -152,27 +167,41 @@
                 }, onEachFeature: (f, l) => l.bindTooltip(f.properties.NOMGEO) }).addTo(map);
             });
 
-        // 2. Datos
+        // Cargar Puntos
         Papa.parse('https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv', {
             download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
             complete: r => { 
                 allData = r.data || [];
-                setupTimeline();
+                setupTimelineSteps();
                 updateView();
             }
         });
 
-        // --- TIMELINE INTELIGENTE ---
-        function setupTimeline() {
-            const years = allData.map(d => parseInt(d.ano_ap)).filter(y => y > 1800 && !isNaN(y));
-            const minYear = Math.min(...years);
-            const maxYear = new Date().getFullYear();
+        // --- LÓGICA DE TIEMPO POR BLOQUES ---
+        function setupTimelineSteps() {
+            // Extraer todos los años únicos válidos
+            const rawYears = allData.flatMap(d => [parseInt(d.ano_ap), parseInt(d.ano_cl)])
+                                   .filter(y => y > 1850 && !isNaN(y));
             
+            const startYear = Math.min(...rawYears);
+            const endYear = new Date().getFullYear();
+            
+            // Crear pasos: Años con datos + Bloques de 5 si hay huecos
+            let steps = [];
+            for(let y = startYear; y <= endYear; y++) {
+                const hasData = allData.some(d => d.ano_ap == y || d.ano_cl == y);
+                if (hasData || y % 5 === 0 || y === endYear) {
+                    steps.push(y);
+                }
+            }
+            timelineSteps = [...new Set(steps)].sort((a,b) => a - b);
+
             const slider = document.getElementById('year-slider');
-            slider.min = minYear;
-            slider.max = maxYear;
-            slider.value = maxYear;
-            currentYear = maxYear;
+            slider.min = 0;
+            slider.max = timelineSteps.length - 1;
+            slider.value = timelineSteps.length - 1;
+            
+            currentYear = timelineSteps[slider.value];
             document.getElementById('year-display').textContent = currentYear;
             document.getElementById('current-year-label').textContent = currentYear;
         }
@@ -183,26 +212,33 @@
             if (isPlaying) {
                 btn.textContent = "⏸";
                 const slider = document.getElementById('year-slider');
-                if (parseInt(slider.value) >= parseInt(slider.max)) slider.value = slider.min;
+                if (parseInt(slider.value) >= timelineSteps.length - 1) slider.value = 0;
+                
                 timer = setInterval(() => {
                     slider.value = parseInt(slider.value) + 1;
                     manualYearChange(slider.value);
-                    if (parseInt(slider.value) >= parseInt(slider.max)) togglePlay();
-                }, 200);
+                    if (parseInt(slider.value) >= timelineSteps.length - 1) togglePlay();
+                }, 400);
             } else {
                 btn.textContent = "▶";
                 clearInterval(timer);
             }
         }
 
-        function manualYearChange(val) {
-            currentYear = parseInt(val);
+        function stepTimeline(dir) {
+            const slider = document.getElementById('year-slider');
+            slider.value = parseInt(slider.value) + dir;
+            manualYearChange(slider.value);
+        }
+
+        function manualYearChange(index) {
+            currentYear = timelineSteps[index];
             document.getElementById('year-display').textContent = currentYear;
             document.getElementById('current-year-label').textContent = currentYear;
             updateView();
         }
 
-        // --- LÓGICA DE FILTRADO Y MAPA ---
+        // --- CORE: ACTUALIZACIÓN DE MAPA Y WIDGETS ---
         function updateView() {
             const filtered = allData.filter(d => {
                 const matchesFilters = Object.entries(activeFilters).every(([col, selecteds]) => {
@@ -211,32 +247,37 @@
                 });
                 const matchesSearch = d.nombre.toLowerCase().includes(searchQuery.toLowerCase());
                 
-                // Lógica Temporal
-                const opened = d.ano_ap <= currentYear;
-                const notClosed = !d.ano_cl || d.ano_cl > currentYear;
+                // LÓGICA DE EXISTENCIA:
+                // Si ano_ap es 0, se asume que siempre ha existido (Legacy).
+                // Un espacio es visible si abrió antes/durante el año actual Y no ha cerrado.
+                const opened = d.ano_ap <= currentYear || !d.ano_ap || d.ano_ap == 0;
+                const notClosed = !d.ano_cl || d.ano_cl == 0 || d.ano_cl > currentYear;
 
                 return matchesFilters && matchesSearch && opened && notClosed;
             });
 
             animateCounters(filtered.length, allData.length);
-
             markersLayer.clearLayers();
+            
             filtered.forEach(p => {
                 const marker = L.circleMarker([p.latitud, p.longitud], {
                     pane: 'markerPane', radius: 8, 
                     fillColor: discColors[p.disciplina] || discColors['Sin información'],
                     color: "#fff", weight: 2, fillOpacity: 1
                 });
-
+                
                 marker.bindPopup(createPopup(p));
                 marker.on('mouseover', function() { if(!this._pinned) this.openPopup(); });
                 marker.on('mouseout', function() { if(!this._pinned) this.closePopup(); });
-                marker.on('click', function() { markersLayer.eachLayer(m => m._pinned = false); this._pinned = true; this.openPopup(); });
+                marker.on('click', function() {
+                    markersLayer.eachLayer(m => m._pinned = false);
+                    this._pinned = true; this.openPopup();
+                });
                 marker.addTo(markersLayer);
             });
 
-            document.getElementById('clear-btn').style.display = isAnyFilterActive() ? 'block' : 'none';
             renderAllWidgets(filtered);
+            document.getElementById('clear-btn').style.display = isAnyFilterActive() ? 'block' : 'none';
         }
 
         function isAnyFilterActive() { return Object.values(activeFilters).some(arr => arr.length > 0) || searchQuery !== ""; }
@@ -245,23 +286,21 @@
             const container = document.getElementById('stats-container');
             const openWidgets = Array.from(document.querySelectorAll('.widget.open')).map(w => w.dataset.col);
             container.innerHTML = '';
-
-            const cols = ['disciplina', 'alcaldia', 'condicion_mobiliaria', 'circuito', 'aforo', 'sostenimiento', 'estatus'];
+            
+            const cols = ['disciplina', 'alcaldia', 'condicion_mobiliaria', 'circuito', 'aforo', 'ano_ap', 'sostenimiento', 'estatus'];
 
             cols.forEach(col => {
-                // Cálculo de Facetas para multiselección
-                const otherFilters = {...activeFilters};
                 const tempFilters = {...activeFilters};
                 delete tempFilters[col];
 
                 const baseForThisWidget = allData.filter(d => {
-                    const matchesOtherFilters = Object.entries(tempFilters).every(([c, sel]) => {
+                    const matchesOther = Object.entries(tempFilters).every(([c, sel]) => {
                         if (sel.length === 0) return true;
                         return sel.map(String).includes(String(d[c]));
                     });
-                    const opened = d.ano_ap <= currentYear;
-                    const notClosed = !d.ano_cl || d.ano_cl > currentYear;
-                    return matchesOtherFilters && opened && notClosed && d.nombre.toLowerCase().includes(searchQuery.toLowerCase());
+                    const opened = d.ano_ap <= currentYear || !d.ano_ap || d.ano_ap == 0;
+                    const notClosed = !d.ano_cl || d.ano_cl == 0 || d.ano_cl > currentYear;
+                    return matchesOther && opened && notClosed && d.nombre.toLowerCase().includes(searchQuery.toLowerCase());
                 });
 
                 const counts = {};
@@ -278,11 +317,10 @@
                 widget.dataset.col = col;
 
                 let h = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')"><span>${labelMap[col] || col}</span> ▾</div><div class="widget-content">`;
-                
                 Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
                     const isActive = activeFilters[col].includes(val);
                     const barP = (count / baseForThisWidget.length * 100).toFixed(0);
-                    const barC = col === 'disciplina' ? discColors[val] : '#00d2ff';
+                    const barC = col === 'disciplina' ? (discColors[val] || '#ff4757') : '#00d2ff';
 
                     h += `<div class="stat-row ${isActive ? 'active' : ''}" onclick="toggleMultiFilter('${col}', '${val}')">
                             <div class="stat-info"><span>${val}</span><strong>${count}</strong></div>
@@ -314,7 +352,7 @@
             const sC = curC, sP = curP, dur = 300; let start = null;
             function step(t) {
                 if(!start) start = t; const prog = Math.min((t-start)/dur, 1);
-                curC = prog*(tC-sC)+sC; curP = prog*(tP-sP)+sP;
+                curC = prog*(tC-sC)+sC; curP = prog*(targetP-sP)+sP;
                 cEl.textContent = Math.floor(curC); pEl.textContent = curP.toFixed(1)+"%";
                 if(prog < 1) requestAnimationFrame(step);
             }
