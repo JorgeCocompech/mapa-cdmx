@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artes Vivas CDMX | Visualizador Pro</title>
+    <title>Artes Vivas CDMX | Dashboard Final</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --accent: #ff4757; --panel: #ffffff; --map-bg: #e0e0e0; }
+        :root { --accent: #ff4757; --panel: #ffffff; }
         * { box-sizing: border-box; }
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: #f0f0f0; display: flex; height: 100vh; width: 100vw; overflow: hidden; }
         
@@ -20,20 +20,20 @@
             overflow-y: auto; flex-shrink: 0; border-right: 1px solid #eee;
         }
 
-        #map { flex-grow: 1; height: 100%; position: relative; background: var(--map-bg); }
+        #map { flex-grow: 1; height: 100%; position: relative; background: #ced6e0; }
 
         h1 { font-size: 1.1rem; margin: 0; font-weight: 900; color: #2d3436; border-bottom: 4px solid var(--accent); display: inline-block; padding-bottom: 5px; }
         
-        /* Dashboard - Counter Section */
+        /* Contador Estilo Centro de Mando */
         .counter-section { 
             margin: 25px 0; text-align: center; background: #1e272e; color: white;
             padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
         .total-counter { font-size: 3.8rem; font-weight: 900; color: #00d2ff; line-height: 1; margin: 0; }
-        .percentage-badge { font-size: 1.2rem; font-weight: 700; color: #ff9ff3; margin-top: 8px; display: block; }
+        .percentage-badge { font-size: 1.2rem; font-weight: 800; color: #ff9ff3; margin-top: 8px; display: block; }
         .total-label { font-size: 0.6rem; text-transform: uppercase; color: #a4b0be; letter-spacing: 2px; margin-top: 15px; font-weight: 600; }
         
-        /* Widgets - Acordeón */
+        /* Widgets Colapsables */
         .widget { margin-top: 12px; border: 1px solid #f1f2f6; border-radius: 12px; background: #fff; overflow: hidden; }
         .widget-header { 
             padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
@@ -42,11 +42,17 @@
         .widget-content { display: none; padding: 10px 18px 15px 18px; }
         .widget.open .widget-content { display: block; }
 
-        .stat-row { margin-bottom: 12px; cursor: pointer; }
+        /* Filas de Estadística */
+        .stat-row { margin-bottom: 12px; cursor: pointer; transition: 0.2s; }
         .stat-info { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 5px; color: #2f3542; }
         .stat-bar-bg { background: #f1f2f6; height: 6px; border-radius: 10px; overflow: hidden; }
         .stat-bar-fill { height: 100%; transition: width 0.7s ease; opacity: 0.8; }
-        .stat-row.active { color: var(--accent); font-weight: 800; }
+        .stat-row.active { color: var(--accent); font-weight: 800; border-left: 3px solid var(--accent); padding-left: 8px; }
+
+        /* Popups Dinámicos */
+        .leaflet-popup-content { min-width: 220px; max-height: 250px; overflow-y: auto; font-size: 11px; }
+        .popup-data-row { border-bottom: 1px solid #eee; padding: 4px 0; display: flex; flex-direction: column; }
+        .popup-label { font-weight: bold; color: #777; text-transform: uppercase; font-size: 9px; }
 
         #clear-btn { display: none; margin-top: 15px; padding: 12px; background: #57606f; color: white; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; }
     </style>
@@ -70,39 +76,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // --- VARIABLES DE ESTADO ---
+        // --- CONFIGURACIÓN ---
         let allData = [];
         let activeFilters = {}; 
-        let currentRawCount = 0; // Para evitar leer el DOM en Safari
-        let currentRawPct = 0;
+        let curCount = 0; // Variables numéricas para Safari
+        let curPct = 0;
         
-        const pointColors = {
+        const colors = {
             'Teatro': '#ff4757', 'Danza': '#3742fa', 'Música': '#ffa502', 
             'Performance': '#8e44ad', 'Interdisciplina': '#2ed573', 'Otros': '#747d8c'
         };
 
-        // Paleta Neón para Alcaldías (Contrastante y sin rojo/azul/naranja)
-        const alcPalette = ['#00d2ff', '#ff9ff3', '#18dcff', '#7efff5', '#c56cf0', '#7d5fff'];
-        function getAlcStyle(name) {
-            let hash = 0;
-            for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-            const color = alcPalette[Math.abs(hash) % alcPalette.length];
-            return {
-                fillColor: color,
-                weight: 2,
-                opacity: 0.8,
-                color: color, // Borde brillante
-                fillOpacity: 0.15 // Transparencia contrastante
-            };
-        }
-
-        const columnas = ['disciplina', 'alcaldia', 'sostenimiento', 'estatus', 'clausuras', 'aforo'];
+        const alcColors = ['#00d2ff', '#ff9ff3', '#00ff88', '#fff200', '#7d5fff'];
 
         // --- INICIALIZAR MAPA ---
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        // Capa Esri World Gray (Máxima compatibilidad)
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Esri', maxZoom: 16
         }).addTo(map);
@@ -110,23 +100,31 @@
         const markersLayer = L.layerGroup().addTo(map);
         map.createPane('alcPane').style.zIndex = 200;
 
-        // --- CARGAR GEOMETRÍA ---
+        // --- 1. CARGAR ALCALDÍAS (GeoJSON) ---
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/CDMX%20Alcaldias.geojson')
             .then(r => r.json())
             .then(data => {
                 L.geoJSON(data, {
                     pane: 'alcPane',
-                    style: (f) => getAlcStyle(f.properties.nomgeo || "X"),
-                    onEachFeature: (f, l) => l.bindTooltip(f.properties.nomgeo || "Alcaldía")
+                    style: (f) => {
+                        const name = f.properties.nomgeo || f.properties.NOMGEO || "";
+                        let hash = 0;
+                        for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+                        const color = alcColors[Math.abs(hash) % alcColors.length];
+                        return { fillColor: color, weight: 2, color: color, fillOpacity: 0.12, opacity: 0.6 };
+                    },
+                    onEachFeature: (f, l) => {
+                        l.bindTooltip(f.properties.nomgeo || f.properties.NOMGEO || "Alcaldía");
+                    }
                 }).addTo(map);
-            }).catch(e => console.log("GeoJSON Error"));
+            }).catch(e => console.error("Fallo GeoJSON:", e));
 
-        // --- CARGAR DATOS ---
+        // --- 2. CARGAR PUNTOS (CSV) ---
         Papa.parse('https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv', {
             download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
             complete: r => { 
                 allData = r.data || []; 
-                setTimeout(() => { map.invalidateSize(); updateView(); }, 300);
+                setTimeout(() => { map.invalidateSize(); updateView(); }, 400);
             }
         });
 
@@ -135,11 +133,11 @@
                 return Object.entries(activeFilters).every(([c, v]) => d[c] === v);
             });
 
-            const targetCount = filtered.length;
-            const targetPct = allData.length > 0 ? (targetCount / allData.length * 100) : 0;
+            const targetC = filtered.length;
+            const targetP = allData.length > 0 ? (targetC / allData.length * 100) : 0;
 
-            // Animación Blindada
-            animateNumbers(targetCount, targetPct);
+            // Animación segura Safari
+            animateSafe(targetC, targetP);
 
             markersLayer.clearLayers();
             filtered.forEach(p => {
@@ -147,9 +145,9 @@
                 const lng = parseFloat(p.longitud || p.lng);
                 if (!isNaN(lat) && !isNaN(lng)) {
                     L.circleMarker([lat, lng], {
-                        radius: 6, fillColor: pointColors[p.disciplina] || pointColors['Otros'],
+                        radius: 7, fillColor: colors[p.disciplina] || colors['Otros'],
                         color: "#fff", weight: 1.5, fillOpacity: 0.9
-                    }).bindPopup(`<b>${p.nombre}</b><br><small>${p.disciplina}</small>`).addTo(markersLayer);
+                    }).bindPopup(generateFullPopup(p)).addTo(markersLayer);
                 }
             });
 
@@ -157,24 +155,43 @@
             renderWidgets(filtered);
         }
 
-        // --- ANIMACIÓN ROBUSTA (Sin leer del DOM) ---
-        function animateNumbers(tCount, tPct) {
-            const countEl = document.getElementById('total-count');
-            const pctEl = document.getElementById('pct-count');
-            const startC = currentRawCount;
-            const startP = currentRawPct;
+        // POPUP DINÁMICO REGENERADO
+        function generateFullPopup(p) {
+            let html = `<div style="padding:5px;">`;
+            html += `<strong style="color:var(--accent); font-size:14px; display:block; margin-bottom:10px;">${p.nombre || 'Espacio'}</strong>`;
+            
+            Object.keys(p).forEach(key => {
+                const val = p[key];
+                const lowKey = key.toLowerCase();
+                // Excluimos columnas técnicas
+                const isTechnical = ['lat','lng','latitud','longitud','carto_id','geometry','wkt'].includes(lowKey);
+                if (!isTechnical && val && lowKey !== 'nombre') {
+                    html += `
+                        <div class="popup-data-row">
+                            <span class="popup-label">${key.replace(/_/g,' ')}</span>
+                            <span>${val}</span>
+                        </div>`;
+                }
+            });
+            html += `</div>`;
+            return html;
+        }
+
+        function animateSafe(tC, tP) {
             const duration = 600;
+            const startC = curCount;
+            const startP = curPct;
             let startTime = null;
 
             function step(timestamp) {
                 if (!startTime) startTime = timestamp;
                 const progress = Math.min((timestamp - startTime) / duration, 1);
                 
-                currentRawCount = progress * (tCount - startC) + startC;
-                currentRawPct = progress * (tPct - startP) + startP;
+                curCount = progress * (tC - startC) + startC;
+                curPct = progress * (tP - startP) + startP;
 
-                countEl.textContent = Math.floor(currentRawCount);
-                pctEl.textContent = currentRawPct.toFixed(1) + "%";
+                document.getElementById('total-count').textContent = Math.floor(curCount);
+                document.getElementById('pct-count').textContent = curPct.toFixed(1) + "%";
 
                 if (progress < 1) requestAnimationFrame(step);
             }
@@ -183,10 +200,11 @@
 
         function renderWidgets(data) {
             const container = document.getElementById('stats-container');
+            const cols = ['disciplina', 'alcaldia', 'sostenimiento', 'estatus', 'clausuras', 'aforo'];
             const openWidgets = Array.from(document.querySelectorAll('.widget.open')).map(w => w.dataset.col);
             container.innerHTML = '';
 
-            columnas.forEach(col => {
+            cols.forEach(col => {
                 const counts = {};
                 data.forEach(d => { let v = d[col] || "N/A"; counts[v] = (counts[v] || 0) + 1; });
 
@@ -200,7 +218,7 @@
                 Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
                     const barPct = data.length > 0 ? (count / data.length * 100) : 0;
                     const isActive = activeFilters[col] === val;
-                    const barColor = col === 'disciplina' ? pointColors[val] || pointColors['Otros'] : '#ff4757';
+                    const barColor = col === 'disciplina' ? colors[val] || colors['Otros'] : '#ff4757';
 
                     html += `
                         <div class="stat-row ${isActive ? 'active' : ''}" onclick="toggleFilter('${col}', '${val}')">
