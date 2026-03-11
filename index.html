@@ -3,44 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BI Dashboard | Artes Vivas CDMX</title>
+    <title>Artes Vivas CDMX | Dashboard Pro</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --accent: #e74c3c; --bg: #f0f2f5; --panel-bg: rgba(255,255,255,0.96); }
-        body { margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); display: flex; height: 100vh; }
+        :root { --accent: #ff4757; --bg: #f1f2f6; --panel: rgba(255,255,255,0.98); }
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); display: flex; height: 100vh; color: #2f3542; }
         
         #dashboard {
-            width: 360px; height: 100%; z-index: 1000;
-            background: var(--panel-bg); backdrop-filter: blur(10px);
-            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
-            display: flex; flex-direction: column; padding: 25px;
-            overflow-y: auto; box-sizing: border-box;
+            width: 380px; height: 100%; z-index: 1000;
+            background: var(--panel); backdrop-filter: blur(15px);
+            box-shadow: 4px 0 25px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column; padding: 30px;
+            overflow-y: auto; box-sizing: border-box; border-right: 1px solid #dfe4ea;
         }
 
-        #map { flex-grow: 1; height: 100%; position: relative; background: #d4dadc; }
+        #map { flex-grow: 1; height: 100%; position: relative; background: #ced6e0; }
 
-        h1 { font-size: 1.1rem; margin: 0; color: #2c3e50; font-weight: 800; border-bottom: 3px solid var(--accent); padding-bottom: 10px; }
-        .counter-section { margin: 20px 0; }
-        .total-counter { font-size: 3rem; font-weight: 900; color: var(--accent); line-height: 1; }
-        .total-label { font-size: 0.7rem; text-transform: uppercase; color: #95a5a6; letter-spacing: 1.5px; margin-top: 5px; }
+        h1 { font-size: 1.2rem; margin: 0; font-weight: 900; letter-spacing: -0.5px; border-bottom: 4px solid var(--accent); display: inline-block; padding-bottom: 5px; }
+        
+        /* Contador con Porcentaje y Sazón */
+        .counter-section { 
+            margin: 30px 0; text-align: center; background: #2f3542; color: white;
+            padding: 25px 20px; border-radius: 16px; position: relative; overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .total-counter { font-size: 4rem; font-weight: 900; color: var(--accent); line-height: 1; }
+        .percentage-badge { 
+            font-size: 1.2rem; font-weight: 800; color: #ced6e0; margin-top: 5px;
+            display: block; opacity: 0.9;
+        }
+        .total-label { font-size: 0.65rem; text-transform: uppercase; color: #a4b0be; letter-spacing: 2px; margin-top: 15px; font-weight: 600; }
+        
+        /* Animación Pulse */
+        .pulse { animation: countPulse 0.4s ease-out; }
+        @keyframes countPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); color: #fff; }
+            100% { transform: scale(1); }
+        }
 
-        .widget { margin-top: 25px; }
-        .widget-title { font-size: 0.75rem; font-weight: 700; color: #7f8c8d; text-transform: uppercase; margin-bottom: 12px; display: block; border-left: 3px solid #ddd; padding-left: 8px; }
+        /* Acordeón de Widgets */
+        .widget { margin-top: 12px; border: 1px solid #f1f2f6; border-radius: 10px; background: #fff; overflow: hidden; transition: box-shadow 0.3s; }
+        .widget:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .widget-header { 
+            padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #57606f; 
+        }
+        .widget-header::after { content: '＋'; font-size: 14px; color: var(--accent); transition: transform 0.3s; }
+        .widget.open .widget-header::after { content: '－'; transform: rotate(180deg); }
         
-        .stat-row { margin-bottom: 10px; cursor: pointer; transition: all 0.2s; padding: 6px; border-radius: 6px; }
-        .stat-row:hover { background: rgba(0,0,0,0.04); }
-        .stat-row.active { background: #fff5f5; border: 1px solid #ffcfcf; }
-        
-        .stat-info { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px; color: #34495e; }
-        .stat-bar-bg { background: #e9ecef; height: 5px; border-radius: 3px; overflow: hidden; }
-        .stat-bar-fill { background: var(--accent); height: 100%; transition: width 0.4s ease-out; opacity: 0.6; }
+        .widget-content { display: none; padding: 5px 18px 15px 18px; }
+        .widget.open .widget-content { display: block; }
+
+        .stat-row { margin-bottom: 12px; cursor: pointer; transition: 0.2s; }
+        .stat-info { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 5px; color: #2f3542; }
+        .stat-bar-bg { background: #f1f2f6; height: 6px; border-radius: 10px; overflow: hidden; }
+        .stat-bar-fill { height: 100%; transition: width 0.8s cubic-bezier(0.19, 1, 0.22, 1); opacity: 0.8; }
+        .stat-row.active { color: var(--accent); font-weight: 700; }
         .stat-row.active .stat-bar-fill { opacity: 1; }
 
         #clear-btn { 
-            display: none; margin-top: 12px; padding: 6px 12px; background: #34495e; 
-            color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer; width: 100%;
+            display: none; margin-top: 15px; padding: 12px; background: #ff4757; color: white; border: none; 
+            border-radius: 8px; font-size: 0.75rem; cursor: pointer; width: 100%; font-weight: 800;
+            box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
         }
     </style>
 </head>
@@ -48,15 +76,15 @@
 
     <div id="dashboard">
         <h1>ARTES VIVAS CDMX</h1>
-        <div class="counter-section">
+        
+        <div class="counter-section" id="counter-card">
             <div class="total-counter" id="total-count">0</div>
-            <div class="total-label">Espacios filtrados</div>
-            <button id="clear-btn" onclick="clearAllFilters()">✕ Quitar todos los filtros</button>
+            <div class="percentage-badge" id="pct-count">100%</div>
+            <div class="total-label">Representación Territorial</div>
+            <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Filtros</button>
         </div>
         
-        <div id="stats-container">
-            <p style="color:#bdc3c7; font-size: 13px;">Cargando cartografía...</p>
-        </div>
+        <div id="stats-container"></div>
     </div>
 
     <div id="map"></div>
@@ -66,168 +94,142 @@
     <script src="https://unpkg.com/wellknown@0.5.0/wellknown.js"></script>
 
     <script>
-        // --- CONFIGURACIÓN DE COLORES POR DISCIPLINA ---
-        const disciplinaColors = {
-            'Teatro': '#e74c3c',
-            'Danza': '#3498db',
-            'Música': '#f1c40f',
-            'Performance': '#9b59b6',
-            'Interdisciplina': '#2ecc71',
-            'Multidisciplina': '#1abc9c',
-            'Otros': '#95a5a6'
+        const colors = {
+            'Teatro': '#ff4757', 'Danza': '#3742fa', 'Música': '#ffa502', 
+            'Performance': '#8e44ad', 'Interdisciplina': '#2ed573', 'Otros': '#747d8c'
         };
-
-        function getPointColor(disciplina) {
-            return disciplinaColors[disciplina] || disciplinaColors['Otros'];
-        }
 
         let allData = [];
         let activeFilters = {}; 
         let markersLayer = L.layerGroup();
-        const columnasAAnalizar = ['disciplina', 'alcaldia', 'sostenimiento', 'estatus', 'clausuras', 'aforo'];
+        const columnas = ['disciplina', 'alcaldia', 'sostenimiento', 'estatus', 'clausuras', 'aforo'];
 
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '© CARTO'
-        }).addTo(map);
-
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' }).addTo(map);
         markersLayer.addTo(map);
-        
-        // Pane para asegurar que las alcaldías estén siempre al fondo
-        map.createPane('alcaldiasPane');
-        map.getPane('alcaldiasPane').style.zIndex = 200;
+        map.createPane('alcPane').style.zIndex = 200;
 
-        // --- 1. CARGA DE ALCALDÍAS ---
-        const urlAlcaldias = 'https://raw.githubusercontent.com/observatoriopoliticas/mapascdmx/main/alcaldias_cdmx.csv';
-        
-        fetch(urlAlcaldias)
-            .then(res => res.text())
-            .then(csvText => {
-                Papa.parse(csvText, {
-                    header: true, skipEmptyLines: true,
-                    complete: (results) => {
-                        results.data.forEach(row => {
-                            // Detección flexible de la columna de geometría
-                            const wkt = row.geometry || row.WKT || row.wkt;
-                            const nombre = row.nomgeo || row.ALCALDIA || "Alcaldía";
-                            
-                            if (wkt) {
-                                try {
-                                    const geojson = wellknown.parse(wkt);
-                                    L.geoJSON(geojson, {
-                                        pane: 'alcaldiasPane',
-                                        style: {
-                                            fillColor: '#2c3e50', // Color sólido oscuro pero con transparencia
-                                            weight: 1.5,
-                                            color: 'white',
-                                            fillOpacity: 0.15, // Transparencia para ver el mapa base
-                                            opacity: 0.5
-                                        }
-                                    }).bindTooltip(nombre, { sticky: true }).addTo(map);
-                                } catch(e) { console.error("Error al leer geometría:", e); }
-                            }
-                        });
-                    }
-                });
+        // 1. Alcaldías (Fondo)
+        fetch('https://raw.githubusercontent.com/observatoriopoliticas/mapascdmx/refs/heads/main/alcaldias_cdmx.csv')
+            .then(r => r.text())
+            .then(csv => {
+                Papa.parse(csv, { header: true, complete: r => {
+                    r.data.forEach(row => {
+                        const wkt = row.geometry || row.WKT;
+                        if (wkt) {
+                            L.geoJSON(wellknown.parse(wkt), {
+                                pane: 'alcPane',
+                                style: { fillColor: '#2f3542', weight: 1, color: '#fff', fillOpacity: 0.12 }
+                            }).bindTooltip(row.nomgeo).addTo(map);
+                        }
+                    });
+                }});
             });
 
-        // --- 2. CARGA DE PUNTOS ---
-        const urlPuntos = 'https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv';
-        
-        Papa.parse(urlPuntos, {
+        // 2. Cargar Puntos
+        Papa.parse('https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv', {
             download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
-            complete: (results) => {
-                allData = results.data;
-                updateView();
-            }
+            complete: r => { allData = r.data; updateView(); }
         });
 
         function updateView() {
-            const filteredData = allData.filter(item => {
-                return Object.entries(activeFilters).every(([col, val]) => item[col] === val);
-            });
+            const filtered = allData.filter(d => Object.entries(activeFilters).every(([c, v]) => d[c] === v));
+            const pct = ((filtered.length / allData.length) * 100).toFixed(1);
 
+            // Sazón: Animación sincronizada
+            animateValue('total-count', filtered.length, 800);
+            animatePct('pct-count', pct, 800);
+            
+            document.getElementById('counter-card').classList.add('pulse');
+            setTimeout(() => document.getElementById('counter-card').classList.remove('pulse'), 400);
+
+            // Mapa
             markersLayer.clearLayers();
-            filteredData.forEach(punto => {
-                const lat = punto.latitud || punto.lat;
-                const lng = punto.longitud || punto.lng;
+            filtered.forEach(p => {
+                const lat = p.latitud || p.lat;
+                const lng = p.longitud || p.lng;
                 if (lat && lng) {
                     L.circleMarker([lat, lng], {
-                        radius: 7,
-                        fillColor: getPointColor(punto.disciplina),
-                        color: "#fff",
-                        weight: 1.5,
-                        fillOpacity: 0.9
-                    }).bindPopup(createDynamicPopup(punto)).addTo(markersLayer);
+                        radius: 7, fillColor: colors[p.disciplina] || colors['Otros'],
+                        color: "#fff", weight: 1.5, fillOpacity: 0.9
+                    }).bindPopup(`<b>${p.nombre}</b><br><small>${p.disciplina}</small>`).addTo(markersLayer);
                 }
             });
 
-            document.getElementById('total-count').innerText = filteredData.length;
             document.getElementById('clear-btn').style.display = Object.keys(activeFilters).length > 0 ? 'block' : 'none';
-            renderAllWidgets(filteredData);
+            renderWidgets(filtered);
         }
 
-        function createDynamicPopup(punto) {
-            let html = `<div style="max-height:250px; overflow-y:auto; min-width:200px;">`;
-            html += `<strong style="color:var(--accent); font-size:14px;">${punto.nombre || 'Sin nombre'}</strong><hr style="border:0; border-top:1px solid #eee; margin:8px 0;">`;
-            Object.keys(punto).forEach(key => {
-                const val = punto[key];
-                const low = key.toLowerCase();
-                if (!['lat','lng','latitud','longitud','geometry','wkt','carto_id'].includes(low) && val) {
-                    html += `<div style="font-size:11px; margin-bottom:4px;"><b style="text-transform:capitalize;">${key.replace(/_/g,' ')}:</b> ${val}</div>`;
-                }
-            });
-            html += `</div>`;
-            return html;
-        }
-
-        function renderAllWidgets(data) {
+        function renderWidgets(data) {
             const container = document.getElementById('stats-container');
+            const openWidgets = Array.from(document.querySelectorAll('.widget.open')).map(w => w.dataset.col);
             container.innerHTML = '';
 
-            columnasAAnalizar.forEach(col => {
+            columnas.forEach(col => {
                 const counts = {};
-                data.forEach(item => {
-                    let val = item[col] || "No especificado";
-                    counts[val] = (counts[val] || 0) + 1;
-                });
+                data.forEach(d => { let v = d[col] || "N/A"; counts[v] = (counts[v] || 0) + 1; });
 
-                const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]);
-                let widgetHtml = `<div class="widget"><span class="widget-title">${col.replace(/_/g,' ')}</span>`;
+                const widget = document.createElement('div');
+                widget.className = `widget ${openWidgets.includes(col) || (Object.keys(activeFilters).length === 0 && col === 'disciplina') ? 'open' : ''}`;
+                widget.dataset.col = col;
+
+                let html = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')">${col.replace(/_/g,' ')}</div>`;
+                html += `<div class="widget-content">`;
                 
-                sorted.forEach(([val, count]) => {
-                    const pct = (count / data.length * 100).toFixed(0);
+                Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
+                    const barPct = (count / data.length * 100).toFixed(0);
                     const isActive = activeFilters[col] === val;
-                    const barColor = col === 'disciplina' ? getPointColor(val) : '#e74c3c';
+                    const barColor = col === 'disciplina' ? colors[val] || colors['Otros'] : '#ff4757';
 
-                    widgetHtml += `
+                    html += `
                         <div class="stat-row ${isActive ? 'active' : ''}" onclick="toggleFilter('${col}', '${val}')">
-                            <div class="stat-info">
-                                <span style="font-weight:${isActive?'bold':'normal'}">${val}</span>
-                                <strong>${count}</strong>
-                            </div>
-                            <div class="stat-bar-bg">
-                                <div class="stat-bar-fill" style="width: ${pct}%; background-color: ${barColor}"></div>
-                            </div>
+                            <div class="stat-info"><span>${val}</span><strong>${count}</strong></div>
+                            <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${barPct}%; background:${barColor}"></div></div>
                         </div>`;
                 });
-                widgetHtml += `</div>`;
-                container.innerHTML += widgetHtml;
+                html += `</div>`;
+                widget.innerHTML = html;
+                container.appendChild(widget);
             });
         }
 
-        function toggleFilter(column, value) {
-            if (activeFilters[column] === value) { delete activeFilters[column]; }
-            else { activeFilters[column] = value; }
+        // --- ANIMADORES ---
+        function animateValue(id, target, duration) {
+            const obj = document.getElementById(id);
+            let start = parseInt(obj.innerText);
+            let startTime = null;
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = Math.min((timestamp - startTime) / duration, 1);
+                obj.innerText = Math.floor(progress * (target - start) + start);
+                if (progress < 1) window.requestAnimationFrame(step);
+            }
+            window.requestAnimationFrame(step);
+        }
+
+        function animatePct(id, target, duration) {
+            const obj = document.getElementById(id);
+            let start = parseFloat(obj.innerText);
+            let startTime = null;
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = Math.min((timestamp - startTime) / duration, 1);
+                const current = (progress * (target - start) + start).toFixed(1);
+                obj.innerText = current + '%';
+                if (progress < 1) window.requestAnimationFrame(step);
+            }
+            window.requestAnimationFrame(step);
+        }
+
+        function toggleFilter(c, v) {
+            if (activeFilters[c] === v) delete activeFilters[c];
+            else activeFilters[c] = v;
             updateView();
         }
 
-        function clearAllFilters() {
-            activeFilters = {};
-            updateView();
-        }
+        function clearAllFilters() { activeFilters = {}; updateView(); }
     </script>
 </body>
 </html>
