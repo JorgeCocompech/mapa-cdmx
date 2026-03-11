@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Artes Vivas CDMX</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { height: 100vh; width: 100%; }
+        .info-panel { position: absolute; top: 10px; right: 10px; z-index: 1000; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 15px rgba(0,0,0,0.2); font-family: sans-serif; }
+    </style>
+</head>
+<body>
+
+    <div class="info-panel">
+        <h3>Artes Vivas CDMX</h3>
+        <p>Datos cargados desde GitHub CSV</p>
+    </div>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+    <script>
+        // 1. Configuración inicial del mapa centrado en CDMX
+        const map = L.map('map').setView([19.4326, -99.1332], 11);
+
+        // 2. Capa base (OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // 3. Cargar y procesar el CSV
+        const csvUrl = 'https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv';
+
+        Papa.parse(csvUrl, {
+            download: true,
+            header: true,
+            dynamicTyping: true,
+            complete: function(results) {
+                const data = results.data;
+                
+                data.forEach(punto => {
+                    // Verificamos que tenga coordenadas (ajusta los nombres si el CSV usa 'lat' o 'latitude')
+                    const lat = punto.latitud || punto.lat;
+                    const lng = punto.longitud || punto.lng || punto.lon;
+
+                    if (lat && lng) {
+                        const marker = L.marker([lat, lng]).addTo(map);
+                        
+                        // Crear un popup con la información disponible
+                        let popupContent = `<b>${punto.nombre || 'Sin nombre'}</b><br>`;
+                        if (punto.alcaldia) popupContent += `Alcaldía: ${punto.alcaldia}<br>`;
+                        if (punto.tipo) popupContent += `Tipo: ${punto.tipo}`;
+                        
+                        marker.bindPopup(popupContent);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
