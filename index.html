@@ -24,28 +24,27 @@
 
         h1 { font-size: 1.1rem; margin: 0; font-weight: 900; color: #2d3436; border-bottom: 4px solid var(--accent); display: inline-block; padding-bottom: 5px; }
         
-        /* Contador Estilo Centro de Mando */
         .counter-section { 
             margin: 25px 0; text-align: center; background: #1e272e; color: white;
             padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
-        .total-counter { font-size: 4rem; font-weight: 900; color: #00d2ff; line-height: 1; margin: 0; }
-        .registered-label { font-size: 0.9rem; font-weight: 600; color: #a4b0be; margin-top: 5px; }
+        .total-counter { font-size: 4rem; font-weight: 900; color: #00d2ff; line-height: 1; }
+        .registered-label { font-size: 0.85rem; font-weight: 600; color: #a4b0be; margin-top: 5px; }
         .percentage-badge { font-size: 1.2rem; font-weight: 800; color: #ff9ff3; margin-top: 5px; display: block; }
         
-        /* Widgets Acordeón */
+        /* Widgets */
         .widget { margin-top: 12px; border: 1px solid #f1f2f6; border-radius: 12px; background: #fff; overflow: hidden; }
         .widget-header { padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; background: #fafafa; }
         .widget-content { display: none; padding: 10px 18px; }
         .widget.open .widget-content { display: block; }
 
         .stat-row { margin-bottom: 12px; cursor: pointer; }
-        .stat-row.active { color: var(--accent); font-weight: 800; border-left: 3px solid var(--accent); padding-left: 8px; }
+        .stat-row.active { color: var(--accent); font-weight: 800; }
         .stat-bar-bg { background: #f1f2f6; height: 6px; border-radius: 10px; overflow: hidden; margin-top: 4px; }
         .stat-bar-fill { height: 100%; transition: width 0.7s ease; background: var(--accent); }
 
-        /* Popups */
-        .popup-container { max-height: 250px; overflow-y: auto; font-size: 11px; color: #333; }
+        /* Popups Estabilizados */
+        .popup-container { max-height: 250px; overflow-y: auto; font-size: 11px; color: #333; width: 220px; }
         .p-title { color: var(--accent); font-weight: 900; font-size: 14px; display: block; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
         .p-row { border-bottom: 1px solid #f9f9f9; padding: 5px 0; }
         .p-label { font-weight: bold; color: #999; text-transform: uppercase; font-size: 9px; display: block; }
@@ -59,7 +58,7 @@
         <h1>ARTES VIVAS CDMX</h1>
         <div class="counter-section">
             <div id="total-count" class="total-counter">0</div>
-            <div class="registered-label">de espacios registrados</div>
+            <div class="registered-label">de <span id="universe-total">293</span> espacios registrados</div>
             <div id="pct-count" class="percentage-badge">0%</div>
             <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
         </div>
@@ -75,14 +74,22 @@
         // --- CONFIGURACIÓN ---
         let allData = [];
         let activeFilters = {}; 
-        let curC = 0, curP = 0;
+        let curC = 0, curP = 0; // Memoria numérica pura
         
         const colors = {
             'Teatro': '#ff4757', 'Danza': '#3742fa', 'Música': '#ffa502', 
             'Performance': '#8e44ad', 'Interdisciplina': '#2ed573', 'Otros': '#747d8c'
         };
 
-        const alcNeon = ['#00d2ff', '#ff9ff3', '#00ff88', '#fff200', '#7d5fff'];
+        // Paleta exclusiva para alcaldías (Cianes, Rosas, Turquesas, Cafés)
+        const alcPalette = {
+            "Azcapotzalco": "#00CED1", "Coyoacán": "#FF1493", "Cuajimalpa de Morelos": "#7FFF00",
+            "Gustavo A. Madero": "#00FA9A", "Iztacalco": "#FF00FF", "Iztapalapa": "#00BFFF",
+            "La Magdalena Contreras": "#D2691E", "Milpa Alta": "#BDB76B", "Álvaro Obregón": "#20B2AA",
+            "Tláhuac": "#EE82EE", "Tlalpan": "#CD853F", "Xochimilco": "#40E0D0",
+            "Benito Juárez": "#BA55D3", "Cuauhtémoc": "#F08080", "Miguel Hidalgo": "#7B68EE",
+            "Venustiano Carranza": "#FF69B4"
+        };
 
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
         L.control.zoom({ position: 'bottomright' }).addTo(map);
@@ -91,8 +98,11 @@
             attribution: 'Esri', maxZoom: 16
         }).addTo(map);
 
+        // --- MANEJO DE CAPAS (EL SECRETO) ---
+        map.createPane('alcPane').style.zIndex = 200; // Nivel fondo
+        map.createPane('markerPane').style.zIndex = 650; // Nivel superior absoluto
+
         const markersLayer = L.layerGroup().addTo(map);
-        map.createPane('alcPane').style.zIndex = 200;
 
         // --- 1. CARGA DE ALCALDÍAS ---
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/cdmx-alcaldias.geojson')
@@ -102,9 +112,8 @@
                     pane: 'alcPane',
                     style: (f) => {
                         const name = f.properties.NOMGEO || "X";
-                        let h = 0; for(let i=0; i<name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
-                        const c = alcNeon[Math.abs(h) % alcNeon.length];
-                        return { fillColor: c, weight: 2.5, color: c, fillOpacity: 0.1, opacity: 0.6 };
+                        const color = alcPalette[name] || "#aaa";
+                        return { fillColor: color, weight: 2, color: color, fillOpacity: 0.15, opacity: 0.6 };
                     },
                     onEachFeature: (f, l) => {
                         l.bindTooltip(f.properties.NOMGEO || "Alcaldía");
@@ -118,7 +127,7 @@
             complete: r => { 
                 allData = r.data || []; 
                 document.getElementById('universe-total').textContent = allData.length;
-                setTimeout(() => { map.invalidateSize(); updateView(); }, 300);
+                setTimeout(() => { map.invalidateSize(); updateView(); }, 400);
             }
         });
 
@@ -127,9 +136,7 @@
                 return Object.entries(activeFilters).every(([c, v]) => d[c] === v);
             });
 
-            const tC = filtered.length;
-            const tP = allData.length > 0 ? (tC / allData.length * 100) : 0;
-            animate(tC, tP);
+            animateCounters(filtered.length, allData.length);
 
             markersLayer.clearLayers();
             filtered.forEach(p => {
@@ -138,16 +145,21 @@
                 
                 if (!isNaN(lat) && !isNaN(lng) && lat !== 0) {
                     const marker = L.circleMarker([lat, lng], {
-                        radius: 8, fillColor: colors[p.disciplina] || colors['Otros'],
-                        color: "#fff", weight: 2, fillOpacity: 0.9
+                        pane: 'markerPane', // <--- SIEMPRE ARRIBA
+                        radius: 8, 
+                        fillColor: colors[p.disciplina] || colors['Otros'],
+                        color: "#fff", 
+                        weight: 2, 
+                        fillOpacity: 0.9
                     });
                     
+                    // POPUP DINÁMICO FULL-DATA
                     let html = `<div class="popup-container">`;
                     html += `<span class="p-title">${p.nombre || 'Espacio'}</span>`;
                     Object.keys(p).forEach(key => {
                         const val = p[key];
                         const low = key.toLowerCase();
-                        if (!['lat','lng','latitud','longitud','carto_id'].includes(low) && val && low !== 'nombre') {
+                        if (!['lat','lng','latitud','longitud','carto_id','geometry','geom','wkt'].includes(low) && val && low !== 'nombre') {
                             html += `<div class="p-row"><span class="p-label">${key.replace(/_/g,' ')}</span>${val}</div>`;
                         }
                     });
@@ -162,15 +174,17 @@
             renderWidgets(filtered);
         }
 
-        function animate(tC, tP) {
+        function animateCounters(targetC, universeTotal) {
             const cEl = document.getElementById('total-count'), pEl = document.getElementById('pct-count');
-            const sC = curC, sP = curP, dur = 400;
-            let start = null;
+            const targetP = universeTotal > 0 ? (targetC / universeTotal * 100) : 0;
+            const startC = curC, startP = curP, dur = 400;
+            let startT = null;
+
             function step(t) {
-                if (!start) start = t;
-                const prog = Math.min((t - start) / dur, 1);
-                curC = prog * (tC - sC) + sC;
-                curP = prog * (tP - sP) + sP;
+                if (!startT) startT = t;
+                const prog = Math.min((t - startT) / dur, 1);
+                curC = prog * (targetC - startC) + startC;
+                curP = prog * (targetP - startP) + startP;
                 cEl.textContent = Math.floor(curC);
                 pEl.textContent = curP.toFixed(1) + "%";
                 if (prog < 1) requestAnimationFrame(step);
@@ -190,7 +204,7 @@
                 const widget = document.createElement('div');
                 widget.className = `widget ${openWidgets.includes(col) || (Object.keys(activeFilters).length === 0 && col === 'disciplina') ? 'open' : ''}`;
                 widget.dataset.col = col;
-                let html = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')"><span>${col}</span> <span>▾</span></div>`;
+                let html = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')"><span>${col.replace(/_/g,' ')}</span> <span>▾</span></div>`;
                 html += `<div class="widget-content">`;
                 Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
                     const barP = data.length > 0 ? (count / data.length * 100) : 0;
