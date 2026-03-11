@@ -3,90 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cartografía Artes Vivas CDMX - Full Data</title>
+    <title>Cartografía Artes Vivas con Alcaldías</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
     <style>
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        #map { height: 100vh; width: 100%; }
+        body { margin: 0; padding: 0; font-family: sans-serif; }
+        #map { height: 100vh; width: 100%; background: #f8f9fa; }
 
-        /* Panel lateral de info */
         .info-panel {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-            max-width: 280px;
-            backdrop-filter: blur(4px);
+            position: absolute; top: 20px; left: 20px; z-index: 1000;
+            background: white; padding: 15px; border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 250px;
         }
 
-        /* Estilos del Popup dinámico */
-        .leaflet-popup-content {
-            min-width: 220px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .popup-row {
-            margin-bottom: 6px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 3px;
-            font-size: 12px;
-        }
-        .popup-label {
-            font-weight: bold;
-            color: #555;
-            text-transform: uppercase;
-            font-size: 10px;
-            display: block;
-        }
-        .popup-value {
-            color: #222;
-            word-break: break-word;
-        }
-        h2 { margin: 0 0 5px 0; color: #e74c3c; font-size: 20px; }
+        /* Estilo de la leyenda */
+        .legend-alcaldias { margin-top: 10px; font-size: 10px; color: #555; border-top: 1px solid #eee; padding-top: 5px; }
     </style>
 </head>
 <body>
 
     <div class="info-panel">
-        <h2>Artes Vivas CDMX</h2>
-        <p style="font-size: 12px; color: #666;">Explora todos los detalles de la cartografía directamente desde el marcador.</p>
-        <div id="legend" style="font-size: 11px;"></div>
+        <h2 style="margin:0; font-size:18px;">Artes Vivas CDMX</h2>
+        <p style="font-size:11px; color:#666;">Puntos y Delimitación Territorial</p>
+        <div id="legend-points"></div>
+        <div class="legend-alcaldias">Colores por Alcaldía (Delimitación Territorial)</div>
     </div>
 
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://unpkg.com/wellknown@0.5.0/wellknown.js"></script>
 
     <script>
-        const map = L.map('map', { center: [19.41, -99.14], zoom: 11, zoomControl: false });
-        L.control.zoom({ position: 'bottomright' }).addTo(map);
+        // 1. Inicializar Mapa y Panes (Capas de profundidad)
+        const map = L.map('map', { center: [19.35, -99.14], zoom: 10 });
 
+        // Capa base limpia
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '© CARTO'
         }).addTo(map);
 
-        const colorPalette = {
-            'Teatro': '#e74c3c',
-            'Danza': '#3498db',
-            'Música': '#f1c40f',
-            'Performance': '#9b59b6',
-            'Otros': '#95a5a6'
-        };
+        // Creamos paneles para controlar quién va arriba
+        map.createPane('alcaldiasPane');
+        map.getPane('alcaldiasPane').style.zIndex = 400; // Fondo
 
-        const csvUrl = 'https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv';
+        map.createPane('puntosPane');
+        map.getPane('puntosPane').style.zIndex = 600; // Frente
 
-        Papa.parse(csvUrl, {
-            download: true,
-            header: true,
-            dynamicTyping: true,
-            skipEmptyLines: true,
+        // 2. Función para generar color aleatorio pero consistente por nombre de Alcaldía
+        function getAlcaldiaColor(name) {
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            return `hsl(${Math.abs(hash) % 360}, 60%, 70%)`;
+        }
+
+        // 3. CARGAR ALCALDÍAS (CSV con WKT)
+        const urlAlcaldias = 'https://raw.githubusercontent.com/observatoriopoliticas/mapascdmx/main/alcaldias_cdmx.csv';
+        
+        Papa.parse(urlAlcaldias, {
+            download: true, header: true, skipEmptyLines: true,
+            complete: function(results) {
+                results.data.forEach(row => {
+                    // Buscamos la columna de geometría (suele llamarse geometry o WKT)
+                    const wktString = row.geometry || row.WKT || row.wkt;
+                    const nombre = row.nomgeo || row.ALCALDIA || "Alcaldía";
+
+                    if (wktString) {
+                        const geojson = wellknown.parse(wktString); // Convertir WKT a GeoJSON
+                        L.geoJSON(geojson, {
+                            pane: 'alcaldiasPane',
+                            style: {
+                                fillColor: getAlcaldiaColor(nombre),
+                                weight: 1.5,
+                                opacity: 0.8,
+                                color: 'white',
+                                fillOpacity: 0.4 // Transparencia solicitada
+                            }
+                        }).bindTooltip(nombre, { sticky: true }).addTo(map);
+                    }
+                });
+            }
+        });
+
+        // 4. CARGAR PUNTOS DE ARTES VIVAS
+        const urlPuntos = 'https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv';
+
+        Papa.parse(urlPuntos, {
+            download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
             complete: function(results) {
                 results.data.forEach(punto => {
                     const lat = punto.latitud || punto.lat;
@@ -94,46 +101,23 @@
 
                     if (lat && lng) {
                         const marker = L.circleMarker([lat, lng], {
-                            radius: 8,
-                            fillColor: colorPalette[punto.tipo] || colorPalette['Otros'],
-                            color: "#fff",
-                            weight: 2,
-                            opacity: 1,
-                            fillOpacity: 0.9
+                            pane: 'puntosPane', // Mantener arriba
+                            radius: 7,
+                            fillColor: '#e74c3c',
+                            color: '#fff',
+                            weight: 1.5,
+                            fillOpacity: 1
                         }).addTo(map);
 
-                        // --- GENERACIÓN DINÁMICA DEL POPUP ---
-                        let popupHTML = `<div style="padding: 5px;">`;
-                        
-                        // Buscamos si existe un nombre para ponerlo de encabezado
-                        const titulo = punto.nombre || punto.Nombre || "Punto de Interés";
-                        popupHTML += `<strong style="font-size:14px; color:#e74c3c; display:block; margin-bottom:10px;">${titulo}</strong>`;
-
-                        // Iteramos sobre todas las columnas del CSV
+                        // Popup dinámico con todos los datos
+                        let content = `<div style="max-height:200px; overflow-y:auto;"><b>${punto.nombre || 'Sin nombre'}</b><hr>`;
                         Object.keys(punto).forEach(key => {
-                            const val = punto[key];
-                            const lowKey = key.toLowerCase();
-
-                            // Excluimos coordenadas y valores vacíos/nulos
-                            const esCoordenada = ['latitud', 'longitud', 'lat', 'lng', 'x', 'y'].includes(lowKey);
-                            const tieneValor = val !== null && val !== undefined && val !== "";
-                            const esNombre = lowKey === 'nombre'; // Ya lo pusimos arriba
-
-                            if (!esCoordenada && tieneValor && !esNombre) {
-                                popupHTML += `
-                                    <div class="popup-row">
-                                        <span class="popup-label">${key.replace(/_/g, ' ')}</span>
-                                        <span class="popup-value">${val}</span>
-                                    </div>`;
+                            if (!['lat','lng','latitud','longitud','geometry','WKT'].includes(key.toLowerCase()) && punto[key]) {
+                                content += `<div style="font-size:10px;"><b>${key}:</b> ${punto[key]}</div>`;
                             }
                         });
-
-                        popupHTML += `</div>`;
-                        marker.bindPopup(popupHTML);
-
-                        // Interacción visual
-                        marker.on('mouseover', function(e) { this.setRadius(12); });
-                        marker.on('mouseout', function(e) { this.setRadius(8); });
+                        content += `</div>`;
+                        marker.bindPopup(content);
                     }
                 });
             }
