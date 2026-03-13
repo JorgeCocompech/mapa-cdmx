@@ -5,7 +5,7 @@
   </g>
 
   <g id="logotipo" fill="black" font-family="sans-serif" style="text-transform: uppercase;">
-    <text x="205" y="85" font-size="36" font-weight="900" transform="scale(0.8, 1.2)" style="letter-spacing: 1px;">OBSERVATORIO</text>
+    <text x="255" y="75" font-size="36" font-weight="900" transform="scale(0.8, 1.2)" style="letter-spacing: 1px;">OBSERVATORIO</text>
     <g font-size="19" font-weight="400" transform="scale(0.9, 1.1)">
         <text x="230" y="105">DE POLÍTICAS</text>
         <text x="230" y="126">CULTURALES</text>
