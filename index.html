@@ -14,10 +14,10 @@
 
         [data-theme="dark"] {
             --bg-color: #0d0d0d;
-            --panel-bg: #141414; /* Oscuro sólido como el ejemplo */
+            --panel-bg: #141414;
             --text-main: #ffffff;
             --text-muted: #8a8f93;
-            --highlight: #1785FB; /* Azul estilo Carto */
+            --highlight: #1785FB; 
             --border-color: #262626;
             --input-bg: #1f1f1f;
             --card-bg: #1c1c1e;
@@ -99,7 +99,7 @@
             border: 1px solid var(--border-color);
             border-radius: 10px;
             display: flex; flex-direction: column;
-            overflow: hidden; /* Necesario para el acordeón */
+            overflow: hidden; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
@@ -127,6 +127,13 @@
 
         /* Estilos del Contador dentro de Card */
         .total-counter { font-size: 2.8rem; font-weight: 800; color: var(--highlight); line-height: 1; margin-top: 4px;}
+
+        /* Alerta de Error de Datos */
+        .data-alert {
+            background: rgba(255, 71, 87, 0.1); border: 1px solid var(--accent);
+            color: var(--accent); padding: 12px; border-radius: 8px;
+            font-size: 0.75rem; line-height: 1.4; margin-top: 15px; display: none;
+        }
 
         /* Filas de Estadísticas */
         .stat-row { 
@@ -181,6 +188,9 @@
                             <span id="total-count" class="total-counter">0</span>
                             <span id="pct-count" style="color:var(--text-muted); font-weight:600; font-size:0.9rem;"></span>
                         </div>
+                        
+                        <div id="data-alert" class="data-alert"></div>
+
                         <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
                     </div>
                 </div>
@@ -220,6 +230,8 @@
             "Venustiano Carranza": "#FF69B4"
         };
 
+        const chevronIcon = `<svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+
         let allData = [];
         let activeFilters = { condicion_mobiliaria: [], circuito: [], estatus: [], disciplina: [], alcaldia: [] }; 
         let searchQuery = "";
@@ -251,7 +263,6 @@
             updateView(); 
         }
 
-        // 1. CARGAR ALCALDÍAS
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/cdmx-alcaldias.geojson')
             .then(res => res.json())
             .then(data => {
@@ -262,11 +273,11 @@
                 }).addTo(map);
             });
 
-        // 2. CARGAR GEOJSON DE RECINTOS
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/data/av-data-cdmx-20230122.geojson')
             .then(res => res.json())
             .then(data => {
-                // allData tomará la cantidad de features reales, asegurando que sean 290
+                let perdidosArr = []; // Array para guardar los que no tienen coordenadas
+
                 allData = data.features.map(f => {
                     let lng = null, lat = null;
                     if (f.geometry && f.geometry.coordinates) {
@@ -276,11 +287,25 @@
                         lng = f.properties.longitud || f.properties.lng || null;
                         lat = f.properties.latitud || f.properties.lat || null;
                     }
+                    
+                    // Si sigue siendo inválido, lo atrapamos
+                    if(isNaN(parseFloat(lat)) || isNaN(parseFloat(lng))) {
+                        perdidosArr.push(f.properties.nombre || "Espacio sin nombre");
+                    }
+
                     return { lat: lat, longitud: lng, ...f.properties };
                 });
+
+                // IMPRESIÓN DE ALERTA DE ESPACIOS FALTANTES EN LA UI
+                if(perdidosArr.length > 0) {
+                    const alertBox = document.getElementById('data-alert');
+                    alertBox.style.display = 'block';
+                    alertBox.innerHTML = `<strong>⚠️ ${perdidosArr.length} espacios sin coordenadas:</strong><br><ul style="margin:5px 0 0 0; padding-left:15px; text-transform:none;">` 
+                        + perdidosArr.map(n => `<li>${n}</li>`).join('') + "</ul><br>Estos espacios suman en estadística pero no aparecen en el mapa.";
+                }
+
                 updateView();
-            })
-            .catch(error => console.error("Error cargando GeoJSON:", error));
+            });
 
         function updateView() {
             const filtered = allData.filter(d => {
@@ -305,7 +330,6 @@
                 const lat = parseFloat(p.lat);
                 const lng = parseFloat(p.longitud); 
                 
-                // Dibuja el punto en el mapa solo si tiene coordenadas válidas
                 if (!isNaN(lat) && !isNaN(lng)) {
                     const marker = L.circleMarker([lat, lng], {
                         pane: 'markerPane', radius: 5.5, 
@@ -313,13 +337,35 @@
                         color: borderHex, weight: 1.5, fillOpacity: 0.95
                     });
 
-                    marker.bindPopup(createPopup(p));
+                    marker.bindPopup(createPopup(p), { autoPan: false });
+
+                    // --- INTERACCIÓN RESTAURADA (HOVER & CLICK PREMIUM) ---
+                    marker.on('mouseover', function() { 
+                        if(!this._pinned) {
+                            this.openPopup(); 
+                            this.setStyle({color: activeHex, weight: 3, radius: 7});
+                        }
+                    });
+                    
+                    marker.on('mouseout', function() { 
+                        if(!this._pinned) {
+                            this.closePopup(); 
+                            this.setStyle({color: borderHex, weight: 1.5, radius: 5.5});
+                        }
+                    });
+                    
                     marker.on('click', function() {
-                        markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: borderHex, weight: 1.5, radius: 5.5}); });
+                        // Resetea todos los demás
+                        markersLayer.eachLayer(m => { 
+                            m._pinned = false; 
+                            m.setStyle({color: borderHex, weight: 1.5, radius: 5.5}); 
+                        });
+                        // Ancla el click actual
                         this._pinned = true; 
-                        this.setStyle({color: activeHex, weight: 3, radius: 7});
+                        this.setStyle({color: activeHex, weight: 4, radius: 8});
                         this.openPopup();
                     });
+
                     marker.addTo(markersLayer);
                 }
             });
@@ -369,15 +415,14 @@
                 if (Object.keys(counts).length === 0) return;
 
                 const widget = document.createElement('div');
-                // Abierto por defecto si es disciplina o si estaba abierto antes
                 const isOpen = openWidgets.includes(col) || (col === 'disciplina' && !isAnyFilterActive());
-                widget.className = `card ${isOpen ? 'open' : ''}`;
+                widget.className = `card ${isOpen ? 'open' : 'open'}`; 
                 widget.dataset.col = col;
 
                 let html = `
                     <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
                         <span>Por ${labelMap[col]}</span>
-                        <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        ${chevronIcon}
                     </div>
                     <div class="card-content-wrapper">
                         <div class="card-content">
@@ -425,6 +470,8 @@
             const cEl = document.getElementById('total-count'), pEl = document.getElementById('pct-count');
             const startC = curC, dur = 300;
             let startT = null;
+
+            cEl.style.color = (targetC === universeTotal) ? 'var(--text-main)' : 'var(--highlight)';
 
             function step(t) {
                 if (!startT) startT = t;
