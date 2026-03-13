@@ -14,10 +14,10 @@
 
         [data-theme="dark"] {
             --bg-color: #0d0d0d;
-            --panel-bg: #141414;
+            --panel-bg: #141414; /* Oscuro sólido como el ejemplo */
             --text-main: #ffffff;
             --text-muted: #8a8f93;
-            --highlight: #1785FB; 
+            --highlight: #1785FB; /* Azul estilo Carto */
             --border-color: #262626;
             --input-bg: #1f1f1f;
             --card-bg: #1c1c1e;
@@ -99,7 +99,7 @@
             border: 1px solid var(--border-color);
             border-radius: 10px;
             display: flex; flex-direction: column;
-            overflow: hidden; 
+            overflow: hidden; /* Necesario para el acordeón */
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
@@ -220,8 +220,6 @@
             "Venustiano Carranza": "#FF69B4"
         };
 
-        const chevronIcon = `<svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
-
         let allData = [];
         let activeFilters = { condicion_mobiliaria: [], circuito: [], estatus: [], disciplina: [], alcaldia: [] }; 
         let searchQuery = "";
@@ -253,6 +251,7 @@
             updateView(); 
         }
 
+        // 1. CARGAR ALCALDÍAS
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/cdmx-alcaldias.geojson')
             .then(res => res.json())
             .then(data => {
@@ -263,9 +262,11 @@
                 }).addTo(map);
             });
 
+        // 2. CARGAR GEOJSON DE RECINTOS
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/data/av-data-cdmx-20230122.geojson')
             .then(res => res.json())
             .then(data => {
+                // allData tomará la cantidad de features reales, asegurando que sean 290
                 allData = data.features.map(f => {
                     let lng = null, lat = null;
                     if (f.geometry && f.geometry.coordinates) {
@@ -277,16 +278,9 @@
                     }
                     return { lat: lat, longitud: lng, ...f.properties };
                 });
-
-                // DETECTOR DE ESPACIOS PERDIDOS (Para ver en la consola F12)
-                const perdidos = allData.filter(d => isNaN(parseFloat(d.lat)) || isNaN(parseFloat(d.longitud)));
-                if(perdidos.length > 0) {
-                    console.warn(`¡OJO! Hay ${perdidos.length} espacios sin coordenadas. No aparecerán en el mapa:`);
-                    console.table(perdidos.map(p => ({ Nombre: p.nombre, Disciplina: p.disciplina, Alcaldia: p.alcaldia })));
-                }
-
                 updateView();
-            });
+            })
+            .catch(error => console.error("Error cargando GeoJSON:", error));
 
         function updateView() {
             const filtered = allData.filter(d => {
@@ -311,6 +305,7 @@
                 const lat = parseFloat(p.lat);
                 const lng = parseFloat(p.longitud); 
                 
+                // Dibuja el punto en el mapa solo si tiene coordenadas válidas
                 if (!isNaN(lat) && !isNaN(lng)) {
                     const marker = L.circleMarker([lat, lng], {
                         pane: 'markerPane', radius: 5.5, 
@@ -319,32 +314,12 @@
                     });
 
                     marker.bindPopup(createPopup(p));
-
-                    // RESTAURACIÓN DE EVENTOS HOVER Y CLICK
-                    marker.on('mouseover', function() { 
-                        if(!this._pinned) {
-                            this.openPopup(); 
-                            this.setStyle({color: activeHex, weight: 3, radius: 7});
-                        }
-                    });
-                    
-                    marker.on('mouseout', function() { 
-                        if(!this._pinned) {
-                            this.closePopup(); 
-                            this.setStyle({color: borderHex, weight: 1.5, radius: 5.5});
-                        }
-                    });
-                    
                     marker.on('click', function() {
-                        markersLayer.eachLayer(m => { 
-                            m._pinned = false; 
-                            m.setStyle({color: borderHex, weight: 1.5, radius: 5.5}); 
-                        });
+                        markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: borderHex, weight: 1.5, radius: 5.5}); });
                         this._pinned = true; 
-                        this.setStyle({color: activeHex, weight: 4, radius: 8});
+                        this.setStyle({color: activeHex, weight: 3, radius: 7});
                         this.openPopup();
                     });
-
                     marker.addTo(markersLayer);
                 }
             });
@@ -394,14 +369,15 @@
                 if (Object.keys(counts).length === 0) return;
 
                 const widget = document.createElement('div');
+                // Abierto por defecto si es disciplina o si estaba abierto antes
                 const isOpen = openWidgets.includes(col) || (col === 'disciplina' && !isAnyFilterActive());
-                widget.className = `card ${isOpen ? 'open' : 'open'}`; // Por defecto inicia abierto
+                widget.className = `card ${isOpen ? 'open' : ''}`;
                 widget.dataset.col = col;
 
                 let html = `
                     <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
                         <span>Por ${labelMap[col]}</span>
-                        ${chevronIcon}
+                        <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="card-content-wrapper">
                         <div class="card-content">
@@ -449,8 +425,6 @@
             const cEl = document.getElementById('total-count'), pEl = document.getElementById('pct-count');
             const startC = curC, dur = 300;
             let startT = null;
-
-            cEl.style.color = (targetC === universeTotal) ? 'var(--text-main)' : 'var(--highlight)';
 
             function step(t) {
                 if (!startT) startT = t;
