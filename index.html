@@ -77,8 +77,8 @@
         }
 
         /* Títulos */
-        h1 { font-size: 1.4rem; font-weight: 800; margin: 0 0 16px 0; text-align: center; }
-        h2 { font-size: 0.85rem; font-weight: 600; margin: 0 0 16px 0; text-align: center; text-transform: uppercase; letter-spacing: 0.5px;}
+        h1 { font-size: 1.5rem; font-weight: 800; margin: 0 0 16px 0; text-align: center; }
+        h2 { font-size: 0.75rem; font-weight: 600; margin: 0;  text-align: center; text-transform: uppercase; letter-spacing: 0.5px;}
 
         /* Contenedor Scrolleable con gap para Bloques Separados */
         #stats-container {
@@ -124,7 +124,6 @@
             padding: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
             user-select: none; color: var(--text-muted); transition: color 0.2s;
         }
-        .card-header h2 { margin: 0; color: inherit; } 
         .card-header:hover { color: var(--text-main); }
         
         .chevron { transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); stroke: currentColor; }
@@ -139,7 +138,7 @@
         .card-content { overflow: hidden; padding: 0 16px; }
         .card.open .card-content { padding-bottom: 16px; }
 
-        .total-counter { font-size: 2.8rem; font-weight: 800; color: var(--highlight); line-height: 1; margin-top: 4px;}
+        .total-counter { font-size: 2.8rem; font-weight: 800; color: var(--highlight); line-height: 1; margin-top: 4px; display: inline-block;}
 
         .data-alert {
             background: rgba(255, 71, 87, 0.1); border: 1px solid var(--accent);
@@ -174,10 +173,12 @@
         .leaflet-popup-tip { background: var(--panel-bg); border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
         .popup-container { max-height: 280px; overflow-y: auto; font-size: 11px; width: 230px; }
         .p-title { color: var(--highlight); font-weight: 700; font-size: 13px; display: block; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; line-height: 1.3;}
-        .p-row { border-bottom: 1px solid var(--border-color); padding: 5px 0; display: flex; flex-direction: column; gap: 2px;}
+        .p-row { border-bottom: 1px solid var(--border-color); padding: 6px 0; display: flex; flex-direction: column; gap: 3px;}
         .p-row:last-child { border-bottom: none; }
-        .p-label { font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 9px; }
-        .p-contact-item { font-weight: 500; margin-top: 2px; word-break: break-word; color: var(--text-main); }
+        .p-label { font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px;}
+        .p-contact-item { font-weight: 500; word-break: break-word; color: var(--text-main); }
+        .p-contact-link { color: var(--highlight); text-decoration: none; font-weight: 600; }
+        .p-contact-link:hover { text-decoration: underline; }
 
         /* FOOTER */
         #app-footer {
@@ -211,17 +212,17 @@
             <div class="dashboard-header">
                 <img src="https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm.svg" class="header-logo theme-logo" alt="Logo Observatorio UACM">
                 <h1>ARTES VIVAS CDMX</h1>
-                <h2>Mapa: Condición Mobiliaria</h2>
+                <h2>Condición Mobiliaria</h2>
                 <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar espacio..." oninput="updateSearch()">
             </div>
             
             <div id="stats-container">
                 <div class="card open">
-                    <div class="card-header" style="cursor: default;">
+                    <div class="card-header" style="cursor: default; padding-bottom: 0;">
                         <h2>Total Espacios</h2>
                     </div>
                     <div class="card-content-wrapper">
-                        <div class="card-content">
+                        <div class="card-content" style="padding-top: 10px;">
                             <div style="display:flex; align-items:baseline; gap: 10px;">
                                 <span id="total-count" class="total-counter">0</span>
                                 <span id="pct-count" style="color:var(--text-muted); font-weight:600; font-size:0.9rem;"></span>
@@ -231,6 +232,7 @@
                         </div>
                     </div>
                 </div>
+                
                 <div id="dynamic-widgets" style="display: flex; flex-direction: column; gap: 12px;"></div>
             </div>
         </div>
@@ -291,7 +293,6 @@
         let allData = [];
         let activeFilters = { condicion_mobiliaria: [], circuito: [], estatus: [], disciplina: [], alcaldia: [] }; 
         let searchQuery = "";
-        let curC = 0;
         let isFirstRender = true; 
 
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
@@ -300,8 +301,7 @@
         const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
         const lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
         
-        // Iniciar en modo claro
-        lightTiles.addTo(map);
+        lightTiles.addTo(map); // Inicia en modo claro
         
         map.createPane('alcPane').style.zIndex = 200;
         map.createPane('markerPane').style.zIndex = 650;
@@ -312,7 +312,6 @@
             const btn = document.getElementById('theme-btn');
             const themeLogos = document.querySelectorAll('.theme-logo');
             
-            // Rutas absolutas
             const darkLogoUrl = 'https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm-inv.svg';
             const lightLogoUrl = 'https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm.svg';
             
@@ -366,7 +365,7 @@
                     const alertBox = document.getElementById('data-alert');
                     alertBox.style.display = 'block';
                     alertBox.innerHTML = `<strong>⚠️ ${perdidosArr.length} espacios sin coordenadas:</strong><br><ul style="margin:5px 0 0 0; padding-left:15px; text-transform:none;">` 
-                        + perdidosArr.map(n => `<li>${n}</li>`).join('') + "</ul><br>Se suman en estadística pero no aparecen en el mapa.";
+                        + perdidosArr.map(n => `<li>${n}</li>`).join('') + "</ul><br>Se suman en la estadística pero no en el mapa.";
                 }
 
                 updateView();
@@ -478,8 +477,10 @@
 
                 let isOpen = false;
                 if (isFirstRender) {
+                    // Sólo abre el primero (Condición Mobiliaria) al entrar a la página
                     isOpen = (index === 0);
                 } else {
+                    // Respeta los que el usuario haya abierto/cerrado
                     isOpen = openWidgets.includes(col);
                 }
 
@@ -545,10 +546,17 @@
 
             if (p.contacto && p.contacto !== 0 && p.contacto !== "0" && p.contacto.trim() !== "") {
                 html += `<div class="p-row"><span class="p-label">Contacto</span>`;
+                // Separa por comas, espacios o saltos de línea
                 let contactos = p.contacto.split(/[,|\n]+/).map(c => c.trim()).filter(c => c !== "");
                 
                 contactos.forEach(c => {
-                    html += `<span class="p-contact-item">${c}</span>`;
+                    // Si es un link web, se hace clickeable
+                    if(c.startsWith('http') || c.startsWith('www.')) {
+                        let link = c.startsWith('http') ? c : 'https://' + c;
+                        html += `<a href="${link}" target="_blank" class="p-contact-item p-contact-link">${c}</a>`;
+                    } else {
+                        html += `<span class="p-contact-item">${c}</span>`;
+                    }
                 });
                 html += `</div>`;
             }
@@ -559,34 +567,49 @@
         function updateSearch() { searchQuery = document.getElementById('search-input').value; updateView(); }
         
         let animFrameId = null;
+        let currentCounterValue = 0;
+
         function animateCounters(targetC, universeTotal) {
-            const cEl = document.getElementById('total-count'), pEl = document.getElementById('pct-count');
-            const startC = curC, dur = 250;
-            let startT = null;
-
+            const cEl = document.getElementById('total-count');
+            const pEl = document.getElementById('pct-count');
+            
             cEl.style.color = (targetC === universeTotal) ? 'var(--text-main)' : 'var(--highlight)';
-            if(animFrameId) cancelAnimationFrame(animFrameId);
+            
+            // Blindaje contra parpadeos y NaN
+            if (animFrameId) cancelAnimationFrame(animFrameId);
 
-            function step(t) {
-                if (!startT) startT = t;
-                const prog = Math.min((t - startT) / dur, 1);
-                curC = prog * (targetC - startC) + startC;
-                cEl.textContent = Math.floor(curC);
-                
-                if(targetC === universeTotal) {
+            const startC = currentCounterValue;
+            const dur = 350; 
+            const startTime = performance.now();
+
+            function updatePct() {
+                if(targetC === universeTotal || universeTotal === 0) {
                     pEl.textContent = "";
                 } else {
                     const pct = (targetC / universeTotal * 100).toFixed(1);
                     pEl.textContent = `(${pct}%)`;
                 }
+            }
+
+            function step(currentTime) {
+                const elapsed = currentTime - startTime;
+                const prog = Math.min(elapsed / dur, 1);
+                
+                // Función Easing fluida (easeOutExpo)
+                const easeOut = prog === 1 ? 1 : 1 - Math.pow(2, -10 * prog);
+                currentCounterValue = Math.round(startC + (targetC - startC) * easeOut);
+                
+                cEl.textContent = currentCounterValue;
 
                 if (prog < 1) {
                     animFrameId = requestAnimationFrame(step);
                 } else {
-                    curC = targetC;
+                    currentCounterValue = targetC;
                     cEl.textContent = targetC;
+                    updatePct();
                 }
             }
+            
             animFrameId = requestAnimationFrame(step);
         }
 
