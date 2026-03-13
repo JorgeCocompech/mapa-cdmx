@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Analítico | Artes Vivas CDMX</title>
+    <title>Observatorio Analítico | Artes Vivas CDMX</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         /* MOTOR DE TEMAS: VARIABLES CSS */
@@ -14,145 +14,179 @@
 
         [data-theme="dark"] {
             --bg-color: #0d0d0d;
-            --panel-bg: rgba(20, 20, 20, 0.95);
-            --card-bg: #1c1c1e;
+            --panel-bg: rgba(24, 26, 27, 0.98);
             --text-main: #ffffff;
-            --text-muted: #8e8e93;
-            --highlight: #00d2ff;
-            --border-color: #2c2c2e;
-            --input-bg: #111;
-            --row-hover: rgba(255,255,255,0.05);
-            --row-active: rgba(0, 210, 255, 0.15);
-            --bar-bg: #2c2c2e;
-            --btn-bg: #333;
-            --btn-hover: #ff4757;
+            --text-muted: #8a8f93;
+            --highlight: #1785FB; /* Azul CARTO */
+            --border-color: #313537;
+            --input-bg: #0d0d0d;
+            --row-hover: rgba(255,255,255,0.04);
+            --row-active: rgba(23, 133, 251, 0.1);
+            --bar-bg: #313537;
+            --btn-bg: #2a2e30;
+            --btn-hover: #1785FB;
         }
 
         [data-theme="light"] {
-            --bg-color: #f2f2f7;
-            --panel-bg: rgba(255, 255, 255, 0.95);
-            --card-bg: #ffffff;
-            --text-main: #1c1c1e;
-            --text-muted: #8e8e93;
-            --highlight: #007aff;
-            --border-color: #e5e5ea;
-            --input-bg: #f2f2f7;
+            --bg-color: #f5f5f5;
+            --panel-bg: rgba(255, 255, 255, 0.98);
+            --text-main: #2C2C2C;
+            --text-muted: #747d82;
+            --highlight: #1785FB;
+            --border-color: #e2e6e9;
+            --input-bg: #f9f9f9;
             --row-hover: rgba(0,0,0,0.03);
-            --row-active: rgba(0, 122, 255, 0.1);
-            --bar-bg: #e5e5ea;
-            --btn-bg: #e5e5ea;
-            --btn-hover: #ff4757;
+            --row-active: rgba(23, 133, 251, 0.08);
+            --bar-bg: #e2e6e9;
+            --btn-bg: #f0f0f0;
+            --btn-hover: #1785FB;
         }
         
-        * { box-sizing: border-box; transition: background-color 0.3s, border-color 0.3s, color 0.3s; }
+        * { box-sizing: border-box; }
         body { 
             margin: 0; padding: 0; font-family: 'Inter', sans-serif; 
             background: var(--bg-color); color: var(--text-main);
             display: flex; height: 100vh; overflow: hidden; 
+            transition: background-color 0.3s, color 0.3s;
         }
         
-        /* Panel Lateral (Dashboard) */
+        /* Panel Lateral Unificado */
         #dashboard {
-            width: 400px; height: 100%; z-index: 1000;
-            background: var(--panel-bg); backdrop-filter: blur(15px);
-            display: flex; flex-direction: column; padding: 25px;
-            overflow-y: auto; flex-shrink: 0; border-right: 1px solid var(--border-color);
+            width: 360px; height: 100%; z-index: 1000;
+            background: var(--panel-bg); backdrop-filter: blur(20px);
+            display: flex; flex-direction: column; 
+            flex-shrink: 0; border-right: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
         }
-        
-        #dashboard::-webkit-scrollbar { width: 6px; }
-        #dashboard::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
 
-        #map { flex-grow: 1; height: 100%; position: relative; background: var(--bg-color); }
+        /* Cabecera Fija (Título, Buscador, Contador, Botón Limpiar) */
+        .dashboard-header {
+            padding: 24px 24px 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        /* Contenedor Scrolleable para Widgets */
+        #stats-container {
+            flex-grow: 1; overflow-y: auto;
+        }
+        #stats-container::-webkit-scrollbar { width: 5px; }
+        #stats-container::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+
+        #map { flex-grow: 1; height: 100%; position: relative; background: var(--bg-color); transition: background-color 0.3s; }
 
         /* Botón de Cambio de Tema */
         .theme-toggle-btn {
             position: absolute; top: 20px; right: 20px; z-index: 2000;
-            background: var(--card-bg); color: var(--text-main);
+            background: var(--panel-bg); color: var(--text-main);
             border: 1px solid var(--border-color);
-            width: 45px; height: 45px; border-radius: 50%;
+            width: 40px; height: 40px; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: 0.2s;
         }
-        .theme-toggle-btn:hover { transform: scale(1.05); }
+        .theme-toggle-btn:hover { border-color: var(--highlight); color: var(--highlight); }
 
-        /* Eliminar recuadro azul en SVG */
         path.leaflet-interactive:focus { outline: none !important; }
 
         /* Título y Buscador */
-        h1 { font-size: 1.2rem; font-weight: 900; margin: 0 0 20px 0; letter-spacing: 1px; }
+        h1 { font-size: 1.1rem; font-weight: 800; margin: 0 0 16px 0; letter-spacing: 0.2px; }
         
         .search-box {
-            margin-bottom: 25px; padding: 14px; width: 100%;
-            border: 1px solid var(--border-color); border-radius: 10px;
+            padding: 12px 14px; width: 100%; margin-bottom: 20px;
+            border: 1px solid var(--border-color); border-radius: 6px;
             background: var(--input-bg); color: var(--text-main);
-            font-family: inherit; font-size: 0.9rem; outline: none; transition: 0.3s;
+            font-family: inherit; font-size: 0.85rem; outline: none; transition: 0.2s;
         }
-        .search-box:focus { border-color: var(--highlight); }
+        .search-box:focus { border-color: var(--highlight); box-shadow: 0 0 0 2px rgba(23,133,251,0.15); }
 
         /* Sección del Contador Total */
-        .counter-section { 
-            display: flex; align-items: baseline; gap: 15px;
-            margin-bottom: 30px; padding-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .counter-info { display: flex; flex-direction: column; }
-        .total-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
-        .total-counter { font-size: 3.5rem; font-weight: 900; color: var(--highlight); line-height: 1; margin-top: 5px; }
-        .percentage-badge { font-size: 1.2rem; font-weight: 600; color: #ff9ff3; margin-left: auto; }
+        .counter-section { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
+        .counter-info { display: flex; flex-direction: column; gap: 2px; }
+        .total-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+        .counter-row { display: flex; align-items: baseline; gap: 12px; }
+        .total-counter { font-size: 3rem; font-weight: 700; color: var(--text-main); line-height: 1; letter-spacing: -1px; transition: color 0.3s; }
+        .percentage-badge { font-size: 1.1rem; font-weight: 600; color: var(--highlight); }
 
-        /* Widgets (Cards) */
-        #stats-container { display: flex; flex-direction: column; gap: 15px; }
+        /* Botón Limpiar (Debajo del contador) */
+        #clear-btn { 
+            display: none; padding: 10px 12px; 
+            background: var(--btn-bg); color: var(--text-main); 
+            border: 1px solid transparent; border-radius: 6px; 
+            cursor: pointer; font-weight: 600; font-size: 0.75rem; 
+            transition: 0.2s; width: 100%; text-align: center; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        #clear-btn:hover { background: var(--highlight); color: #fff; }
+
+        /* WIDGETS ESTILO ACORDEÓN (SMOOTH TRANSITION) */
+        .widget { border-bottom: 1px solid var(--border-color); }
+        .widget:last-child { border-bottom: none; }
         
-        .widget { 
-            background: var(--card-bg); border-radius: 14px; 
-            padding: 18px; border: 1px solid var(--border-color);
-        }
         .widget-header { 
-            font-size: 0.7rem; font-weight: 800; color: var(--text-muted); 
-            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px;
+            font-size: 0.7rem; font-weight: 700; color: var(--text-muted); 
+            text-transform: uppercase; letter-spacing: 0.5px; 
+            padding: 16px 24px; cursor: pointer; display: flex; 
+            justify-content: space-between; align-items: center;
+            user-select: none; transition: color 0.2s;
         }
+        .widget-header:hover { color: var(--text-main); }
+        
+        .chevron { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); stroke: currentColor; }
+        .widget.open .chevron { transform: rotate(180deg); }
 
-        .stat-row { margin-bottom: 10px; cursor: pointer; border-radius: 6px; padding: 5px 8px; border: 1px solid transparent;}
+        /* Animación fluida de apertura/cierre */
+        .widget-content-wrapper {
+            display: grid; grid-template-rows: 0fr;
+            transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .widget.open .widget-content-wrapper { grid-template-rows: 1fr; }
+        
+        .widget-content { overflow: hidden; padding: 0 24px; }
+        .widget.open .widget-content { padding-bottom: 16px; }
+
+        .stat-row { 
+            margin-bottom: 8px; cursor: pointer; border-radius: 4px; 
+            padding: 5px 8px; border: 1px solid transparent; transition: 0.2s;
+        }
         .stat-row:last-child { margin-bottom: 0; }
         .stat-row:hover { background: var(--row-hover); }
-        .stat-row.active { background: var(--row-active); border-color: var(--highlight); }
+        .stat-row.active { background: var(--row-active); border-color: transparent; }
         .stat-row.active .stat-info { color: var(--highlight); font-weight: 600; }
         
-        .stat-info { 
-            display: flex; justify-content: space-between; font-size: 0.85rem; 
-            margin-bottom: 6px; color: var(--text-main); 
-        }
-        .stat-bar-bg { background: var(--bar-bg); height: 4px; border-radius: 10px; overflow: hidden; }
-        .stat-bar-fill { height: 100%; transition: width 0.5s ease; border-radius: 10px; }
+        .stat-info { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; color: var(--text-main); transition: 0.2s; }
+        .stat-bar-bg { background: var(--bar-bg); height: 4px; border-radius: 4px; overflow: hidden; }
+        .stat-bar-fill { height: 100%; transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1); border-radius: 4px; }
 
-        /* Popups */
-        .leaflet-popup-content-wrapper { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 12px; }
-        .leaflet-popup-tip { background: var(--card-bg); }
+        /* Popups del Mapa */
+        .leaflet-popup-content-wrapper { background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .leaflet-popup-tip { background: var(--panel-bg); border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
         .popup-container { max-height: 250px; overflow-y: auto; font-size: 11px; width: 220px; }
-        .p-title { color: var(--highlight); font-weight: 900; font-size: 14px; display: block; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
+        .p-title { color: var(--highlight); font-weight: 700; font-size: 13px; display: block; margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
         .p-row { border-bottom: 1px solid var(--border-color); padding: 5px 0; display: flex; flex-direction: column; gap: 2px;}
+        .p-row:last-child { border-bottom: none; }
         .p-label { font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 9px; }
-
-        #clear-btn { display: none; margin-top: 20px; padding: 12px; background: var(--btn-bg); color: var(--text-main); border: none; border-radius: 10px; width: 100%; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
-        #clear-btn:hover { background: var(--btn-hover); color: #fff; }
     </style>
 </head>
 <body data-theme="dark">
 
     <div id="dashboard">
-        <h1>ARTES VIVAS CDMX</h1>
-        <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar por nombre..." oninput="updateSearch()">
-        
-        <div class="counter-section">
-            <div class="counter-info">
-                <span class="total-label">Total Espacios</span>
-                <span id="total-count" class="total-counter">0</span>
+        <div class="dashboard-header">
+            <h1>ARTES VIVAS CDMX</h1>
+            <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar espacio..." oninput="updateSearch()">
+            
+            <div class="counter-section">
+                <div class="counter-info">
+                    <span class="total-label">Total Espacios</span>
+                    <div class="counter-row">
+                        <span id="total-count" class="total-counter">0</span>
+                        <span id="pct-count" class="percentage-badge"></span>
+                    </div>
+                </div>
+                <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Filtros</button>
             </div>
-            <span id="pct-count" class="percentage-badge">0%</span>
         </div>
         
         <div id="stats-container"></div>
-        <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
     </div>
 
     <div id="map">
@@ -186,25 +220,27 @@
             "Venustiano Carranza": "#FF69B4"
         };
 
+        // Icono SVG para el Acordeón
+        const chevronIcon = `<svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+
         // --- STATE ---
         let allData = [];
         let activeFilters = { condicion_mobiliaria: [], circuito: [], estatus: [], disciplina: [], alcaldia: [] }; 
         let searchQuery = "";
         let curC = 0, curP = 0;
 
-        // --- CONFIGURACIÓN DE MAPA Y CAPAS TEMÁTICAS ---
+        // --- CONFIGURACIÓN DE MAPA ---
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
         L.control.zoom({ position: 'bottomright' }).addTo(map);
         
         const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
         const lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
         
-        darkTiles.addTo(map); // Inicia en oscuro
+        darkTiles.addTo(map);
         
         map.createPane('alcPane').style.zIndex = 200;
         map.createPane('markerPane').style.zIndex = 650;
         const markersLayer = L.layerGroup().addTo(map);
-        let alcaldiasLayer = null;
 
         // Lógica Cambio de Tema
         function toggleTheme() {
@@ -222,32 +258,36 @@
                 darkTiles.addTo(map);
                 btn.textContent = '🌞';
             }
-            updateView(); // Refresca colores de marcadores
+            updateView(); 
         }
 
         // 1. CARGAR ALCALDÍAS
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/cdmx-alcaldias.geojson')
             .then(res => res.json())
             .then(data => {
-                alcaldiasLayer = L.geoJSON(data, {
+                L.geoJSON(data, {
                     pane: 'alcPane',
                     style: (f) => {
                         const color = alcPalette[f.properties.NOMGEO] || "#333";
-                        return { fillColor: color, weight: 1.5, color: color, fillOpacity: 0.1, opacity: 0.5 };
+                        return { fillColor: color, weight: 1.5, color: color, fillOpacity: 0.08, opacity: 0.4 };
                     },
                     onEachFeature: (f, l) => l.bindTooltip(f.properties.NOMGEO)
                 }).addTo(map);
             });
 
-        // 2. CARGAR GEOJSON RECINTOS (A prueba de fallos)
+        // 2. CARGAR GEOJSON RECINTOS (Rescate de los 290)
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/data/av-data-cdmx-20230122.geojson')
             .then(res => res.json())
             .then(data => {
                 allData = data.features.map(f => {
                     let lng = null, lat = null;
+                    // Búsqueda exhaustiva de coordenadas para no perder ningún punto en el conteo total
                     if (f.geometry && f.geometry.coordinates) {
                         lng = f.geometry.coordinates[0];
                         lat = f.geometry.coordinates[1];
+                    } else if (f.properties) {
+                        lng = f.properties.longitud || f.properties.lng || null;
+                        lat = f.properties.latitud || f.properties.lat || null;
                     }
                     return { lat: lat, longitud: lng, ...f.properties };
                 });
@@ -265,47 +305,47 @@
                 return matchesFilters && matchesSearch;
             });
 
+            // Se anima y se usa la longitud REAL de todos los datos parseados (290)
             animateCounters(filtered.length, allData.length);
             markersLayer.clearLayers();
 
-            // Detecta qué tema está activo para asignar el color del "Click"
-            const activeHex = document.body.getAttribute('data-theme') === 'dark' ? '#00d2ff' : '#007aff';
-            const borderHex = document.body.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#333333';
+            const activeHex = document.body.getAttribute('data-theme') === 'dark' ? '#1785FB' : '#1785FB';
+            const borderHex = document.body.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#111111';
 
             filtered.forEach(p => {
                 const lat = parseFloat(p.lat);
                 const lng = parseFloat(p.longitud); 
                 
+                // Si el punto no tiene coordenada, se cuenta en los widgets pero no se dibuja, evitando que Leaflet colapse.
                 if (!isNaN(lat) && !isNaN(lng)) {
                     const marker = L.circleMarker([lat, lng], {
-                        pane: 'markerPane', radius: 6, 
+                        pane: 'markerPane', radius: 5.5, 
                         fillColor: discColors[p.disciplina] || '#555',
-                        color: borderHex, weight: 1.5, fillOpacity: 0.9
+                        color: borderHex, weight: 1.5, fillOpacity: 0.95
                     });
 
                     marker.bindPopup(createPopup(p));
                     marker.on('mouseover', function() { if(!this._pinned) this.openPopup(); });
                     marker.on('mouseout', function() { if(!this._pinned) this.closePopup(); });
                     
-                    // El clic seguro con variables Hex
                     marker.on('click', function() {
-                        markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: borderHex, weight: 1.5}); });
+                        markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: borderHex, weight: 1.5, radius: 5.5}); });
                         this._pinned = true; 
-                        this.setStyle({color: activeHex, weight: 3});
+                        this.setStyle({color: activeHex, weight: 3, radius: 7});
                         this.openPopup();
                     });
                     marker.addTo(markersLayer);
                 }
             });
 
+            // Mostrar el botón Limpiar solo si hay un filtro o texto activo
             document.getElementById('clear-btn').style.display = isAnyFilterActive() ? 'block' : 'none';
             renderAllWidgets(filtered);
         }
 
-        // Clic en el mapa para deseleccionar
         map.on('click', function() {
-            const borderHex = document.body.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#333333';
-            markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: borderHex, weight: 1.5}); });
+            const borderHex = document.body.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#111111';
+            markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: borderHex, weight: 1.5, radius: 5.5}); });
         });
 
         function isAnyFilterActive() {
@@ -315,6 +355,7 @@
         // --- LÓGICA DE WIDGETS ---
         function renderAllWidgets(filteredData) {
             const container = document.getElementById('stats-container');
+            const openWidgets = Array.from(document.querySelectorAll('.widget.open')).map(w => w.dataset.col);
             container.innerHTML = '';
 
             const cols = ['condicion_mobiliaria', 'circuito', 'estatus', 'disciplina', 'alcaldia'];
@@ -342,9 +383,18 @@
                 if (Object.keys(counts).length === 0) return;
 
                 const widget = document.createElement('div');
-                widget.className = 'widget';
+                // Abiertos por defecto si es Disciplina, o si estaban abiertos antes del redibujo
+                widget.className = `widget ${openWidgets.includes(col) || (col === 'disciplina' && !isAnyFilterActive()) ? 'open' : 'open'}`; // Cambiado a open para que todos inicien desplegados al estilo CARTO si se desea.
+                widget.dataset.col = col;
 
-                let html = `<div class="widget-header">${labelMap[col]}</div>`;
+                let html = `
+                    <div class="widget-header" onclick="this.parentElement.classList.toggle('open')">
+                        <span>${labelMap[col]}</span>
+                        ${chevronIcon}
+                    </div>
+                    <div class="widget-content-wrapper">
+                        <div class="widget-content">
+                `;
                 
                 Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
                     const isActive = activeFilters[col].map(String).includes(String(val));
@@ -357,6 +407,8 @@
                             <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${barP}%; background:${barC}"></div></div>
                         </div>`;
                 });
+                
+                html += `</div></div>`;
                 widget.innerHTML = html;
                 container.appendChild(widget);
             });
@@ -364,8 +416,11 @@
 
         function toggleMultiFilter(col, val) {
             const index = activeFilters[col].indexOf(val);
-            if (index > -1) activeFilters[col].splice(index, 1);
-            else activeFilters[col].push(val);
+            if (index > -1) {
+                activeFilters[col].splice(index, 1);
+            } else {
+                activeFilters[col].push(val);
+            }
             updateView();
         }
 
@@ -374,7 +429,7 @@
             const popupMap = { 'disciplina':'Disciplina', 'alcaldia':'Alcaldía', 'aforo':'Aforo', 'ano_ap':'Apertura' };
             Object.entries(popupMap).forEach(([key, label]) => {
                 if (p[key] && p[key] !== 0 && p[key] !== "0") {
-                    html += `<div class="p-row"><span class="p-label">${label}</span><span>${p[key]}</span></div>`;
+                    html += `<div class="p-row"><span class="p-label">${label}</span><span style="font-weight:500">${p[key]}</span></div>`;
                 }
             });
             return html + `</div>`;
@@ -387,6 +442,10 @@
             const targetP = universeTotal > 0 ? (targetC / universeTotal * 100) : 0;
             const startC = curC, startP = curP, dur = 400;
             let startT = null;
+            
+            // Colorea el texto si hay filtros aplicados
+            cEl.style.color = (targetC === universeTotal) ? 'var(--text-main)' : 'var(--highlight)';
+
             function step(t) {
                 if (!startT) startT = t;
                 const prog = Math.min((t - startT) / dur, 1);
@@ -395,7 +454,7 @@
                 cEl.textContent = Math.floor(curC);
                 
                 if(targetC === universeTotal) pEl.textContent = "";
-                else pEl.textContent = curP.toFixed(0) + "%";
+                else pEl.textContent = "(" + curP.toFixed(0) + "%)";
 
                 if (prog < 1) requestAnimationFrame(step);
             }
