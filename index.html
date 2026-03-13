@@ -85,10 +85,11 @@
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-
+    
     <script>
         // --- DATA MAPS ---
+        // Asegúrate de que los nombres de las propiedades aquí (ej. 'disciplina') coincidan 
+        // EXACTAMENTE con las propiedades dentro de tu nuevo GeoJSON.
         const labelMap = {
             'disciplina': 'Disciplina', 'alcaldia': 'Alcaldía', 'condicion_mobiliaria': 'Condición mobiliaria',
             'circuito': 'Circuito', 'aforo': 'Aforo', 'ano_ap': 'Año Apertura',
@@ -111,8 +112,7 @@
         };
 
         // --- STATE ---
-        let allData = [];
-        // Filtros ahora guardan ARRAYS para permitir multiselección
+        let allData = []; // Ahora guardará objetos con { lat, lng, props }
         let activeFilters = {
             disciplina: [], alcaldia: [], condicion_mobiliaria: [],
             circuito: [], aforo: [], ano_ap: [], ano_cl: [], 
@@ -129,7 +129,7 @@
         map.createPane('markerPane').style.zIndex = 650;
         const markersLayer = L.layerGroup().addTo(map);
 
-        // 1. Alcaldías
+        // 1. CARGAR ALCALDÍAS (Polígonos de Fondo)
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/cdmx-alcaldias.geojson')
             .then(res => res.json())
             .then(data => {
@@ -143,15 +143,23 @@
                 }).addTo(map);
             });
 
-        // 2. Datos CSV
-        Papa.parse('https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv', {
-            download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
-            complete: r => { 
-                allData = r.data || []; 
+        // 2. CARGAR NUEVO GEOJSON DE RECINTOS
+        fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/data/av-data-cdmx-20230122.geojson')
+            .then(res => res.json())
+            .then(data => {
+                // Transformar las features del GeoJSON al array plano que necesita el dashboard
+                allData = data.features.map(f => {
+                    // Extraer coordenadas asumiendo que es Point [lng, lat]
+                    let lng = f.geometry.coordinates[0];
+                    let lat = f.geometry.coordinates[1];
+                    
+                    // Combinar lat, lng y todas las propiedades en un solo objeto plano
+                    return { lat: lat, longitud: lng, ...f.properties };
+                });
+
                 document.getElementById('universe-total').textContent = allData.length;
                 updateView();
-            }
-        });
+            });
 
         function updateView() {
             // Filtrar puntos para el mapa
@@ -160,7 +168,11 @@
                     if (selecteds.length === 0) return true;
                     return selecteds.map(String).includes(String(d[col]));
                 });
-                const matchesSearch = d.nombre.toLowerCase().includes(searchQuery.toLowerCase());
+                
+                // Asegurar que 'nombre' exista en las propiedades antes de buscar
+                const nombre = d.nombre || ""; 
+                const matchesSearch = nombre.toLowerCase().includes(searchQuery.toLowerCase());
+                
                 return matchesFilters && matchesSearch;
             });
 
@@ -168,7 +180,9 @@
 
             markersLayer.clearLayers();
             filtered.forEach(p => {
-                const lat = parseFloat(p.latitud), lng = parseFloat(p.longitud);
+                const lat = parseFloat(p.lat);
+                const lng = parseFloat(p.longitud); // Usamos longitud porque lo mapeamos así arriba
+                
                 if (!isNaN(lat) && !isNaN(lng)) {
                     const marker = L.circleMarker([lat, lng], {
                         pane: 'markerPane', radius: 8, 
@@ -202,22 +216,22 @@
             container.innerHTML = '';
 
             Object.keys(activeFilters).forEach(col => {
-                // Cálculo de Facetas: Para que un widget no "desaparezca" lo que no está seleccionado,
-                // calculamos sus conteos basados en TODOS los filtros EXCEPTO el suyo propio.
                 const otherFilters = {...activeFilters};
                 delete otherFilters[col];
 
                 const baseForThisWidget = allData.filter(d => {
-                    return Object.entries(otherFilters).every(([c, selecteds]) => {
+                    const matchesOther = Object.entries(otherFilters).every(([c, selecteds]) => {
                         if (selecteds.length === 0) return true;
                         return selecteds.map(String).includes(String(d[c]));
-                    }) && d.nombre.toLowerCase().includes(searchQuery.toLowerCase());
+                    });
+                    const nombre = d.nombre || "";
+                    return matchesOther && nombre.toLowerCase().includes(searchQuery.toLowerCase());
                 });
 
                 const counts = {};
                 baseForThisWidget.forEach(d => {
                     let v = d[col];
-                    if (v === 0 || v === "0" || v === "" || v === null) v = "Sin dato";
+                    if (v === 0 || v === "0" || v === "" || v === null || v === undefined) v = "Sin dato";
                     counts[v] = (counts[v] || 0) + 1;
                 });
 
@@ -256,7 +270,7 @@
         }
 
         function createPopup(p) {
-            let html = `<div class="popup-container"><span class="p-title">${p.nombre}</span>`;
+            let html = `<div class="popup-container"><span class="p-title">${p.nombre || 'Sin Nombre'}</span>`;
             Object.entries(labelMap).forEach(([key, label]) => {
                 if (p[key] && p[key] !== 0 && p[key] !== "0") {
                     html += `<div class="p-row"><span class="p-label">${label}</span><span>${p[key]}</span></div>`;
