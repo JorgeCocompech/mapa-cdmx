@@ -9,17 +9,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { 
+        /* MOTOR DE TEMAS: VARIABLES CSS */
+        :root { --accent: #ff4757; }
+
+        [data-theme="dark"] {
             --bg-color: #0d0d0d;
             --panel-bg: rgba(20, 20, 20, 0.95);
             --card-bg: #1c1c1e;
             --text-main: #ffffff;
             --text-muted: #8e8e93;
-            --accent: #ff4757; 
             --highlight: #00d2ff;
+            --border-color: #2c2c2e;
+            --input-bg: #111;
+            --row-hover: rgba(255,255,255,0.05);
+            --row-active: rgba(0, 210, 255, 0.15);
+            --bar-bg: #2c2c2e;
+            --btn-bg: #333;
+            --btn-hover: #ff4757;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f2f2f7;
+            --panel-bg: rgba(255, 255, 255, 0.95);
+            --card-bg: #ffffff;
+            --text-main: #1c1c1e;
+            --text-muted: #8e8e93;
+            --highlight: #007aff;
+            --border-color: #e5e5ea;
+            --input-bg: #f2f2f7;
+            --row-hover: rgba(0,0,0,0.03);
+            --row-active: rgba(0, 122, 255, 0.1);
+            --bar-bg: #e5e5ea;
+            --btn-bg: #e5e5ea;
+            --btn-hover: #ff4757;
         }
         
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; transition: background-color 0.3s, border-color 0.3s, color 0.3s; }
         body { 
             margin: 0; padding: 0; font-family: 'Inter', sans-serif; 
             background: var(--bg-color); color: var(--text-main);
@@ -31,14 +56,24 @@
             width: 400px; height: 100%; z-index: 1000;
             background: var(--panel-bg); backdrop-filter: blur(15px);
             display: flex; flex-direction: column; padding: 25px;
-            overflow-y: auto; flex-shrink: 0; border-right: 1px solid #2c2c2e;
+            overflow-y: auto; flex-shrink: 0; border-right: 1px solid var(--border-color);
         }
         
-        /* Ocultar scrollbar para un look más limpio */
         #dashboard::-webkit-scrollbar { width: 6px; }
-        #dashboard::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        #dashboard::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
 
-        #map { flex-grow: 1; height: 100%; position: relative; background: #000; }
+        #map { flex-grow: 1; height: 100%; position: relative; background: var(--bg-color); }
+
+        /* Botón de Cambio de Tema */
+        .theme-toggle-btn {
+            position: absolute; top: 20px; right: 20px; z-index: 2000;
+            background: var(--card-bg); color: var(--text-main);
+            border: 1px solid var(--border-color);
+            width: 45px; height: 45px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .theme-toggle-btn:hover { transform: scale(1.05); }
 
         /* Eliminar recuadro azul en SVG */
         path.leaflet-interactive:focus { outline: none !important; }
@@ -48,8 +83,8 @@
         
         .search-box {
             margin-bottom: 25px; padding: 14px; width: 100%;
-            border: 1px solid #333; border-radius: 10px;
-            background: #111; color: var(--text-main);
+            border: 1px solid var(--border-color); border-radius: 10px;
+            background: var(--input-bg); color: var(--text-main);
             font-family: inherit; font-size: 0.9rem; outline: none; transition: 0.3s;
         }
         .search-box:focus { border-color: var(--highlight); }
@@ -58,7 +93,7 @@
         .counter-section { 
             display: flex; align-items: baseline; gap: 15px;
             margin-bottom: 30px; padding-bottom: 25px;
-            border-bottom: 1px solid #2c2c2e;
+            border-bottom: 1px solid var(--border-color);
         }
         .counter-info { display: flex; flex-direction: column; }
         .total-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
@@ -70,41 +105,39 @@
         
         .widget { 
             background: var(--card-bg); border-radius: 14px; 
-            padding: 18px; border: 1px solid #2c2c2e;
+            padding: 18px; border: 1px solid var(--border-color);
         }
         .widget-header { 
             font-size: 0.7rem; font-weight: 800; color: var(--text-muted); 
             text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px;
         }
 
-        .stat-row { 
-            margin-bottom: 10px; cursor: pointer; transition: 0.2s; 
-        }
+        .stat-row { margin-bottom: 10px; cursor: pointer; border-radius: 6px; padding: 5px 8px; border: 1px solid transparent;}
         .stat-row:last-child { margin-bottom: 0; }
-        .stat-row:hover .stat-info { color: var(--highlight); }
+        .stat-row:hover { background: var(--row-hover); }
+        .stat-row.active { background: var(--row-active); border-color: var(--highlight); }
         .stat-row.active .stat-info { color: var(--highlight); font-weight: 600; }
-        .stat-row.active .stat-bar-fill { box-shadow: 0 0 10px rgba(0, 210, 255, 0.5); }
         
         .stat-info { 
             display: flex; justify-content: space-between; font-size: 0.85rem; 
-            margin-bottom: 6px; color: #d1d1d6; transition: 0.2s;
+            margin-bottom: 6px; color: var(--text-main); 
         }
-        .stat-bar-bg { background: #2c2c2e; height: 4px; border-radius: 10px; overflow: hidden; }
+        .stat-bar-bg { background: var(--bar-bg); height: 4px; border-radius: 10px; overflow: hidden; }
         .stat-bar-fill { height: 100%; transition: width 0.5s ease; border-radius: 10px; }
 
         /* Popups */
-        .leaflet-popup-content-wrapper { background: var(--card-bg); color: var(--text-main); border: 1px solid #333; border-radius: 12px; }
+        .leaflet-popup-content-wrapper { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 12px; }
         .leaflet-popup-tip { background: var(--card-bg); }
         .popup-container { max-height: 250px; overflow-y: auto; font-size: 11px; width: 220px; }
-        .p-title { color: var(--highlight); font-weight: 900; font-size: 14px; display: block; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 6px; }
-        .p-row { border-bottom: 1px solid #222; padding: 5px 0; display: flex; flex-direction: column; gap: 2px;}
+        .p-title { color: var(--highlight); font-weight: 900; font-size: 14px; display: block; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
+        .p-row { border-bottom: 1px solid var(--border-color); padding: 5px 0; display: flex; flex-direction: column; gap: 2px;}
         .p-label { font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 9px; }
 
-        #clear-btn { display: none; margin-top: 20px; padding: 12px; background: #333; color: white; border: none; border-radius: 10px; width: 100%; cursor: pointer; font-weight: 600; font-size: 0.8rem; transition: 0.2s;}
-        #clear-btn:hover { background: var(--accent); }
+        #clear-btn { display: none; margin-top: 20px; padding: 12px; background: var(--btn-bg); color: var(--text-main); border: none; border-radius: 10px; width: 100%; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
+        #clear-btn:hover { background: var(--btn-hover); color: #fff; }
     </style>
 </head>
-<body>
+<body data-theme="dark">
 
     <div id="dashboard">
         <h1>ARTES VIVAS CDMX</h1>
@@ -122,7 +155,9 @@
         <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
     </div>
 
-    <div id="map"></div>
+    <div id="map">
+        <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Cambiar Tema">🌞</button>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -153,27 +188,48 @@
 
         // --- STATE ---
         let allData = [];
-        let activeFilters = {
-            condicion_mobiliaria: [], circuito: [], estatus: [],
-            disciplina: [], alcaldia: []
-        }; 
+        let activeFilters = { condicion_mobiliaria: [], circuito: [], estatus: [], disciplina: [], alcaldia: [] }; 
         let searchQuery = "";
         let curC = 0, curP = 0;
 
-        // Configuración de Mapa Oscuro (Carto Dark Matter)
+        // --- CONFIGURACIÓN DE MAPA Y CAPAS TEMÁTICAS ---
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
         L.control.zoom({ position: 'bottomright' }).addTo(map);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' }).addTo(map);
+        
+        const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
+        const lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
+        
+        darkTiles.addTo(map); // Inicia en oscuro
         
         map.createPane('alcPane').style.zIndex = 200;
         map.createPane('markerPane').style.zIndex = 650;
         const markersLayer = L.layerGroup().addTo(map);
+        let alcaldiasLayer = null;
+
+        // Lógica Cambio de Tema
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('theme-btn');
+            
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                map.removeLayer(darkTiles);
+                lightTiles.addTo(map);
+                btn.textContent = '🌙';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                map.removeLayer(lightTiles);
+                darkTiles.addTo(map);
+                btn.textContent = '🌞';
+            }
+            updateView(); // Refresca colores de marcadores
+        }
 
         // 1. CARGAR ALCALDÍAS
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/cdmx-alcaldias.geojson')
             .then(res => res.json())
             .then(data => {
-                L.geoJSON(data, {
+                alcaldiasLayer = L.geoJSON(data, {
                     pane: 'alcPane',
                     style: (f) => {
                         const color = alcPalette[f.properties.NOMGEO] || "#333";
@@ -183,12 +239,11 @@
                 }).addTo(map);
             });
 
-        // 2. CARGAR NUEVO GEOJSON DE RECINTOS (A prueba de fallos geométricos)
+        // 2. CARGAR GEOJSON RECINTOS (A prueba de fallos)
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/data/av-data-cdmx-20230122.geojson')
             .then(res => res.json())
             .then(data => {
                 allData = data.features.map(f => {
-                    // Validar si el punto tiene geometría para no romper el array
                     let lng = null, lat = null;
                     if (f.geometry && f.geometry.coordinates) {
                         lng = f.geometry.coordinates[0];
@@ -211,26 +266,33 @@
             });
 
             animateCounters(filtered.length, allData.length);
-
             markersLayer.clearLayers();
+
+            // Detecta qué tema está activo para asignar el color del "Click"
+            const activeHex = document.body.getAttribute('data-theme') === 'dark' ? '#00d2ff' : '#007aff';
+            const borderHex = document.body.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#333333';
+
             filtered.forEach(p => {
                 const lat = parseFloat(p.lat);
                 const lng = parseFloat(p.longitud); 
                 
-                // Solo dibuja en el mapa si las coordenadas existen y son números
                 if (!isNaN(lat) && !isNaN(lng)) {
                     const marker = L.circleMarker([lat, lng], {
                         pane: 'markerPane', radius: 6, 
                         fillColor: discColors[p.disciplina] || '#555',
-                        color: "#fff", weight: 1.5, fillOpacity: 0.9
+                        color: borderHex, weight: 1.5, fillOpacity: 0.9
                     });
 
                     marker.bindPopup(createPopup(p));
                     marker.on('mouseover', function() { if(!this._pinned) this.openPopup(); });
                     marker.on('mouseout', function() { if(!this._pinned) this.closePopup(); });
+                    
+                    // El clic seguro con variables Hex
                     marker.on('click', function() {
-                        markersLayer.eachLayer(m => m._pinned = false);
-                        this._pinned = true; this.openPopup();
+                        markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: borderHex, weight: 1.5}); });
+                        this._pinned = true; 
+                        this.setStyle({color: activeHex, weight: 3});
+                        this.openPopup();
                     });
                     marker.addTo(markersLayer);
                 }
@@ -239,6 +301,12 @@
             document.getElementById('clear-btn').style.display = isAnyFilterActive() ? 'block' : 'none';
             renderAllWidgets(filtered);
         }
+
+        // Clic en el mapa para deseleccionar
+        map.on('click', function() {
+            const borderHex = document.body.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#333333';
+            markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: borderHex, weight: 1.5}); });
+        });
 
         function isAnyFilterActive() {
             return Object.values(activeFilters).some(arr => arr.length > 0) || searchQuery !== "";
@@ -249,7 +317,6 @@
             const container = document.getElementById('stats-container');
             container.innerHTML = '';
 
-            // El ORDEN EXACTO que solicitaste
             const cols = ['condicion_mobiliaria', 'circuito', 'estatus', 'disciplina', 'alcaldia'];
 
             cols.forEach(col => {
@@ -282,7 +349,6 @@
                 Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
                     const isActive = activeFilters[col].map(String).includes(String(val));
                     const barP = (count / baseForThisWidget.length * 100).toFixed(0);
-                    // Color azul por defecto, a menos que sea disciplina
                     const barC = col === 'disciplina' ? (discColors[val] || 'var(--highlight)') : 'var(--highlight)';
 
                     html += `
@@ -298,17 +364,13 @@
 
         function toggleMultiFilter(col, val) {
             const index = activeFilters[col].indexOf(val);
-            if (index > -1) {
-                activeFilters[col].splice(index, 1);
-            } else {
-                activeFilters[col].push(val);
-            }
+            if (index > -1) activeFilters[col].splice(index, 1);
+            else activeFilters[col].push(val);
             updateView();
         }
 
         function createPopup(p) {
             let html = `<div class="popup-container"><span class="p-title">${p.nombre || 'Sin Nombre'}</span>`;
-            // Etiquetas del popup simplificadas para mostrar info útil
             const popupMap = { 'disciplina':'Disciplina', 'alcaldia':'Alcaldía', 'aforo':'Aforo', 'ano_ap':'Apertura' };
             Object.entries(popupMap).forEach(([key, label]) => {
                 if (p[key] && p[key] !== 0 && p[key] !== "0") {
@@ -322,4 +384,29 @@
         
         function animateCounters(targetC, universeTotal) {
             const cEl = document.getElementById('total-count'), pEl = document.getElementById('pct-count');
-            const targetP = universeTotal > 0 ? (
+            const targetP = universeTotal > 0 ? (targetC / universeTotal * 100) : 0;
+            const startC = curC, startP = curP, dur = 400;
+            let startT = null;
+            function step(t) {
+                if (!startT) startT = t;
+                const prog = Math.min((t - startT) / dur, 1);
+                curC = prog * (targetC - startC) + startC;
+                curP = prog * (targetP - startP) + startP;
+                cEl.textContent = Math.floor(curC);
+                
+                if(targetC === universeTotal) pEl.textContent = "";
+                else pEl.textContent = curP.toFixed(0) + "%";
+
+                if (prog < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+
+        function clearAllFilters() { 
+            Object.keys(activeFilters).forEach(k => activeFilters[k] = []);
+            document.getElementById('search-input').value = ""; searchQuery = ""; 
+            updateView(); 
+        }
+    </script>
+</body>
+</html>
