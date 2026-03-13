@@ -73,7 +73,7 @@
             max-width: 250px;
             margin: 0 auto 20px auto; 
             height: auto;
-            transition: opacity 0.3s; /* Transición suave al cambiar logo */
+            transition: opacity 0.3s; 
         }
 
         /* Títulos */
@@ -209,7 +209,7 @@
     <div id="main-wrapper">
         <div id="dashboard">
             <div class="dashboard-header">
-                <img src="logo-opc-uacm.svg" class="header-logo theme-logo" alt="Logo Observatorio UACM">
+                <img src="https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm.svg" class="header-logo theme-logo" alt="Logo Observatorio UACM">
                 <h1>ARTES VIVAS CDMX</h1>
                 <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar espacio..." oninput="updateSearch()">
             </div>
@@ -242,7 +242,7 @@
     <footer id="app-footer">
         <div class="footer-logo">
             <p align="center" style="margin: 0;">
-                <img src="logo-opc-uacm.svg" class="theme-logo" alt="Logo Observatorio UACM">
+                <img src="https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm.svg" class="theme-logo" alt="Logo Observatorio UACM">
             </p>
         </div>
         <div class="footer-actions">
@@ -309,20 +309,22 @@
         function toggleTheme() {
             const body = document.body;
             const btn = document.getElementById('theme-btn');
-            const themeLogos = document.querySelectorAll('.theme-logo'); // Busca todos los logos
+            const themeLogos = document.querySelectorAll('.theme-logo');
+            
+            // Rutas absolutas
+            const darkLogoUrl = 'https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm-inv.svg';
+            const lightLogoUrl = 'https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm.svg';
             
             if (body.getAttribute('data-theme') === 'light') {
-                // Pasando a Dark Mode
                 body.setAttribute('data-theme', 'dark');
                 map.removeLayer(lightTiles); darkTiles.addTo(map);
                 btn.textContent = '🌞';
-                themeLogos.forEach(img => img.src = 'logo-opc-uacm-inv.svg');
+                themeLogos.forEach(img => img.src = darkLogoUrl);
             } else {
-                // Pasando a Light Mode
                 body.setAttribute('data-theme', 'light');
                 map.removeLayer(darkTiles); lightTiles.addTo(map);
                 btn.textContent = '🌙';
-                themeLogos.forEach(img => img.src = 'logo-opc-uacm.svg');
+                themeLogos.forEach(img => img.src = lightLogoUrl);
             }
             updateView(); 
         }
