@@ -159,14 +159,17 @@
         }
         #clear-btn:hover { background: var(--accent); color: #fff; }
 
-        /* Popups */
-        .leaflet-popup-content-wrapper { background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; }
-        .leaflet-popup-tip { background: var(--panel-bg); }
-        .popup-container { max-height: 250px; overflow-y: auto; font-size: 11px; width: 220px; }
-        .p-title { color: var(--highlight); font-weight: 700; font-size: 13px; display: block; margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
+        /* Popups del Mapa */
+        .leaflet-popup-content-wrapper { background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .leaflet-popup-tip { background: var(--panel-bg); border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
+        .popup-container { max-height: 280px; overflow-y: auto; font-size: 11px; width: 230px; }
+        .p-title { color: var(--highlight); font-weight: 700; font-size: 13px; display: block; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; line-height: 1.3;}
         .p-row { border-bottom: 1px solid var(--border-color); padding: 5px 0; display: flex; flex-direction: column; gap: 2px;}
         .p-row:last-child { border-bottom: none; }
         .p-label { font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 9px; }
+        
+        /* Formato especial para los enlaces de contacto */
+        .p-contact-item { font-weight: 500; margin-top: 2px; word-break: break-word; color: var(--text-main); }
     </style>
 </head>
 <body data-theme="dark">
@@ -190,7 +193,6 @@
                         </div>
                         
                         <div id="data-alert" class="data-alert"></div>
-
                         <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
                     </div>
                 </div>
@@ -236,6 +238,7 @@
         let activeFilters = { condicion_mobiliaria: [], circuito: [], estatus: [], disciplina: [], alcaldia: [] }; 
         let searchQuery = "";
         let curC = 0;
+        let isFirstRender = true; // Variable para controlar el estado inicial de los widgets
 
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
         L.control.zoom({ position: 'bottomright' }).addTo(map);
@@ -276,7 +279,7 @@
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/data/av-data-cdmx-20230122.geojson')
             .then(res => res.json())
             .then(data => {
-                let perdidosArr = []; // Array para guardar los que no tienen coordenadas
+                let perdidosArr = [];
 
                 allData = data.features.map(f => {
                     let lng = null, lat = null;
@@ -288,7 +291,6 @@
                         lat = f.properties.latitud || f.properties.lat || null;
                     }
                     
-                    // Si sigue siendo inválido, lo atrapamos
                     if(isNaN(parseFloat(lat)) || isNaN(parseFloat(lng))) {
                         perdidosArr.push(f.properties.nombre || "Espacio sin nombre");
                     }
@@ -296,12 +298,11 @@
                     return { lat: lat, longitud: lng, ...f.properties };
                 });
 
-                // IMPRESIÓN DE ALERTA DE ESPACIOS FALTANTES EN LA UI
                 if(perdidosArr.length > 0) {
                     const alertBox = document.getElementById('data-alert');
                     alertBox.style.display = 'block';
                     alertBox.innerHTML = `<strong>⚠️ ${perdidosArr.length} espacios sin coordenadas:</strong><br><ul style="margin:5px 0 0 0; padding-left:15px; text-transform:none;">` 
-                        + perdidosArr.map(n => `<li>${n}</li>`).join('') + "</ul><br>Estos espacios suman en estadística pero no aparecen en el mapa.";
+                        + perdidosArr.map(n => `<li>${n}</li>`).join('') + "</ul><br>Se suman en estadística pero no aparecen en el mapa.";
                 }
 
                 updateView();
@@ -339,7 +340,6 @@
 
                     marker.bindPopup(createPopup(p), { autoPan: false });
 
-                    // --- INTERACCIÓN RESTAURADA (HOVER & CLICK PREMIUM) ---
                     marker.on('mouseover', function() { 
                         if(!this._pinned) {
                             this.openPopup(); 
@@ -355,12 +355,10 @@
                     });
                     
                     marker.on('click', function() {
-                        // Resetea todos los demás
                         markersLayer.eachLayer(m => { 
                             m._pinned = false; 
                             m.setStyle({color: borderHex, weight: 1.5, radius: 5.5}); 
                         });
-                        // Ancla el click actual
                         this._pinned = true; 
                         this.setStyle({color: activeHex, weight: 4, radius: 8});
                         this.openPopup();
@@ -390,7 +388,7 @@
 
             const cols = ['condicion_mobiliaria', 'circuito', 'estatus', 'disciplina', 'alcaldia'];
 
-            cols.forEach(col => {
+            cols.forEach((col, index) => {
                 const otherFilters = {...activeFilters};
                 delete otherFilters[col];
 
@@ -414,9 +412,16 @@
 
                 if (Object.keys(counts).length === 0) return;
 
+                // Lógica de Acordeón: Solo el primer widget abierto en la carga inicial
+                let isOpen = false;
+                if (isFirstRender) {
+                    isOpen = (index === 0);
+                } else {
+                    isOpen = openWidgets.includes(col);
+                }
+
                 const widget = document.createElement('div');
-                const isOpen = openWidgets.includes(col) || (col === 'disciplina' && !isAnyFilterActive());
-                widget.className = `card ${isOpen ? 'open' : 'open'}`; 
+                widget.className = `card ${isOpen ? 'open' : ''}`; 
                 widget.dataset.col = col;
 
                 let html = `
@@ -444,6 +449,9 @@
                 widget.innerHTML = html;
                 container.appendChild(widget);
             });
+
+            // Apagar la bandera de primera carga
+            isFirstRender = false;
         }
 
         function toggleMultiFilter(col, val) {
@@ -453,25 +461,54 @@
             updateView();
         }
 
+        // --- POPUP SÚPER-VITAMINADO ---
         function createPopup(p) {
             let html = `<div class="popup-container"><span class="p-title">${p.nombre || 'Sin Nombre'}</span>`;
-            const popupMap = { 'disciplina':'Disciplina', 'alcaldia':'Alcaldía', 'aforo':'Aforo', 'ano_ap':'Apertura' };
+            
+            // Campos normales solicitados
+            const popupMap = { 
+                'disciplina': 'Disciplina', 
+                'circuito': 'Circuito', 
+                'condicion_mobiliaria': 'Condición Mobiliaria', 
+                'sostenimiento': 'Sostenimiento', 
+                'estatus': 'Estatus', 
+                'clausuras': 'Clausuras', 
+                'aforo': 'Aforo', 
+                'alcaldia': 'Alcaldía' 
+            };
+            
             Object.entries(popupMap).forEach(([key, label]) => {
                 if (p[key] && p[key] !== 0 && p[key] !== "0") {
                     html += `<div class="p-row"><span class="p-label">${label}</span><span style="font-weight:500">${p[key]}</span></div>`;
                 }
             });
+
+            // Lógica Especial para Contacto Segmentado
+            if (p.contacto && p.contacto !== 0 && p.contacto !== "0" && p.contacto.trim() !== "") {
+                html += `<div class="p-row"><span class="p-label">Contacto</span>`;
+                // Separa la cadena por comas o saltos de línea
+                let contactos = p.contacto.split(/[,|\n]+/).map(c => c.trim()).filter(c => c !== "");
+                
+                contactos.forEach(c => {
+                    html += `<span class="p-contact-item">${c}</span>`;
+                });
+                html += `</div>`;
+            }
+
             return html + `</div>`;
         }
 
         function updateSearch() { searchQuery = document.getElementById('search-input').value; updateView(); }
         
+        // Animación de contador blindada contra bugs
+        let animFrameId = null;
         function animateCounters(targetC, universeTotal) {
             const cEl = document.getElementById('total-count'), pEl = document.getElementById('pct-count');
-            const startC = curC, dur = 300;
+            const startC = curC, dur = 250;
             let startT = null;
 
             cEl.style.color = (targetC === universeTotal) ? 'var(--text-main)' : 'var(--highlight)';
+            if(animFrameId) cancelAnimationFrame(animFrameId);
 
             function step(t) {
                 if (!startT) startT = t;
@@ -486,9 +523,14 @@
                     pEl.textContent = `(${pct}%)`;
                 }
 
-                if (prog < 1) requestAnimationFrame(step);
+                if (prog < 1) {
+                    animFrameId = requestAnimationFrame(step);
+                } else {
+                    curC = targetC;
+                    cEl.textContent = targetC;
+                }
             }
-            requestAnimationFrame(step);
+            animFrameId = requestAnimationFrame(step);
         }
 
         function clearAllFilters() { 
