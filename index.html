@@ -14,32 +14,30 @@
 
         [data-theme="dark"] {
             --bg-color: #0d0d0d;
-            --panel-bg: rgba(24, 26, 27, 0.98);
+            --panel-bg: #141414; /* Oscuro sólido como el ejemplo */
             --text-main: #ffffff;
             --text-muted: #8a8f93;
-            --highlight: #1785FB; /* Azul CARTO */
-            --border-color: #313537;
-            --input-bg: #0d0d0d;
-            --row-hover: rgba(255,255,255,0.04);
-            --row-active: rgba(23, 133, 251, 0.1);
-            --bar-bg: #313537;
-            --btn-bg: #2a2e30;
-            --btn-hover: #1785FB;
+            --highlight: #1785FB; /* Azul estilo Carto */
+            --border-color: #262626;
+            --input-bg: #1f1f1f;
+            --card-bg: #1c1c1e;
+            --row-hover: rgba(255,255,255,0.05);
+            --row-active: rgba(23, 133, 251, 0.15);
+            --bar-bg: #333333;
         }
 
         [data-theme="light"] {
             --bg-color: #f5f5f5;
-            --panel-bg: rgba(255, 255, 255, 0.98);
+            --panel-bg: #ffffff;
             --text-main: #2C2C2C;
             --text-muted: #747d82;
             --highlight: #1785FB;
             --border-color: #e2e6e9;
             --input-bg: #f9f9f9;
+            --card-bg: #ffffff;
             --row-hover: rgba(0,0,0,0.03);
-            --row-active: rgba(23, 133, 251, 0.08);
+            --row-active: rgba(23, 133, 251, 0.1);
             --bar-bg: #e2e6e9;
-            --btn-bg: #f0f0f0;
-            --btn-hover: #1785FB;
         }
         
         * { box-sizing: border-box; }
@@ -47,35 +45,32 @@
             margin: 0; padding: 0; font-family: 'Inter', sans-serif; 
             background: var(--bg-color); color: var(--text-main);
             display: flex; height: 100vh; overflow: hidden; 
-            transition: background-color 0.3s, color 0.3s;
         }
         
-        /* Panel Lateral Unificado */
+        /* Panel Lateral (Dashboard) */
         #dashboard {
-            width: 360px; height: 100%; z-index: 1000;
-            background: var(--panel-bg); backdrop-filter: blur(20px);
+            width: 380px; height: 100%; z-index: 1000;
+            background: var(--panel-bg);
             display: flex; flex-direction: column; 
             flex-shrink: 0; border-right: 1px solid var(--border-color);
-            transition: background-color 0.3s, border-color 0.3s;
         }
 
-        /* Cabecera Fija (Título, Buscador, Contador, Botón Limpiar) */
         .dashboard-header {
-            padding: 24px 24px 16px 24px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 24px 20px 10px 20px;
             flex-shrink: 0;
         }
 
-        /* Contenedor Scrolleable para Widgets */
+        /* Contenedor Scrolleable con gap para Bloques Separados */
         #stats-container {
-            flex-grow: 1; overflow-y: auto;
+            flex-grow: 1; overflow-y: auto; padding: 0 20px 20px 20px;
+            display: flex; flex-direction: column; gap: 12px;
         }
         #stats-container::-webkit-scrollbar { width: 5px; }
         #stats-container::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 
-        #map { flex-grow: 1; height: 100%; position: relative; background: var(--bg-color); transition: background-color 0.3s; }
+        #map { flex-grow: 1; height: 100%; position: relative; background: var(--bg-color); }
 
-        /* Botón de Cambio de Tema */
+        /* Botón de Tema Flotante */
         .theme-toggle-btn {
             position: absolute; top: 20px; right: 20px; z-index: 2000;
             background: var(--panel-bg); color: var(--text-main);
@@ -83,70 +78,60 @@
             width: 40px; height: 40px; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
             font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            transition: 0.2s;
         }
-        .theme-toggle-btn:hover { border-color: var(--highlight); color: var(--highlight); }
 
         path.leaflet-interactive:focus { outline: none !important; }
 
         /* Título y Buscador */
-        h1 { font-size: 1.1rem; font-weight: 800; margin: 0 0 16px 0; letter-spacing: 0.2px; }
+        h1 { font-size: 1.1rem; font-weight: 800; margin: 0 0 16px 0; }
         
         .search-box {
-            padding: 12px 14px; width: 100%; margin-bottom: 20px;
-            border: 1px solid var(--border-color); border-radius: 6px;
+            padding: 12px 14px; width: 100%;
+            border: 1px solid var(--border-color); border-radius: 8px;
             background: var(--input-bg); color: var(--text-main);
             font-family: inherit; font-size: 0.85rem; outline: none; transition: 0.2s;
         }
-        .search-box:focus { border-color: var(--highlight); box-shadow: 0 0 0 2px rgba(23,133,251,0.15); }
+        .search-box:focus { border-color: var(--highlight); }
 
-        /* Sección del Contador Total */
-        .counter-section { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
-        .counter-info { display: flex; flex-direction: column; gap: 2px; }
-        .total-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
-        .counter-row { display: flex; align-items: baseline; gap: 12px; }
-        .total-counter { font-size: 3rem; font-weight: 700; color: var(--text-main); line-height: 1; letter-spacing: -1px; transition: color 0.3s; }
-        .percentage-badge { font-size: 1.1rem; font-weight: 600; color: var(--highlight); }
-
-        /* Botón Limpiar (Debajo del contador) */
-        #clear-btn { 
-            display: none; padding: 10px 12px; 
-            background: var(--btn-bg); color: var(--text-main); 
-            border: 1px solid transparent; border-radius: 6px; 
-            cursor: pointer; font-weight: 600; font-size: 0.75rem; 
-            transition: 0.2s; width: 100%; text-align: center; text-transform: uppercase; letter-spacing: 0.5px;
+        /* WIDGETS: BLOQUES SEPARADOS (CARDS) */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            display: flex; flex-direction: column;
+            overflow: hidden; /* Necesario para el acordeón */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        #clear-btn:hover { background: var(--highlight); color: #fff; }
 
-        /* WIDGETS ESTILO ACORDEÓN (SMOOTH TRANSITION) */
-        .widget { border-bottom: 1px solid var(--border-color); }
-        .widget:last-child { border-bottom: none; }
-        
-        .widget-header { 
+        /* ACORDEÓN: CABECERA */
+        .card-header {
             font-size: 0.7rem; font-weight: 700; color: var(--text-muted); 
-            text-transform: uppercase; letter-spacing: 0.5px; 
-            padding: 16px 24px; cursor: pointer; display: flex; 
-            justify-content: space-between; align-items: center;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
             user-select: none; transition: color 0.2s;
         }
-        .widget-header:hover { color: var(--text-main); }
+        .card-header:hover { color: var(--text-main); }
         
-        .chevron { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); stroke: currentColor; }
-        .widget.open .chevron { transform: rotate(180deg); }
+        .chevron { transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); stroke: currentColor; }
+        .card.open .chevron { transform: rotate(180deg); }
 
-        /* Animación fluida de apertura/cierre */
-        .widget-content-wrapper {
+        /* ACORDEÓN: CONTENIDO (EFECTO SMOOTH DELAY) */
+        .card-content-wrapper {
             display: grid; grid-template-rows: 0fr;
             transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .widget.open .widget-content-wrapper { grid-template-rows: 1fr; }
+        .card.open .card-content-wrapper { grid-template-rows: 1fr; }
         
-        .widget-content { overflow: hidden; padding: 0 24px; }
-        .widget.open .widget-content { padding-bottom: 16px; }
+        .card-content { overflow: hidden; padding: 0 16px; }
+        .card.open .card-content { padding-bottom: 16px; }
 
+        /* Estilos del Contador dentro de Card */
+        .total-counter { font-size: 2.8rem; font-weight: 800; color: var(--highlight); line-height: 1; margin-top: 4px;}
+
+        /* Filas de Estadísticas */
         .stat-row { 
-            margin-bottom: 8px; cursor: pointer; border-radius: 4px; 
-            padding: 5px 8px; border: 1px solid transparent; transition: 0.2s;
+            margin-bottom: 8px; cursor: pointer; border-radius: 6px; 
+            padding: 6px 8px; border: 1px solid transparent; transition: 0.2s;
         }
         .stat-row:last-child { margin-bottom: 0; }
         .stat-row:hover { background: var(--row-hover); }
@@ -155,11 +140,21 @@
         
         .stat-info { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; color: var(--text-main); transition: 0.2s; }
         .stat-bar-bg { background: var(--bar-bg); height: 4px; border-radius: 4px; overflow: hidden; }
-        .stat-bar-fill { height: 100%; transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1); border-radius: 4px; }
+        .stat-bar-fill { height: 100%; transition: width 0.4s ease; border-radius: 4px; }
 
-        /* Popups del Mapa */
-        .leaflet-popup-content-wrapper { background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .leaflet-popup-tip { background: var(--panel-bg); border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
+        /* Botón Limpiar (Debajo del contador) */
+        #clear-btn { 
+            display: none; padding: 10px 12px; margin-top: 15px;
+            background: rgba(255, 71, 87, 0.1); color: var(--accent); 
+            border: 1px solid var(--accent); border-radius: 6px; 
+            cursor: pointer; font-weight: 600; font-size: 0.75rem; 
+            transition: 0.2s; width: 100%; text-align: center; text-transform: uppercase;
+        }
+        #clear-btn:hover { background: var(--accent); color: #fff; }
+
+        /* Popups */
+        .leaflet-popup-content-wrapper { background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; }
+        .leaflet-popup-tip { background: var(--panel-bg); }
         .popup-container { max-height: 250px; overflow-y: auto; font-size: 11px; width: 220px; }
         .p-title { color: var(--highlight); font-weight: 700; font-size: 13px; display: block; margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
         .p-row { border-bottom: 1px solid var(--border-color); padding: 5px 0; display: flex; flex-direction: column; gap: 2px;}
@@ -173,20 +168,26 @@
         <div class="dashboard-header">
             <h1>ARTES VIVAS CDMX</h1>
             <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar espacio..." oninput="updateSearch()">
-            
-            <div class="counter-section">
-                <div class="counter-info">
-                    <span class="total-label">Total Espacios</span>
-                    <div class="counter-row">
-                        <span id="total-count" class="total-counter">0</span>
-                        <span id="pct-count" class="percentage-badge"></span>
-                    </div>
-                </div>
-                <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Filtros</button>
-            </div>
         </div>
         
-        <div id="stats-container"></div>
+        <div id="stats-container">
+            <div class="card open">
+                <div class="card-header" style="cursor: default;">
+                    <span>Total Espacios</span>
+                </div>
+                <div class="card-content-wrapper">
+                    <div class="card-content">
+                        <div style="display:flex; align-items:baseline; gap: 10px;">
+                            <span id="total-count" class="total-counter">0</span>
+                            <span id="pct-count" style="color:var(--text-muted); font-weight:600; font-size:0.9rem;"></span>
+                        </div>
+                        <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="dynamic-widgets" style="display: flex; flex-direction: column; gap: 12px;"></div>
+        </div>
     </div>
 
     <div id="map">
@@ -196,13 +197,12 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
-        // --- DATA MAPS ---
         const labelMap = {
-            'condicion_mobiliaria': 'Por Condición Mobiliaria',
-            'circuito': 'Por Circuito',
-            'estatus': 'Por Estatus',
-            'disciplina': 'Por Disciplinas',
-            'alcaldia': 'Por Alcaldía'
+            'condicion_mobiliaria': 'Condición Mobiliaria',
+            'circuito': 'Circuito',
+            'estatus': 'Estatus',
+            'disciplina': 'Disciplinas',
+            'alcaldia': 'Alcaldía'
         };
 
         const discColors = {
@@ -220,42 +220,32 @@
             "Venustiano Carranza": "#FF69B4"
         };
 
-        // Icono SVG para el Acordeón
-        const chevronIcon = `<svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
-
-        // --- STATE ---
         let allData = [];
         let activeFilters = { condicion_mobiliaria: [], circuito: [], estatus: [], disciplina: [], alcaldia: [] }; 
         let searchQuery = "";
-        let curC = 0, curP = 0;
+        let curC = 0;
 
-        // --- CONFIGURACIÓN DE MAPA ---
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
         L.control.zoom({ position: 'bottomright' }).addTo(map);
         
         const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
         const lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
-        
         darkTiles.addTo(map);
         
         map.createPane('alcPane').style.zIndex = 200;
         map.createPane('markerPane').style.zIndex = 650;
         const markersLayer = L.layerGroup().addTo(map);
 
-        // Lógica Cambio de Tema
         function toggleTheme() {
             const body = document.body;
             const btn = document.getElementById('theme-btn');
-            
             if (body.getAttribute('data-theme') === 'dark') {
                 body.setAttribute('data-theme', 'light');
-                map.removeLayer(darkTiles);
-                lightTiles.addTo(map);
+                map.removeLayer(darkTiles); lightTiles.addTo(map);
                 btn.textContent = '🌙';
             } else {
                 body.setAttribute('data-theme', 'dark');
-                map.removeLayer(lightTiles);
-                darkTiles.addTo(map);
+                map.removeLayer(lightTiles); darkTiles.addTo(map);
                 btn.textContent = '🌞';
             }
             updateView(); 
@@ -267,21 +257,18 @@
             .then(data => {
                 L.geoJSON(data, {
                     pane: 'alcPane',
-                    style: (f) => {
-                        const color = alcPalette[f.properties.NOMGEO] || "#333";
-                        return { fillColor: color, weight: 1.5, color: color, fillOpacity: 0.08, opacity: 0.4 };
-                    },
+                    style: (f) => ({ fillColor: alcPalette[f.properties.NOMGEO] || "#333", weight: 1.5, color: "white", fillOpacity: 0.08, opacity: 0.4 }),
                     onEachFeature: (f, l) => l.bindTooltip(f.properties.NOMGEO)
                 }).addTo(map);
             });
 
-        // 2. CARGAR GEOJSON RECINTOS (Rescate de los 290)
+        // 2. CARGAR GEOJSON DE RECINTOS
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/data/av-data-cdmx-20230122.geojson')
             .then(res => res.json())
             .then(data => {
+                // allData tomará la cantidad de features reales, asegurando que sean 290
                 allData = data.features.map(f => {
                     let lng = null, lat = null;
-                    // Búsqueda exhaustiva de coordenadas para no perder ningún punto en el conteo total
                     if (f.geometry && f.geometry.coordinates) {
                         lng = f.geometry.coordinates[0];
                         lat = f.geometry.coordinates[1];
@@ -292,20 +279,22 @@
                     return { lat: lat, longitud: lng, ...f.properties };
                 });
                 updateView();
-            });
+            })
+            .catch(error => console.error("Error cargando GeoJSON:", error));
 
         function updateView() {
             const filtered = allData.filter(d => {
                 const matchesFilters = Object.entries(activeFilters).every(([col, selecteds]) => {
                     if (selecteds.length === 0) return true;
-                    return selecteds.map(String).includes(String(d[col]));
+                    let val = d[col];
+                    if (val === undefined) return false;
+                    return selecteds.includes(String(val));
                 });
                 const nombre = d.nombre || ""; 
                 const matchesSearch = nombre.toLowerCase().includes(searchQuery.toLowerCase());
                 return matchesFilters && matchesSearch;
             });
 
-            // Se anima y se usa la longitud REAL de todos los datos parseados (290)
             animateCounters(filtered.length, allData.length);
             markersLayer.clearLayers();
 
@@ -316,7 +305,7 @@
                 const lat = parseFloat(p.lat);
                 const lng = parseFloat(p.longitud); 
                 
-                // Si el punto no tiene coordenada, se cuenta en los widgets pero no se dibuja, evitando que Leaflet colapse.
+                // Dibuja el punto en el mapa solo si tiene coordenadas válidas
                 if (!isNaN(lat) && !isNaN(lng)) {
                     const marker = L.circleMarker([lat, lng], {
                         pane: 'markerPane', radius: 5.5, 
@@ -325,9 +314,6 @@
                     });
 
                     marker.bindPopup(createPopup(p));
-                    marker.on('mouseover', function() { if(!this._pinned) this.openPopup(); });
-                    marker.on('mouseout', function() { if(!this._pinned) this.closePopup(); });
-                    
                     marker.on('click', function() {
                         markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: borderHex, weight: 1.5, radius: 5.5}); });
                         this._pinned = true; 
@@ -338,7 +324,6 @@
                 }
             });
 
-            // Mostrar el botón Limpiar solo si hay un filtro o texto activo
             document.getElementById('clear-btn').style.display = isAnyFilterActive() ? 'block' : 'none';
             renderAllWidgets(filtered);
         }
@@ -352,10 +337,9 @@
             return Object.values(activeFilters).some(arr => arr.length > 0) || searchQuery !== "";
         }
 
-        // --- LÓGICA DE WIDGETS ---
         function renderAllWidgets(filteredData) {
-            const container = document.getElementById('stats-container');
-            const openWidgets = Array.from(document.querySelectorAll('.widget.open')).map(w => w.dataset.col);
+            const container = document.getElementById('dynamic-widgets');
+            const openWidgets = Array.from(document.querySelectorAll('.card.open')).map(w => w.dataset.col);
             container.innerHTML = '';
 
             const cols = ['condicion_mobiliaria', 'circuito', 'estatus', 'disciplina', 'alcaldia'];
@@ -367,7 +351,9 @@
                 const baseForThisWidget = allData.filter(d => {
                     const matchesOther = Object.entries(otherFilters).every(([c, selecteds]) => {
                         if (selecteds.length === 0) return true;
-                        return selecteds.map(String).includes(String(d[c]));
+                        let val = d[c];
+                        if(val === undefined) return false;
+                        return selecteds.includes(String(val));
                     });
                     const nombre = d.nombre || "";
                     return matchesOther && nombre.toLowerCase().includes(searchQuery.toLowerCase());
@@ -383,21 +369,22 @@
                 if (Object.keys(counts).length === 0) return;
 
                 const widget = document.createElement('div');
-                // Abiertos por defecto si es Disciplina, o si estaban abiertos antes del redibujo
-                widget.className = `widget ${openWidgets.includes(col) || (col === 'disciplina' && !isAnyFilterActive()) ? 'open' : 'open'}`; // Cambiado a open para que todos inicien desplegados al estilo CARTO si se desea.
+                // Abierto por defecto si es disciplina o si estaba abierto antes
+                const isOpen = openWidgets.includes(col) || (col === 'disciplina' && !isAnyFilterActive());
+                widget.className = `card ${isOpen ? 'open' : ''}`;
                 widget.dataset.col = col;
 
                 let html = `
-                    <div class="widget-header" onclick="this.parentElement.classList.toggle('open')">
-                        <span>${labelMap[col]}</span>
-                        ${chevronIcon}
+                    <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+                        <span>Por ${labelMap[col]}</span>
+                        <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
-                    <div class="widget-content-wrapper">
-                        <div class="widget-content">
+                    <div class="card-content-wrapper">
+                        <div class="card-content">
                 `;
                 
                 Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
-                    const isActive = activeFilters[col].map(String).includes(String(val));
+                    const isActive = activeFilters[col].includes(String(val));
                     const barP = (count / baseForThisWidget.length * 100).toFixed(0);
                     const barC = col === 'disciplina' ? (discColors[val] || 'var(--highlight)') : 'var(--highlight)';
 
@@ -416,11 +403,8 @@
 
         function toggleMultiFilter(col, val) {
             const index = activeFilters[col].indexOf(val);
-            if (index > -1) {
-                activeFilters[col].splice(index, 1);
-            } else {
-                activeFilters[col].push(val);
-            }
+            if (index > -1) activeFilters[col].splice(index, 1);
+            else activeFilters[col].push(val);
             updateView();
         }
 
@@ -439,22 +423,21 @@
         
         function animateCounters(targetC, universeTotal) {
             const cEl = document.getElementById('total-count'), pEl = document.getElementById('pct-count');
-            const targetP = universeTotal > 0 ? (targetC / universeTotal * 100) : 0;
-            const startC = curC, startP = curP, dur = 400;
+            const startC = curC, dur = 300;
             let startT = null;
-            
-            // Colorea el texto si hay filtros aplicados
-            cEl.style.color = (targetC === universeTotal) ? 'var(--text-main)' : 'var(--highlight)';
 
             function step(t) {
                 if (!startT) startT = t;
                 const prog = Math.min((t - startT) / dur, 1);
                 curC = prog * (targetC - startC) + startC;
-                curP = prog * (targetP - startP) + startP;
                 cEl.textContent = Math.floor(curC);
                 
-                if(targetC === universeTotal) pEl.textContent = "";
-                else pEl.textContent = "(" + curP.toFixed(0) + "%)";
+                if(targetC === universeTotal) {
+                    pEl.textContent = "";
+                } else {
+                    const pct = (targetC / universeTotal * 100).toFixed(1);
+                    pEl.textContent = `(${pct}%)`;
+                }
 
                 if (prog < 1) requestAnimationFrame(step);
             }
