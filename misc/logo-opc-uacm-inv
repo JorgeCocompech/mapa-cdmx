@@ -1,0 +1,15 @@
+<svg width="450" height="200" viewBox="0 0 500 200" xmlns="http://www.w3.org/2000/svg">
+  <g id="isotipo">
+    <circle cx="100" cy="100" r="90" fill="white"/>
+    <circle cx="89" cy="168" r="22" fill="black" />
+  </g>
+
+  <g id="logotipo" fill="white" font-family="sans-serif" style="text-transform: uppercase;">
+    <text x="255" y="75" font-size="36" font-weight="900" transform="scale(0.8, 1.2)" style="letter-spacing: 1px;">OBSERVATORIO</text>
+    <g font-size="19" font-weight="400" transform="scale(0.9, 1.1)">
+        <text x="230" y="105">DE POLÍTICAS</text>
+        <text x="230" y="126">CULTURALES</text>
+        <text x="230" y="147">UACM</text>
+    </g>
+  </g>
+</svg>
