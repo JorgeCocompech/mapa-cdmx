@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Condición Mobilliaria | Artes Vivas CDMX</title>
+    <title>Observatorio Analítico | Artes Vivas CDMX</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -55,36 +55,27 @@
         
         /* Panel Lateral (Dashboard) */
         #dashboard {
-            width: 380px; height: 100%; z-index: 1000;
+            width: 380px; height: 100%; z-index: 3000;
             background: var(--panel-bg);
             display: flex; flex-direction: column; 
             flex-shrink: 0; border-right: 1px solid var(--border-color);
-            transition: background-color 0.3s, border-color 0.3s;
+            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s, border-color 0.3s;
         }
 
-        /* CABECERA FIJA (NO SCROLLEA) */
+        /* CABECERA FIJA */
         .dashboard-header {
             padding: 24px 20px 10px 20px; flex-shrink: 0;
-            border-bottom: 1px solid var(--border-color);
-            z-index: 10;
+            border-bottom: 1px solid var(--border-color); z-index: 10;
         }
 
-        /* Logotipo Header */
         .header-logo {
             display: block; width: 90%; max-width: 250px;
-            margin: 0 auto 20px auto; height: auto;
-            transition: opacity 0.3s; 
+            margin: 0 auto 20px auto; height: auto; transition: opacity 0.3s; 
         }
 
-        /* Títulos Mejorados (Look and Feel) */
-        h1 { 
-            font-size: 1.5rem; font-weight: 900; margin: 0 0 16px 0; 
-            text-align: center; color: var(--text-main); letter-spacing: -0.5px;
-        }
-        h2 { 
-            font-size: 0.85rem; font-weight: 600; margin: 0 0 16px 0; 
-            text-align: center; color: var(--text-main); 
-        }
+        /* Títulos */
+        h1 { font-size: 1.5rem; font-weight: 900; margin: 0 0 16px 0; text-align: center; color: var(--text-main); letter-spacing: -0.5px; }
+        h2 { font-size: 0.85rem; font-weight: 600; margin: 0 0 16px 0; color: var(--text-main); }
 
         /* CONTENEDOR DE WIDGETS SCROLLEABLE */
         #stats-container {
@@ -94,9 +85,9 @@
         #stats-container::-webkit-scrollbar { width: 5px; }
         #stats-container::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 
-        #map { flex-grow: 1; height: 100%; position: relative; background: var(--bg-color); transition: background-color 0.3s; }
+        #map { flex-grow: 1; height: 100%; position: relative; background: var(--bg-color); transition: background-color 0.3s; z-index: 100; }
 
-        /* Botón de Tema Flotante */
+        /* Botones Flotantes del Mapa */
         .theme-toggle-btn {
             position: absolute; top: 20px; right: 20px; z-index: 2000;
             background: var(--panel-bg); color: var(--text-main);
@@ -118,7 +109,7 @@
         }
         .search-box:focus { border-color: var(--highlight); }
 
-        /* CONTADOR TOTAL ESTILO CARTO (NUEVO DISEÑO FIJO) */
+        /* CONTADOR TOTAL ESTILO CARTO */
         .counter-section {
             display: flex; flex-direction: column; align-items: center;
             background: var(--card-bg); border: 1px solid var(--border-color);
@@ -150,13 +141,11 @@
         }
         #clear-btn:hover { background: var(--accent); color: #fff; }
 
-
-        /* WIDGETS: BLOQUES SEPARADOS (CARDS) */
+        /* WIDGETS: BLOQUES SEPARADOS */
         .card {
             background: var(--card-bg); border: 1px solid var(--border-color);
             border-radius: 10px; display: flex; flex-direction: column;
             overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            transition: background-color 0.3s, border-color 0.3s;
         }
 
         .card-header {
@@ -164,7 +153,6 @@
             user-select: none; color: var(--text-muted); transition: color 0.2s;
         }
         .card-header:hover { color: var(--text-main); }
-        
         .chevron { transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); stroke: currentColor; }
         .card.open .chevron { transform: rotate(180deg); }
 
@@ -173,14 +161,10 @@
             transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .card.open .card-content-wrapper { grid-template-rows: 1fr; }
-        
         .card-content { overflow: hidden; padding: 0 16px; }
         .card.open .card-content { padding-bottom: 16px; }
 
-        .stat-row { 
-            margin-bottom: 8px; cursor: pointer; border-radius: 6px; 
-            padding: 6px 8px; border: 1px solid transparent; transition: 0.2s;
-        }
+        .stat-row { margin-bottom: 8px; cursor: pointer; border-radius: 6px; padding: 6px 8px; border: 1px solid transparent; transition: 0.2s; }
         .stat-row:last-child { margin-bottom: 0; }
         .stat-row:hover { background: var(--row-hover); }
         .stat-row.active { background: var(--row-active); border-color: transparent; }
@@ -207,7 +191,7 @@
             height: 75px; width: 100%; flex-shrink: 0;
             background: var(--panel-bg); border-top: 1px solid var(--border-color);
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 30px; z-index: 2000; transition: background-color 0.3s, border-color 0.3s;
+            padding: 0 30px; z-index: 4000; transition: background-color 0.3s, border-color 0.3s;
         }
         .footer-logo { display: flex; align-items: center; }
         .footer-logo img { max-height: 40px; width: auto; object-fit: contain; transition: opacity 0.3s; }
@@ -225,6 +209,63 @@
         .footer-btn:hover { border-color: var(--highlight); color: var(--highlight); }
         .footer-btn svg { width: 16px; height: 16px; fill: currentColor; }
         .footer-btn.dl-btn svg { fill: none; stroke: currentColor; }
+
+
+        /* =========================================
+           DISEÑO MÓVIL (RESPONSIVE)
+           ========================================= */
+        
+        /* Botón para Abrir Filtros en Móvil (Flotante sobre el mapa) */
+        #mobile-open-btn {
+            display: none; position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);
+            z-index: 2000; background: var(--highlight); color: #fff; border: none;
+            padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; font-weight: 700;
+            font-family: 'Inter', sans-serif; box-shadow: 0 6px 16px rgba(23, 133, 251, 0.4);
+            cursor: pointer; align-items: center; gap: 8px; transition: transform 0.2s;
+        }
+        #mobile-open-btn:active { transform: translateX(-50%) scale(0.95); }
+
+        /* Badge Rojo indicador de filtros activos */
+        #filter-badge {
+            display: none; background: #fff; color: var(--highlight);
+            border-radius: 50%; width: 22px; height: 22px; font-size: 0.75rem;
+            align-items: center; justify-content: center; font-weight: 800;
+        }
+
+        /* Botón Cerrar Panel dentro del Dashboard (Solo visible en Móvil) */
+        #mobile-close-btn {
+            display: none; align-items: center; justify-content: center; gap: 8px;
+            background: rgba(23, 133, 251, 0.1); color: var(--highlight);
+            border: 1px solid var(--highlight); font-size: 0.85rem; font-weight: 700;
+            font-family: 'Inter', sans-serif; cursor: pointer; margin-bottom: 15px;
+            padding: 12px; border-radius: 8px; width: 100%; text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+            #main-wrapper { height: calc(100vh - 65px); } /* Footer más pequeño en móvil */
+            
+            /* El Dashboard se convierte en un Cajón (Drawer) que entra por la izquierda */
+            #dashboard {
+                position: absolute; top: 0; left: -100%; /* Oculto por defecto */
+                width: 100%; height: 100%;
+                border-right: none;
+            }
+            #dashboard.mobile-active { left: 0; } /* Se muestra al agregar clase */
+            
+            #mobile-open-btn { display: flex; }
+            #mobile-close-btn { display: flex; }
+
+            /* Ajustes para ganar espacio en celular */
+            .dashboard-header { padding: 20px 15px 10px 15px; }
+            .header-logo { max-width: 180px; margin-bottom: 15px; }
+            .total-counter { font-size: 2.2rem; }
+            
+            /* Ajustes Footer Móvil */
+            #app-footer { padding: 0 15px; height: 65px; }
+            .footer-logo img { max-height: 30px; }
+            .footer-btn.dl-btn .btn-text { display: none; } /* Ocultar "Descargar GeoJSON" */
+            .footer-btn.dl-btn { width: 38px; padding: 0; justify-content: center; border-radius: 50%; }
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -232,9 +273,14 @@
     <div id="main-wrapper">
         <div id="dashboard">
             <div class="dashboard-header">
+                <button id="mobile-close-btn" onclick="toggleMobileDashboard()">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Volver al Mapa
+                </button>
+
                 <img src="https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm.svg" class="header-logo theme-logo" alt="Logo Observatorio UACM">
                 <h1>ARTES VIVAS CDMX</h1>
-                <h2>Condición Mobilliaria</h2>
+                
                 <div class="counter-section">
                     <span class="counter-label">Total Espacios</span>
                     <div style="display:flex; align-items:baseline; justify-content: center;">
@@ -255,6 +301,12 @@
 
         <div id="map">
             <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Cambiar Tema">🌙</button>
+            
+            <button id="mobile-open-btn" onclick="toggleMobileDashboard()">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                Filtros y Datos
+                <span id="filter-badge">0</span>
+            </button>
         </div>
     </div>
 
@@ -271,9 +323,9 @@
             <button class="footer-btn icon-only" title="Compartir en Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(window.location.href), '_blank')">
                 <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
             </button>
-            <a href="https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/data/av-data-cdmx-20230122.geojson" target="_blank" download="av-data-cdmx.geojson" class="footer-btn dl-btn">
+            <a href="https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/data/av-data-cdmx-20230122.geojson" target="_blank" download="av-data-cdmx.geojson" class="footer-btn dl-btn" title="Descargar Datos GeoJSON">
                 <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                Descargar GeoJSON
+                <span class="btn-text">Descargar GeoJSON</span>
             </a>
         </div>
     </footer>
@@ -311,6 +363,7 @@
         let searchQuery = "";
         let isFirstRender = true; 
 
+        // Inicialización Mapa
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
         L.control.zoom({ position: 'bottomright' }).addTo(map);
         
@@ -318,11 +371,16 @@
         const lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
         
         lightTiles.addTo(map); 
-        
         map.createPane('alcPane').style.zIndex = 200;
         map.createPane('markerPane').style.zIndex = 650;
         const markersLayer = L.layerGroup().addTo(map);
 
+        // Control Panel Deslizante Móvil
+        function toggleMobileDashboard() {
+            document.getElementById('dashboard').classList.toggle('mobile-active');
+        }
+
+        // Lógica de Temas
         function toggleTheme() {
             const body = document.body;
             const btn = document.getElementById('theme-btn');
@@ -345,6 +403,7 @@
             updateView(); 
         }
 
+        // Fetch Polígonos
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/cdmx-alcaldias.geojson')
             .then(res => res.json())
             .then(data => {
@@ -355,11 +414,11 @@
                 }).addTo(map);
             });
 
+        // Fetch Puntos
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/data/av-data-cdmx-20230122.geojson')
             .then(res => res.json())
             .then(data => {
                 let perdidosArr = [];
-
                 allData = data.features.map(f => {
                     let lng = null, lat = null;
                     if (f.geometry && f.geometry.coordinates) {
@@ -369,11 +428,9 @@
                         lng = f.properties.longitud || f.properties.lng || null;
                         lat = f.properties.latitud || f.properties.lat || null;
                     }
-                    
                     if(isNaN(parseFloat(lat)) || isNaN(parseFloat(lng))) {
                         perdidosArr.push(f.properties.nombre || "Espacio sin nombre");
                     }
-
                     return { lat: lat, longitud: lng, ...f.properties };
                 });
 
@@ -383,9 +440,21 @@
                     alertBox.innerHTML = `<strong>⚠️ ${perdidosArr.length} espacios sin coordenadas:</strong><br><ul style="margin:5px 0 0 0; padding-left:15px; text-transform:none;">` 
                         + perdidosArr.map(n => `<li>${n}</li>`).join('') + "</ul>";
                 }
-
                 updateView();
             });
+
+        // Actualización de Filtros y Botón de Badge
+        function updateFilterBadge() {
+            let count = 0;
+            Object.values(activeFilters).forEach(arr => { count += arr.length; });
+            const badge = document.getElementById('filter-badge');
+            if (count > 0 || searchQuery !== "") {
+                badge.style.display = 'flex';
+                badge.textContent = count + (searchQuery ? 1 : 0);
+            } else {
+                badge.style.display = 'none';
+            }
+        }
 
         function updateView() {
             const filtered = allData.filter(d => {
@@ -401,8 +470,9 @@
             });
 
             animateCounters(filtered.length, allData.length);
-            markersLayer.clearLayers();
+            updateFilterBadge(); // Actualiza el número de filtros en el botón flotante móvil
 
+            markersLayer.clearLayers();
             const activeHex = document.body.getAttribute('data-theme') === 'dark' ? '#1785FB' : '#1785FB';
             const borderHex = document.body.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#111111';
 
@@ -420,29 +490,15 @@
                     marker.bindPopup(createPopup(p), { autoPan: false });
 
                     marker.on('mouseover', function() { 
-                        if(!this._pinned) {
-                            this.openPopup(); 
-                            this.setStyle({color: activeHex, weight: 3, radius: 7});
-                        }
+                        if(!this._pinned) { this.openPopup(); this.setStyle({color: activeHex, weight: 3, radius: 7}); }
                     });
-                    
                     marker.on('mouseout', function() { 
-                        if(!this._pinned) {
-                            this.closePopup(); 
-                            this.setStyle({color: borderHex, weight: 1.5, radius: 5.5});
-                        }
+                        if(!this._pinned) { this.closePopup(); this.setStyle({color: borderHex, weight: 1.5, radius: 5.5}); }
                     });
-                    
                     marker.on('click', function() {
-                        markersLayer.eachLayer(m => { 
-                            m._pinned = false; 
-                            m.setStyle({color: borderHex, weight: 1.5, radius: 5.5}); 
-                        });
-                        this._pinned = true; 
-                        this.setStyle({color: activeHex, weight: 4, radius: 8});
-                        this.openPopup();
+                        markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: borderHex, weight: 1.5, radius: 5.5}); });
+                        this._pinned = true; this.setStyle({color: activeHex, weight: 4, radius: 8}); this.openPopup();
                     });
-
                     marker.addTo(markersLayer);
                 }
             });
@@ -492,11 +548,8 @@
                 if (Object.keys(counts).length === 0) return;
 
                 let isOpen = false;
-                if (isFirstRender) {
-                    isOpen = (index === 0);
-                } else {
-                    isOpen = openWidgets.includes(col);
-                }
+                if (isFirstRender) { isOpen = (index === 0); } 
+                else { isOpen = openWidgets.includes(col); }
 
                 const widget = document.createElement('div');
                 widget.className = `card ${isOpen ? 'open' : ''}`; 
@@ -540,16 +593,11 @@
 
         function createPopup(p) {
             let html = `<div class="popup-container"><span class="p-title">${p.nombre || 'Sin Nombre'}</span>`;
-            
             const popupMap = { 
-                'disciplina': 'Disciplina', 
-                'circuito': 'Circuito', 
-                'condicion_mobiliaria': 'Condición Mobiliaria', 
-                'sostenimiento': 'Sostenimiento', 
-                'estatus': 'Estatus', 
-                'clausuras': 'Clausuras', 
-                'aforo': 'Aforo', 
-                'alcaldia': 'Alcaldía' 
+                'disciplina': 'Disciplina', 'circuito': 'Circuito', 
+                'condicion_mobiliaria': 'Condición Mobiliaria', 'sostenimiento': 'Sostenimiento', 
+                'estatus': 'Estatus', 'clausuras': 'Clausuras', 
+                'aforo': 'Aforo', 'alcaldia': 'Alcaldía' 
             };
             
             Object.entries(popupMap).forEach(([key, label]) => {
@@ -561,18 +609,14 @@
             if (p.contacto && p.contacto !== 0 && p.contacto !== "0" && p.contacto.trim() !== "") {
                 html += `<div class="p-row"><span class="p-label">Contacto</span>`;
                 let contactos = p.contacto.split(/[,|\n]+/).map(c => c.trim()).filter(c => c !== "");
-                
                 contactos.forEach(c => {
                     if(c.startsWith('http') || c.startsWith('www.')) {
                         let link = c.startsWith('http') ? c : 'https://' + c;
                         html += `<a href="${link}" target="_blank" class="p-contact-item p-contact-link">${c}</a>`;
-                    } else {
-                        html += `<span class="p-contact-item">${c}</span>`;
-                    }
+                    } else { html += `<span class="p-contact-item">${c}</span>`; }
                 });
                 html += `</div>`;
             }
-
             return html + `</div>`;
         }
 
@@ -586,7 +630,6 @@
             const pEl = document.getElementById('pct-count');
             
             cEl.style.color = (targetC === universeTotal) ? 'var(--text-main)' : 'var(--highlight)';
-            
             if (animFrameId) cancelAnimationFrame(animFrameId);
 
             const startC = currentCounterValue;
@@ -596,7 +639,6 @@
             function step(currentTime) {
                 const elapsed = currentTime - startTime;
                 const prog = Math.min(elapsed / dur, 1);
-                
                 const easeOut = prog === 1 ? 1 : 1 - Math.pow(2, -10 * prog);
                 currentCounterValue = Math.round(startC + (targetC - startC) * easeOut);
                 
@@ -607,16 +649,10 @@
                 } else {
                     currentCounterValue = targetC;
                     cEl.textContent = targetC;
-                    
-                    if(targetC === universeTotal || universeTotal === 0) {
-                        pEl.textContent = "";
-                    } else {
-                        const pct = (targetC / universeTotal * 100).toFixed(1);
-                        pEl.textContent = `(${pct}%)`;
-                    }
+                    if(targetC === universeTotal || universeTotal === 0) { pEl.textContent = ""; } 
+                    else { const pct = (targetC / universeTotal * 100).toFixed(1); pEl.textContent = `(${pct}%)`; }
                 }
             }
-            
             animFrameId = requestAnimationFrame(step);
         }
 
