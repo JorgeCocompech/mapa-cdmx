@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Observatorio Analítico | Artes Vivas CDMX</title>
+    <title>Observatorio de Políticas Culturales UACM | Artes Vivas CDMX</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -75,7 +75,7 @@
 
         /* Títulos */
         h1 { font-size: 1.5rem; font-weight: 900; margin: 0 0 16px 0; text-align: center; color: var(--text-main); letter-spacing: -0.5px; }
-        h2 { font-size: 0.85rem; font-weight: 600; margin: 0 0 16px 0; color: var(--text-main); }
+        h2 { font-size: 0.85rem; font-weight: 600; margin: 0 0 16px 0;  text-align: center; color: var(--text-main); }
 
         /* CONTENEDOR DE WIDGETS SCROLLEABLE */
         #stats-container {
@@ -242,28 +242,25 @@
         }
 
         @media (max-width: 768px) {
-            #main-wrapper { height: calc(100vh - 65px); } /* Footer más pequeño en móvil */
+            #main-wrapper { height: calc(100vh - 65px); } 
             
-            /* El Dashboard se convierte en un Cajón (Drawer) que entra por la izquierda */
             #dashboard {
-                position: absolute; top: 0; left: -100%; /* Oculto por defecto */
+                position: absolute; top: 0; left: -100%; 
                 width: 100%; height: 100%;
                 border-right: none;
             }
-            #dashboard.mobile-active { left: 0; } /* Se muestra al agregar clase */
+            #dashboard.mobile-active { left: 0; } 
             
             #mobile-open-btn { display: flex; }
             #mobile-close-btn { display: flex; }
 
-            /* Ajustes para ganar espacio en celular */
             .dashboard-header { padding: 20px 15px 10px 15px; }
             .header-logo { max-width: 180px; margin-bottom: 15px; }
             .total-counter { font-size: 2.2rem; }
             
-            /* Ajustes Footer Móvil */
             #app-footer { padding: 0 15px; height: 65px; }
             .footer-logo img { max-height: 30px; }
-            .footer-btn.dl-btn .btn-text { display: none; } /* Ocultar "Descargar GeoJSON" */
+            .footer-btn.dl-btn .btn-text { display: none; } 
             .footer-btn.dl-btn { width: 38px; padding: 0; justify-content: center; border-radius: 50%; }
         }
     </style>
@@ -280,7 +277,7 @@
 
                 <img src="https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm.svg" class="header-logo theme-logo" alt="Logo Observatorio UACM">
                 <h1>ARTES VIVAS CDMX</h1>
-                
+                <h2>Condiciones Laborales</h2>
                 <div class="counter-section">
                     <span class="counter-label">Total Espacios</span>
                     <div style="display:flex; align-items:baseline; justify-content: center;">
@@ -409,7 +406,12 @@
             .then(data => {
                 L.geoJSON(data, {
                     pane: 'alcPane',
-                    style: (f) => ({ fillColor: alcPalette[f.properties.NOMGEO] || "#333", weight: 1.5, color: "white", fillOpacity: 0.08, opacity: 0.4 }),
+                    style: (f) => ({ 
+                        fillColor: alcPalette[f.properties.NOMGEO] || "#333", 
+                        weight: 1.5, color: "white", 
+                        fillOpacity: 0.25, /* 25% más fuerte según instrucción anterior */
+                        opacity: 0.6 
+                    }),
                     onEachFeature: (f, l) => l.bindTooltip(f.properties.NOMGEO)
                 }).addTo(map);
             });
@@ -470,7 +472,7 @@
             });
 
             animateCounters(filtered.length, allData.length);
-            updateFilterBadge(); // Actualiza el número de filtros en el botón flotante móvil
+            updateFilterBadge(); 
 
             markersLayer.clearLayers();
             const activeHex = document.body.getAttribute('data-theme') === 'dark' ? '#1785FB' : '#1785FB';
