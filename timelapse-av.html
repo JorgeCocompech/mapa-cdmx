@@ -3,259 +3,392 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timelapse Analítico | Artes Vivas CDMX</title>
+    <title>Timelapse Histórico | Artes Vivas CDMX</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --accent: #ff4757;
-            --highlight: #00d2ff;
-            --bg: #0a0c0e;
-            --panel-bg: rgba(18, 22, 25, 0.96);
-            --card-bg: #1e272e;
-            --text-main: #ffffff;
-            --text-dim: #a4b0be;
-            --click-glow: #f1c40f;
+        /* MOTOR DE TEMAS: VARIABLES CSS */
+        :root { --accent: #ff4757; }
+
+        [data-theme="dark"] {
+            --bg-color: #0d0d0d; --panel-bg: #141414; --text-main: #ffffff;
+            --text-muted: #8a8f93; --highlight: #1785FB; --border-color: #262626;
+            --input-bg: #1f1f1f; --card-bg: #1c1c1e; --row-hover: rgba(255,255,255,0.05);
+            --row-active: rgba(23, 133, 251, 0.15); --bar-bg: #333333;
         }
 
-        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
-
-        /* Dashboard de Control */
-        #sidebar {
-            width: 380px; height: 100%; z-index: 2000;
-            background: var(--panel-bg); backdrop-filter: blur(25px);
-            border-right: 1px solid rgba(255,255,255,0.08);
-            display: flex; flex-direction: column; padding: 30px;
-            overflow-y: auto; scrollbar-width: none;
+        [data-theme="light"] {
+            --bg-color: #f5f5f5; --panel-bg: #ffffff; --text-main: #2C2C2C;
+            --text-muted: #747d82; --highlight: #1785FB; --border-color: #e2e6e9;
+            --input-bg: #f9f9f9; --card-bg: #ffffff; --row-hover: rgba(0,0,0,0.03);
+            --row-active: rgba(23, 133, 251, 0.1); --bar-bg: #e2e6e9;
         }
-        #sidebar::-webkit-scrollbar { display: none; }
+        
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; padding: 0; font-family: 'Inter', sans-serif; 
+            background: var(--bg-color); color: var(--text-main);
+            display: flex; flex-direction: column; height: 100vh; overflow: hidden; 
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-        #map { flex-grow: 1; height: 100%; position: relative; background: #000; }
+        #main-wrapper { display: flex; flex-grow: 1; height: calc(100vh - 75px); width: 100%; position: relative; }
+        
+        #dashboard {
+            width: 380px; height: 100%; z-index: 3000; background: var(--panel-bg);
+            display: flex; flex-direction: column; flex-shrink: 0; border-right: 1px solid var(--border-color);
+            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s, border-color 0.3s;
+        }
 
-        /* Estética Vibe Coding */
-        h1 { font-size: 1.2rem; font-weight: 900; margin: 0 0 5px 0; letter-spacing: -0.5px; }
-        .subtitle { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; display: block; }
+        .dashboard-header { padding: 24px 20px 10px 20px; flex-shrink: 0; border-bottom: 1px solid var(--border-color); z-index: 10; }
+        .header-logo { display: block; width: 90%; max-width: 250px; margin: 0 auto 20px auto; height: auto; transition: opacity 0.3s; }
 
+        h1 { font-size: 1.5rem; font-weight: 900; margin: 0 0 16px 0; text-align: center; color: var(--text-main); letter-spacing: -0.5px; }
+        h2 { font-size: 0.85rem; font-weight: 600; margin: 0 0 16px 0;  text-align: center; color: var(--text-main); }
+
+        #stats-container { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        #stats-container::-webkit-scrollbar { width: 5px; }
+        #stats-container::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+
+        #map { flex-grow: 1; height: 100%; position: relative; background: var(--bg-color); transition: background-color 0.3s; z-index: 100; }
+
+        .theme-toggle-btn {
+            position: absolute; top: 20px; right: 20px; z-index: 2000;
+            background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border-color);
+            width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: 0.2s;
+        }
+        .theme-toggle-btn:hover { border-color: var(--highlight); color: var(--highlight); }
+
+        path.leaflet-interactive:focus { outline: none !important; }
+        
         .search-box {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            padding: 14px; border-radius: 12px; color: white; width: 100%; margin-bottom: 20px;
-            font-family: inherit; transition: 0.3s;
+            padding: 12px 14px; width: 100%; border: 1px solid var(--border-color); border-radius: 8px;
+            background: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 0.85rem; outline: none; transition: 0.2s;
         }
-        .search-box:focus { border-color: var(--highlight); outline: none; background: rgba(255,255,255,0.08); }
+        .search-box:focus { border-color: var(--highlight); }
 
-        /* Contador Dinámico */
-        .big-stats { text-align: center; margin-bottom: 30px; padding: 25px; background: #000; border-radius: 20px; border: 1px solid #222; }
-        #total-count { font-size: 4.5rem; font-weight: 900; color: var(--highlight); line-height: 0.9; font-family: 'JetBrains Mono', monospace; }
-        .stat-label { font-size: 0.8rem; color: var(--text-dim); margin-top: 10px; font-weight: 600; text-transform: uppercase; }
+        .counter-section {
+            display: flex; flex-direction: column; align-items: center;
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 10px; padding: 16px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .counter-label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .total-counter { font-size: 2.8rem; font-weight: 800; color: var(--highlight); line-height: 1; display: inline-block; transition: color 0.3s; }
+        .pct-count { font-size: 1rem; font-weight: 600; color: var(--text-muted); margin-left: 8px; }
 
-        /* Widgets Analíticos */
-        .widget { margin-top: 15px; border-radius: 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); }
-        .widget-header { padding: 16px; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; color: var(--text-dim); text-transform: uppercase;}
-        .widget.open .widget-content { display: block; }
-        .widget-content { display: none; padding: 0 16px 16px 16px; }
+        #clear-btn { 
+            display: none; padding: 10px 12px; margin-top: 15px;
+            background: rgba(255, 71, 87, 0.1); color: var(--accent); border: 1px solid var(--accent); border-radius: 6px; 
+            cursor: pointer; font-weight: 600; font-size: 0.75rem; transition: 0.2s; width: 100%; text-align: center; text-transform: uppercase;
+        }
+        #clear-btn:hover { background: var(--accent); color: #fff; }
 
-        .stat-row { margin-bottom: 10px; cursor: pointer; padding: 4px 0; border-radius: 4px;}
-        .stat-row.active { color: var(--accent); font-weight: bold;}
-        .stat-info { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
-        .stat-bar { background: rgba(255,255,255,0.05); height: 4px; border-radius: 10px; overflow: hidden; }
-        .stat-bar-fill { height: 100%; transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+        /* WIDGETS */
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .card-header { padding: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; color: var(--text-muted); transition: color 0.2s; }
+        .card-header:hover { color: var(--text-main); }
+        .chevron { transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); stroke: currentColor; }
+        .card.open .chevron { transform: rotate(180deg); }
+        .card-content-wrapper { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card.open .card-content-wrapper { grid-template-rows: 1fr; }
+        .card-content { overflow: hidden; padding: 0 16px; }
+        .card.open .card-content { padding-bottom: 16px; }
+        .stat-row { margin-bottom: 8px; cursor: pointer; border-radius: 6px; padding: 6px 8px; border: 1px solid transparent; transition: 0.2s; }
+        .stat-row:last-child { margin-bottom: 0; }
+        .stat-row:hover { background: var(--row-hover); }
+        .stat-row.active { background: var(--row-active); border-color: transparent; }
+        .stat-row.active .stat-info { color: var(--highlight); font-weight: 600; }
+        .stat-info { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; color: var(--text-main); transition: 0.2s; }
+        .stat-bar-bg { background: var(--bar-bg); height: 4px; border-radius: 4px; overflow: hidden; transition: background-color 0.3s; }
+        .stat-bar-fill { height: 100%; transition: width 0.4s ease; border-radius: 4px; }
 
-        /* TIMELINE CONTROLLER (CARTO STYLE) */
+        /* POPUPS */
+        .leaflet-popup-content-wrapper { background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .leaflet-popup-tip { background: var(--panel-bg); border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
+        .popup-container { max-height: 280px; overflow-y: auto; font-size: 11px; width: 230px; }
+        .p-title { color: var(--highlight); font-weight: 700; font-size: 13px; display: block; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; line-height: 1.3;}
+        .p-row { border-bottom: 1px solid var(--border-color); padding: 5px 0; display: flex; flex-direction: column; gap: 2px;}
+        .p-row:last-child { border-bottom: none; }
+        .p-label { font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 9px; }
+
+        /* FOOTER */
+        #app-footer {
+            height: 75px; width: 100%; flex-shrink: 0; background: var(--panel-bg); border-top: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 4000; transition: background-color 0.3s, border-color 0.3s;
+        }
+        .footer-logo img { max-height: 40px; width: auto; object-fit: contain; transition: opacity 0.3s; }
+        .footer-actions { display: flex; align-items: center; gap: 12px; }
+        .footer-btn {
+            display: flex; align-items: center; gap: 8px; background: var(--input-bg); border: 1px solid var(--border-color);
+            color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+            height: 38px; padding: 0 16px; border-radius: 20px; cursor: pointer; text-decoration: none; transition: 0.2s;
+        }
+        .footer-btn.icon-only { width: 38px; padding: 0; justify-content: center; border-radius: 50%; }
+        .footer-btn:hover { border-color: var(--highlight); color: var(--highlight); }
+        .footer-btn svg { width: 16px; height: 16px; fill: currentColor; }
+        .footer-btn.dl-btn svg { fill: none; stroke: currentColor; }
+
+        /* =========================================
+           TIMELINE UI (BARRA FLOTANTE INFERIOR)
+           ========================================= */
         #timeline-ui {
-            position: absolute; bottom: 40px; left: 420px; right: 40px;
-            background: rgba(15, 18, 20, 0.95); padding: 20px 35px; border-radius: 100px;
-            z-index: 1500; border: 1px solid rgba(255,255,255,0.1);
-            display: flex; align-items: center; gap: 25px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--panel-bg); border: 1px solid var(--border-color);
+            padding: 15px 25px; border-radius: 50px; z-index: 2000;
+            display: flex; align-items: center; gap: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15); backdrop-filter: blur(10px);
+            width: 90%; max-width: 600px; transition: background-color 0.3s, border-color 0.3s;
         }
 
         .ctrl-btn {
-            background: #222; border: none; color: white; width: 40px; height: 40px;
-            border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex;
+            background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main);
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex;
             align-items: center; justify-content: center; transition: 0.2s;
         }
-        .ctrl-btn:hover { background: #444; }
+        .ctrl-btn:hover { background: var(--row-hover); border-color: var(--highlight); color: var(--highlight); }
         
-        .play-btn {
-            background: var(--highlight); border: none; width: 55px; height: 55px; color: #000;
-            border-radius: 50%; cursor: pointer; font-size: 1.5rem; display: flex;
-            align-items: center; justify-content: center; transition: 0.3s;
-        }
-        .play-btn:hover { transform: scale(1.15); box-shadow: 0 0 25px rgba(0,210,255,0.4); background: #fff;}
+        .play-btn { background: var(--highlight); color: #fff; width: 48px; height: 48px; border: none; font-size: 1.2rem; }
+        .play-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(23,133,251,0.4); background: var(--highlight); color: #fff; border:none; }
 
-        #year-focus { font-family: 'JetBrains Mono', monospace; font-size: 2.8rem; font-weight:800; color: var(--highlight); min-width: 140px; text-align: center; }
+        #year-focus { font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; font-weight: 800; color: var(--highlight); min-width: 100px; text-align: center; }
 
-        .slider-container { flex-grow: 1; display: flex; flex-direction: column; }
-        input[type=range] { flex-grow: 1; accent-color: var(--highlight); cursor: pointer; height: 6px; background: rgba(255,255,255,0.2); outline: none; border-radius: 4px; }
-        .speed-ctrl { font-size: 10px; color: #888; text-transform: uppercase; font-weight: 800; cursor: pointer; margin-top: 8px; text-align: right; }
-        .speed-ctrl span { padding: 3px 8px; border-radius: 4px; transition: 0.2s; }
-        .speed-ctrl span.active { background: var(--highlight); color: #000; }
+        .slider-container { flex-grow: 1; display: flex; flex-direction: column; gap: 5px; }
+        input[type=range] { width: 100%; accent-color: var(--highlight); cursor: pointer; height: 5px; background: var(--border-color); outline: none; border-radius: 4px; }
+        
+        .speed-ctrl { display:flex; justify-content: space-between; font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-top: 4px; }
+        .speed-toggles span { padding: 2px 6px; border-radius: 4px; cursor: pointer; transition: 0.2s; margin-left: 4px; }
+        .speed-toggles span.active { background: var(--highlight); color: #fff; }
 
-        /* Leaflet Overrides y Popups */
-        .leaflet-popup-content-wrapper { background: rgba(20, 24, 28, 0.95); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; backdrop-filter: blur(10px); }
-        .leaflet-popup-tip { background: rgba(20, 24, 28, 0.95); border: 1px solid rgba(255,255,255,0.1); }
-        .popup-container { max-height: 250px; overflow-y: auto; font-size: 11px; width: 220px; }
-        .p-title { color: var(--highlight); font-weight: 900; font-size: 14px; display: block; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; }
-        .p-row { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 4px 0; }
-        .p-label { font-weight: 800; color: #888; text-transform: uppercase; font-size: 9px; display: block; }
-
-        /* Animación Pulsar (Nacimiento de Espacio) */
+        /* EFECTO PULSAR (NACIMIENTO DEL ESPACIO) */
         @keyframes pulse-ring {
-            0% { transform: scale(0.5); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 20px rgba(255, 255, 255, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+            0% { transform: scale(0.5); box-shadow: 0 0 0 0 rgba(23, 133, 251, 0.8); }
+            70% { transform: scale(1); box-shadow: 0 0 0 25px rgba(23, 133, 251, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(23, 133, 251, 0); }
         }
         .marker-pulse { animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) forwards; }
 
-        #clear-btn { display: none; margin-top: 15px; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-weight: 800; text-transform: uppercase; font-size: 10px; }
+
+        /* MÓVIL RESPONSIVE */
+        #mobile-open-btn, #mobile-close-btn, #filter-badge { display: none; }
+
+        @media (max-width: 768px) {
+            #main-wrapper { height: calc(100vh - 65px); } 
+            #dashboard { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; border-right: none; }
+            #dashboard.mobile-active { left: 0; } 
+            
+            #mobile-open-btn {
+                display: flex; position: absolute; top: 20px; left: 20px; z-index: 2000; background: var(--highlight); color: #fff; border: none;
+                padding: 10px 18px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; cursor: pointer; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            }
+            #filter-badge { display: none; background: #fff; color: var(--highlight); border-radius: 50%; width: 20px; height: 20px; font-size: 0.7rem; align-items: center; justify-content: center; font-weight: 800; }
+            
+            #mobile-close-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(23, 133, 251, 0.1); color: var(--highlight); border: 1px solid var(--highlight); font-size: 0.85rem; font-weight: 700; cursor: pointer; margin-bottom: 15px; padding: 12px; border-radius: 8px; width: 100%; text-transform: uppercase; }
+
+            #timeline-ui { bottom: 20px; padding: 15px; flex-direction: column; border-radius: 25px; gap: 10px; width: 95%; }
+            .slider-container { width: 100%; }
+            
+            .dashboard-header { padding: 20px 15px 10px 15px; }
+            .header-logo { max-width: 180px; margin-bottom: 15px; }
+            .total-counter { font-size: 2.2rem; }
+            
+            #app-footer { padding: 0 15px; height: 65px; }
+            .footer-logo img { max-height: 30px; }
+            .footer-btn.dl-btn .btn-text { display: none; } 
+            .footer-btn.dl-btn { width: 38px; padding: 0; justify-content: center; border-radius: 50%; }
+        }
     </style>
 </head>
-<body>
+<body data-theme="light">
 
-    <aside id="sidebar">
-        <h1>OBSERVATORIO</h1>
-        <span class="subtitle">Artes Vivas CDMX</span>
+    <div id="main-wrapper">
+        <div id="dashboard">
+            <div class="dashboard-header">
+                <button id="mobile-close-btn" onclick="toggleMobileDashboard()">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Volver al Mapa
+                </button>
 
-        <input type="text" class="search-box" id="search-input" placeholder="🔍 Filtrar por nombre..." oninput="updateSearch()">
+                <img src="https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm.svg" class="header-logo theme-logo" alt="Logo Observatorio UACM">
+                <h1>TIMELAPSE: ARTES VIVAS</h1>
+                <h2>1950 - 2021</h2>
+                
+                <div class="counter-section">
+                    <span class="counter-label">Activos en <span id="label-year" style="color:var(--highlight)">2021</span></span>
+                    <div style="display:flex; align-items:baseline; justify-content: center;">
+                        <span id="total-count" class="total-counter">0</span>
+                        <span id="pct-count" class="pct-count"></span>
+                    </div>
+                    <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
+                </div>
 
-        <div class="big-stats">
-            <div id="total-count">0</div>
-            <div class="stat-label">Espacios activos en <span id="label-year" style="color:var(--highlight)">-</span></div>
-            <div id="pct-count" style="color: #ff9ff3; font-weight: 800; font-size: 1.2rem; margin-top:10px;">0%</div>
-            <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
+                <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar espacio..." oninput="updateSearch()">
+            </div>
+            
+            <div id="stats-container">
+                <div id="dynamic-widgets" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            </div>
         </div>
 
-        <div id="stats-container"></div>
-    </aside>
+        <div id="map">
+            <button id="mobile-open-btn" onclick="toggleMobileDashboard()">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                Filtros
+                <span id="filter-badge">0</span>
+            </button>
 
-    <main id="map">
-        <div id="timeline-ui">
-            <button class="ctrl-btn" onclick="stepTime(-1)">⏮</button>
-            <button class="play-btn" id="play-btn" onclick="togglePlayback()">▶</button>
-            <button class="ctrl-btn" onclick="stepTime(1)">⏭</button>
+            <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Cambiar Tema">🌙</button>
             
-            <div id="year-focus">2024</div>
-            
-            <div class="slider-container">
-                <input type="range" id="time-slider" oninput="handleTimeChange(this.value)">
-                <div class="speed-ctrl">
-                    Velocidad: 
-                    <span id="sp-1" class="active" onclick="setSpeed(1, 800)">1x</span>
-                    <span id="sp-2" onclick="setSpeed(2, 300)">2x</span>
-                    <span id="sp-3" onclick="setSpeed(3, 100)">3x</span>
+            <div id="timeline-ui">
+                <button class="ctrl-btn" onclick="stepTime(-1)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 19 2 12 11 5 11 19"></polygon><polygon points="22 19 13 12 22 5 22 19"></polygon></svg>
+                </button>
+                <button class="ctrl-btn play-btn" id="play-btn" onclick="togglePlayback()">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                </button>
+                <button class="ctrl-btn" onclick="stepTime(1)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 19 22 12 13 5 13 19"></polygon><polygon points="2 19 11 12 2 5 2 19"></polygon></svg>
+                </button>
+                
+                <div id="year-focus">2021</div>
+                
+                <div class="slider-container">
+                    <input type="range" id="time-slider" min="1950" max="2021" value="2021" oninput="handleTimeChange(this.value)">
+                    <div class="speed-ctrl">
+                        <span>Evolución Histórica</span>
+                        <div class="speed-toggles">
+                            <span id="sp-1" onclick="setSpeed(1, 800)">1x</span>
+                            <span id="sp-2" class="active" onclick="setSpeed(2, 350)">2x</span>
+                            <span id="sp-3" onclick="setSpeed(3, 100)">3x</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
+
+    <footer id="app-footer">
+        <div class="footer-logo">
+            <p align="center" style="margin: 0;">
+                <img src="https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm.svg" class="theme-logo" alt="Logo Observatorio UACM">
+            </p>
+        </div>
+        <div class="footer-actions">
+            <button class="footer-btn icon-only" title="Compartir en X" onclick="window.open('https://twitter.com/intent/tweet?text=Mira el Timelapse de Artes Vivas CDMX&url='+encodeURIComponent(window.location.href), '_blank')">
+                <svg viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
+            </button>
+            <button class="footer-btn icon-only" title="Compartir en Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(window.location.href), '_blank')">
+                <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+            </button>
+            <a href="https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/data/av-data-cdmx-20230122.geojson" target="_blank" download="av-data-cdmx.geojson" class="footer-btn dl-btn">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span class="btn-text">Descargar GeoJSON</span>
+            </a>
+        </div>
+    </footer>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
     <script>
-        // --- CONFIG & PALETTE ---
-        const labelMap = {
-            'disciplina': 'Disciplina', 'alcaldia': 'Alcaldía', 'condicion_mobiliaria': 'Condición mobiliaria',
-            'circuito': 'Circuito', 'aforo': 'Aforo', 'ano_ap': 'Año Apertura',
-            'ano_cl': 'Año Clausura', 'sostenimiento': 'Sostenimiento', 'estatus': 'Estatus', 'contacto': 'Contacto'
-        };
+        const labelMap = { 'condicion_mobiliaria': 'Condición Mobiliaria', 'circuito': 'Circuito', 'estatus': 'Estatus', 'disciplina': 'Disciplinas', 'alcaldia': 'Alcaldía' };
+        const discColors = { 'Música': '#E67E22', 'Teatro': '#D72638', 'Multidisciplina': '#5B21B6', 'Artes escénicas': '#065F46', 'Otras disciplinas': '#374151', 'Artes vivas': '#8E24AA', 'Danza': '#1E3A8A', 'Sin información': '#9CA3AF' };
+        const alcPalette = { "Azcapotzalco": "#00CED1", "Coyoacán": "#FF1493", "Cuajimalpa de Morelos": "#7FFF00", "Gustavo A. Madero": "#00FA9A", "Iztacalco": "#FF00FF", "Iztapalapa": "#00BFFF", "La Magdalena Contreras": "#D2691E", "Milpa Alta": "#BDB76B", "Álvaro Obregón": "#20B2AA", "Tláhuac": "#EE82EE", "Tlalpan": "#CD853F", "Xochimilco": "#40E0D0", "Benito Juárez": "#BA55D3", "Cuauhtémoc": "#F08080", "Miguel Hidalgo": "#7B68EE", "Venustiano Carranza": "#FF69B4" };
+        const chevronIcon = `<svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
 
-        const discColors = {
-            'Música': '#E67E22', 'Teatro': '#D72638', 'Multidisciplina': '#5B21B6',
-            'Artes escénicas': '#065F46', 'Otras disciplinas': '#374151',
-            'Artes vivas': '#8E24AA', 'Danza': '#1E3A8A', 'Sin información': '#9CA3AF'
-        };
-
-        const alcPalette = {
-            "Azcapotzalco": "#00CED1", "Coyoacán": "#FF1493", "Cuajimalpa de Morelos": "#7FFF00",
-            "Gustavo A. Madero": "#00FA9A", "Iztacalco": "#FF00FF", "Iztapalapa": "#00BFFF",
-            "La Magdalena Contreras": "#D2691E", "Milpa Alta": "#BDB76B", "Álvaro Obregón": "#20B2AA",
-            "Tláhuac": "#EE82EE", "Tlalpan": "#CD853F", "Xochimilco": "#40E0D0",
-            "Benito Juárez": "#BA55D3", "Cuauhtémoc": "#F08080", "Miguel Hidalgo": "#7B68EE",
-            "Venustiano Carranza": "#FF69B4"
-        };
-
-        let allData = [], activeFilters = { disciplina: [], alcaldia: [], condicion_mobiliaria: [], circuito: [], aforo: [], sostenimiento: [], estatus: [] };
-        let currentYear = 2024, searchQuery = "", isPlaying = false, animationTimer = null, playSpeed = 800;
-        let timelinePoints = [];
-        let curC = 0;
-
-        const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false, doubleClickZoom: false });
-        L.control.zoom({ position: 'topright' }).addTo(map);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' }).addTo(map);
+        let allData = [];
+        let activeFilters = { condicion_mobiliaria: [], circuito: [], estatus: [], disciplina: [], alcaldia: [] }; 
+        let searchQuery = "";
+        let isFirstRender = true; 
         
+        // Variables Timelapse
+        let currentYear = 2021;
+        let isPlaying = false;
+        let animationTimer = null;
+        let playSpeed = 350; // Default 2x
+
+        const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
+        L.control.zoom({ position: 'topright' }).addTo(map);
+        
+        const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
+        const lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
+        
+        lightTiles.addTo(map); 
         map.createPane('alcPane').style.zIndex = 200;
         map.createPane('markerPane').style.zIndex = 650;
         const markersLayer = L.layerGroup().addTo(map);
 
-        // 1. Cargar Alcaldías
+        function toggleMobileDashboard() { document.getElementById('dashboard').classList.toggle('mobile-active'); }
+
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('theme-btn');
+            const themeLogos = document.querySelectorAll('.theme-logo');
+            const darkLogoUrl = 'https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm-inv.svg';
+            const lightLogoUrl = 'https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm.svg';
+            
+            if (body.getAttribute('data-theme') === 'light') {
+                body.setAttribute('data-theme', 'dark'); map.removeLayer(lightTiles); darkTiles.addTo(map);
+                btn.textContent = '🌞'; themeLogos.forEach(img => img.src = darkLogoUrl);
+            } else {
+                body.setAttribute('data-theme', 'light'); map.removeLayer(darkTiles); lightTiles.addTo(map);
+                btn.textContent = '🌙'; themeLogos.forEach(img => img.src = lightLogoUrl);
+            }
+            updateView(); 
+        }
+
         fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/cdmx-alcaldias.geojson')
             .then(res => res.json())
             .then(data => {
                 L.geoJSON(data, {
                     pane: 'alcPane',
-                    style: (f) => {
-                        const color = alcPalette[f.properties.NOMGEO] || "#333";
-                        return { fillColor: color, weight: 1.5, color: color, fillOpacity: 0.1, opacity: 0.3 };
-                    },
-                    onEachFeature: (f, l) => l.bindTooltip(f.properties.NOMGEO, {className: 'leaflet-tooltip'})
+                    style: (f) => ({ fillColor: alcPalette[f.properties.NOMGEO] || "#333", weight: 1.5, color: "white", fillOpacity: 0.25, opacity: 0.6 }),
+                    onEachFeature: (f, l) => l.bindTooltip(f.properties.NOMGEO)
                 }).addTo(map);
             });
 
-        // 2. Cargar Datos y Preparar Motor de Tiempo
-        Papa.parse('https://raw.githubusercontent.com/observatoriopoliticas/cartografias-artesvivas/refs/heads/main/cdmx_artesvivas.csv', {
-            download: true, header: true, dynamicTyping: true, skipEmptyLines: true,
-            complete: r => { 
-                // Limpieza estricta de fechas para que la lógica matemática no falle
-                allData = r.data.map(d => {
-                    return {
-                        ...d,
-                        _apertura: parseInt(d.ano_ap) || 0,
-                        _clausura: parseInt(d.ano_cl) || 0
+        fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/data/av-data-cdmx-20230122.geojson')
+            .then(res => res.json())
+            .then(data => {
+                allData = data.features.map(f => {
+                    let lng = null, lat = null;
+                    if (f.geometry && f.geometry.coordinates) {
+                        lng = f.geometry.coordinates[0]; lat = f.geometry.coordinates[1];
+                    } else if (f.properties) {
+                        lng = f.properties.longitud || f.properties.lng || null;
+                        lat = f.properties.latitud || f.properties.lat || null;
+                    }
+                    return { 
+                        lat: lat, longitud: lng, 
+                        _apertura: parseInt(f.properties.ano_ap) || 0,
+                        _clausura: parseInt(f.properties.ano_cl) || 0,
+                        ...f.properties 
                     };
                 });
-                initTimeEngine();
                 updateView();
-            }
-        });
+            });
 
-        // --- MOTOR DE TIEMPO "ELASTIC" ---
-        function initTimeEngine() {
-            // Extraer solo años válidos mayores a 1850 para no tener siglos vacíos
-            const validYears = allData.map(d => d._apertura).filter(y => y > 1850);
-            const minYear = validYears.length > 0 ? Math.min(...validYears) : 1950;
-            const maxYear = new Date().getFullYear();
-
-            // Rellenar array secuencial desde el más antiguo hasta hoy
-            let seq = [];
-            for(let y = minYear; y <= maxYear; y++) seq.push(y);
-            timelinePoints = seq;
-
-            const slider = document.getElementById('time-slider');
-            slider.min = 0;
-            slider.max = timelinePoints.length - 1;
-            slider.value = timelinePoints.length - 1;
-            
-            updateYearDisplay(timelinePoints[slider.value]);
+        function updateFilterBadge() {
+            let count = 0;
+            Object.values(activeFilters).forEach(arr => { count += arr.length; });
+            const badge = document.getElementById('filter-badge');
+            if (count > 0 || searchQuery !== "") { badge.style.display = 'flex'; badge.textContent = count + (searchQuery ? 1 : 0); } 
+            else { badge.style.display = 'none'; }
         }
 
-        function handleTimeChange(index) {
-            currentYear = timelinePoints[index];
-            updateYearDisplay(currentYear);
+        // --- FUNCIONES DEL MOTOR DE TIEMPO ---
+        function handleTimeChange(val) {
+            currentYear = parseInt(val);
+            document.getElementById('year-focus').textContent = currentYear;
+            document.getElementById('label-year').textContent = currentYear;
             updateView();
-        }
-
-        function updateYearDisplay(y) {
-            document.getElementById('year-focus').textContent = y;
-            document.getElementById('label-year').textContent = y;
         }
 
         function stepTime(dir) {
             const slider = document.getElementById('time-slider');
             let newVal = parseInt(slider.value) + dir;
-            if(newVal < 0) newVal = 0;
+            if(newVal < parseInt(slider.min)) newVal = parseInt(slider.min);
             if(newVal > parseInt(slider.max)) newVal = parseInt(slider.max);
             slider.value = newVal;
             handleTimeChange(newVal);
@@ -263,18 +396,19 @@
 
         function setSpeed(id, ms) {
             playSpeed = ms;
-            document.querySelectorAll('.speed-ctrl span').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.speed-toggles span').forEach(el => el.classList.remove('active'));
             document.getElementById('sp-'+id).classList.add('active');
-            if(isPlaying) { togglePlayback(); togglePlayback(); } // Reset timer
+            if(isPlaying) { togglePlayback(); togglePlayback(); } // Reinicia con nueva velocidad
         }
 
         function togglePlayback() {
             isPlaying = !isPlaying;
             const btn = document.getElementById('play-btn');
+            const slider = document.getElementById('time-slider');
+            
             if(isPlaying) {
-                btn.innerHTML = "⏸";
-                const slider = document.getElementById('time-slider');
-                if(parseInt(slider.value) >= parseInt(slider.max)) { slider.value = 0; handleTimeChange(0); }
+                btn.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+                if(parseInt(slider.value) >= parseInt(slider.max)) { slider.value = slider.min; handleTimeChange(slider.min); }
                 
                 animationTimer = setInterval(() => {
                     let nextVal = parseInt(slider.value) + 1;
@@ -283,63 +417,77 @@
                     handleTimeChange(nextVal);
                 }, playSpeed);
             } else {
-                btn.innerHTML = "▶";
+                btn.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
                 clearInterval(animationTimer);
             }
         }
 
-        // --- LÓGICA VISUAL Y FILTROS CRUZADOS ---
         function updateView() {
-            // Filtrado: Tiempo + Búsqueda + Filtros Activos
             const filtered = allData.filter(d => {
-                // Filtros de Widgets
+                // 1. Filtros de Widgets
                 const matchesFilters = Object.entries(activeFilters).every(([col, selecteds]) => {
                     if (selecteds.length === 0) return true;
-                    return selecteds.includes(String(d[col]));
+                    let val = d[col];
+                    if (val === undefined) return false;
+                    return selecteds.includes(String(val));
                 });
                 
-                // Búsqueda Textual
-                const matchesSearch = d.nombre.toLowerCase().includes(searchQuery.toLowerCase());
+                // 2. Buscador
+                const nombre = d.nombre || ""; 
+                const matchesSearch = nombre.toLowerCase().includes(searchQuery.toLowerCase());
                 
-                // Lógica de Existencia Temporal
-                // Existe si (su año de apertura <= año actual) O (no tiene fecha registrada)
-                // Desaparece si (tiene clausura > 0) Y (su clausura es anterior al año actual)
-                const exists = (d._apertura <= currentYear || d._apertura === 0);
-                const notDead = (d._clausura === 0 || d._clausura > currentYear);
+                // 3. Lógica Temporal (1950 - 2021)
+                // Se muestra si abrió antes/en el año actual, o si es un espacio "legado" (ano_ap 0 o menor a 1950)
+                const isOpened = d._apertura <= currentYear || d._apertura === 0 || d._apertura < 1950;
+                // No se muestra si ya clausuró
+                const isAlive = d._clausura === 0 || d._clausura > currentYear;
 
-                return matchesFilters && matchesSearch && exists && notDead;
+                return matchesFilters && matchesSearch && isOpened && isAlive;
             });
 
-            animateCounter(filtered.length);
+            // Consideramos el "Universe Total" dinámico según el año, no el histórico absoluto.
+            // Esto permite que el porcentaje tenga sentido en el tiempo.
+            const universeThisYear = allData.filter(d => {
+                const isOpened = d._apertura <= currentYear || d._apertura === 0 || d._apertura < 1950;
+                const isAlive = d._clausura === 0 || d._clausura > currentYear;
+                return isOpened && isAlive;
+            }).length;
+
+            animateCounters(filtered.length, universeThisYear);
+            updateFilterBadge(); 
 
             markersLayer.clearLayers();
+            const activeHex = document.body.getAttribute('data-theme') === 'dark' ? '#1785FB' : '#1785FB';
+            const borderHex = document.body.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#111111';
+
             filtered.forEach(p => {
-                const lat = parseFloat(p.latitud), lng = parseFloat(p.longitud);
+                const lat = parseFloat(p.lat);
+                const lng = parseFloat(p.longitud); 
+                
                 if (!isNaN(lat) && !isNaN(lng)) {
-                    
-                    // Evaluar si acaba de nacer este año exacto (Efecto Pulsar)
+                    // Si el espacio abrió exactamente este año de la animación, le damos la clase "marker-pulse"
                     const justBorn = (p._apertura === currentYear);
-                    const cssClass = justBorn && isPlaying ? 'marker-pulse' : '';
+                    const pulseClass = (justBorn && isPlaying) ? 'marker-pulse' : '';
 
                     const marker = L.circleMarker([lat, lng], {
-                        pane: 'markerPane', radius: 7, 
-                        fillColor: discColors[p.disciplina] || discColors['Sin información'],
-                        color: "#fff", weight: 1.5, fillOpacity: 0.9,
-                        className: cssClass
+                        pane: 'markerPane', radius: 5.5, 
+                        fillColor: discColors[p.disciplina] || '#555',
+                        color: borderHex, weight: 1.5, fillOpacity: 0.95,
+                        className: pulseClass
                     });
 
-                    // Evita el zoom loco desactivando el autoPan
                     marker.bindPopup(createPopup(p), { autoPan: false });
-                    
-                    marker.on('mouseover', function() { if(!this._pinned) this.openPopup(); });
-                    marker.on('mouseout', function() { if(!this._pinned) this.closePopup(); });
-                    marker.on('click', function() {
-                        markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: '#fff', weight: 1.5}); });
-                        this._pinned = true;
-                        this.setStyle({color: '#f1c40f', weight: 4}); // El color hex directamente, sin variables CSS problemáticas
-                        this.openPopup();
+
+                    marker.on('mouseover', function() { 
+                        if(!this._pinned) { this.openPopup(); this.setStyle({color: activeHex, weight: 3, radius: 7}); }
                     });
-                    
+                    marker.on('mouseout', function() { 
+                        if(!this._pinned) { this.closePopup(); this.setStyle({color: borderHex, weight: 1.5, radius: 5.5}); }
+                    });
+                    marker.on('click', function() {
+                        markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: borderHex, weight: 1.5, radius: 5.5}); });
+                        this._pinned = true; this.setStyle({color: activeHex, weight: 4, radius: 8}); this.openPopup();
+                    });
                     marker.addTo(markersLayer);
                 }
             });
@@ -348,98 +496,147 @@
             renderAllWidgets(filtered);
         }
 
-        map.on('click', function() { 
-            markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: '#fff', weight: 1.5}); });
+        map.on('click', function() {
+            const borderHex = document.body.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#111111';
+            markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: borderHex, weight: 1.5, radius: 5.5}); });
         });
 
         function isAnyFilterActive() { return Object.values(activeFilters).some(arr => arr.length > 0) || searchQuery !== ""; }
 
         function renderAllWidgets(filteredData) {
-            const container = document.getElementById('stats-container');
-            const openWidgets = Array.from(document.querySelectorAll('.widget.open')).map(w => w.dataset.col);
+            const container = document.getElementById('dynamic-widgets');
+            const openWidgets = Array.from(document.querySelectorAll('.card.open')).map(w => w.dataset.col);
             container.innerHTML = '';
 
-            Object.keys(activeFilters).forEach(col => {
-                // Aislar el cálculo para permitir multiselección sin borrar las otras opciones
-                const tempFilters = {...activeFilters};
-                delete tempFilters[col];
+            const cols = ['condicion_mobiliaria', 'circuito', 'estatus', 'disciplina', 'alcaldia'];
+
+            cols.forEach((col, index) => {
+                const otherFilters = {...activeFilters};
+                delete otherFilters[col];
 
                 const baseForThisWidget = allData.filter(d => {
-                    const matchesOther = Object.entries(tempFilters).every(([c, sel]) => {
-                        if (sel.length === 0) return true;
-                        return sel.includes(String(d[c]));
+                    const matchesOther = Object.entries(otherFilters).every(([c, selecteds]) => {
+                        if (selecteds.length === 0) return true;
+                        let val = d[c];
+                        if(val === undefined) return false;
+                        return selecteds.includes(String(val));
                     });
-                    const exists = (d._apertura <= currentYear || d._apertura === 0);
-                    const notDead = (d._clausura === 0 || d._clausura > currentYear);
-                    return matchesOther && exists && notDead && d.nombre.toLowerCase().includes(searchQuery.toLowerCase());
+                    const nombre = d.nombre || "";
+                    const isOpened = d._apertura <= currentYear || d._apertura === 0 || d._apertura < 1950;
+                    const isAlive = d._clausura === 0 || d._clausura > currentYear;
+                    
+                    return matchesOther && nombre.toLowerCase().includes(searchQuery.toLowerCase()) && isOpened && isAlive;
                 });
 
                 const counts = {};
                 baseForThisWidget.forEach(d => {
                     let v = d[col];
-                    if (v === 0 || v === "0" || v === "" || v === null) v = "Sin dato";
+                    if (v === 0 || v === "0" || v === "" || v === null || v === undefined) v = "N/D";
                     counts[v] = (counts[v] || 0) + 1;
                 });
 
                 if (Object.keys(counts).length === 0) return;
 
+                let isOpen = false;
+                if (isFirstRender) { isOpen = (index === 0); } 
+                else { isOpen = openWidgets.includes(col); }
+
                 const widget = document.createElement('div');
-                widget.className = `widget ${openWidgets.includes(col) || (col === 'disciplina' && !isAnyFilterActive()) ? 'open' : ''}`;
+                widget.className = `card ${isOpen ? 'open' : ''}`; 
                 widget.dataset.col = col;
 
-                let h = `<div class="widget-header" onclick="this.parentElement.classList.toggle('open')"><span>${labelMap[col] || col}</span> ▾</div><div class="widget-content">`;
+                let html = `
+                    <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+                        <h2 style="margin:0; text-align:left;">${labelMap[col]}</h2>
+                        ${chevronIcon}
+                    </div>
+                    <div class="card-content-wrapper">
+                        <div class="card-content">
+                `;
                 
                 Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
                     const isActive = activeFilters[col].includes(String(val));
                     const barP = (count / baseForThisWidget.length * 100).toFixed(0);
-                    const barC = col === 'disciplina' ? (discColors[val] || '#00d2ff') : '#00d2ff';
+                    const barC = col === 'disciplina' ? (discColors[val] || 'var(--highlight)') : 'var(--highlight)';
 
-                    h += `
+                    html += `
                         <div class="stat-row ${isActive ? 'active' : ''}" onclick="toggleMultiFilter('${col}', '${val}')">
-                            <div class="stat-info"><span>${val}</span><strong>${count}</strong></div>
-                            <div class="stat-bar"><div class="stat-bar-fill" style="width:${barP}%; background:${barC}"></div></div>
+                            <div class="stat-info"><span>${val}</span><span>${count}</span></div>
+                            <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${barP}%; background:${barC}"></div></div>
                         </div>`;
                 });
-                widget.innerHTML = h + `</div>`;
+                
+                html += `</div></div>`;
+                widget.innerHTML = html;
                 container.appendChild(widget);
             });
+
+            isFirstRender = false;
         }
 
         function toggleMultiFilter(col, val) {
-            const index = activeFilters[col].indexOf(String(val));
+            const index = activeFilters[col].indexOf(val);
             if (index > -1) activeFilters[col].splice(index, 1);
-            else activeFilters[col].push(String(val));
+            else activeFilters[col].push(val);
             updateView();
         }
 
         function createPopup(p) {
-            let html = `<div class="popup-container"><span class="p-title">${p.nombre}</span>`;
-            Object.entries(labelMap).forEach(([key, label]) => {
-                const val = p[key];
-                if (val && val !== 0 && val !== "0") {
-                    html += `<div class="p-row"><span class="p-label">${label}</span><span>${val}</span></div>`;
-                }
+            let html = `<div class="popup-container"><span class="p-title">${p.nombre || 'Sin Nombre'}</span>`;
+            const popupMap = { 'disciplina': 'Disciplina', 'circuito': 'Circuito', 'condicion_mobiliaria': 'Condición Mobiliaria', 'sostenimiento': 'Sostenimiento', 'estatus': 'Estatus', 'clausuras': 'Clausuras', 'aforo': 'Aforo', 'alcaldia': 'Alcaldía' };
+            
+            Object.entries(popupMap).forEach(([key, label]) => {
+                if (p[key] && p[key] !== 0 && p[key] !== "0") { html += `<div class="p-row"><span class="p-label">${label}</span><span style="font-weight:500">${p[key]}</span></div>`; }
             });
+
+            if (p.contacto && p.contacto !== 0 && p.contacto !== "0" && p.contacto.trim() !== "") {
+                html += `<div class="p-row"><span class="p-label">Contacto</span>`;
+                let contactos = p.contacto.split(/[,|\n]+/).map(c => c.trim()).filter(c => c !== "");
+                contactos.forEach(c => {
+                    if(c.startsWith('http') || c.startsWith('www.')) {
+                        let link = c.startsWith('http') ? c : 'https://' + c;
+                        html += `<a href="${link}" target="_blank" class="p-contact-item p-contact-link">${c}</a>`;
+                    } else { html += `<span class="p-contact-item">${c}</span>`; }
+                });
+                html += `</div>`;
+            }
             return html + `</div>`;
         }
 
         function updateSearch() { searchQuery = document.getElementById('search-input').value; updateView(); }
         
-        function animateCounter(target) {
-            const el = document.getElementById('total-count');
-            const pct = document.getElementById('pct-count');
-            const start = curC;
-            const dur = 300;
-            let st = null;
-            function step(t) {
-                if(!st) st = t;
-                const prog = Math.min((t - st) / dur, 1);
-                curC = prog * (target - start) + start;
-                el.textContent = Math.floor(curC);
-                pct.textContent = (allData.length > 0 ? (curC/allData.length*100) : 0).toFixed(1) + "%";
-                if(prog < 1) requestAnimationFrame(step);
+        let animFrameId = null;
+        let currentCounterValue = 0;
+
+        function animateCounters(targetC, universeTotal) {
+            const cEl = document.getElementById('total-count');
+            const pEl = document.getElementById('pct-count');
+            
+            cEl.style.color = (targetC === universeTotal) ? 'var(--text-main)' : 'var(--highlight)';
+            if (animFrameId) cancelAnimationFrame(animFrameId);
+
+            const startC = currentCounterValue;
+            const dur = 350; 
+            const startTime = performance.now();
+
+            function step(currentTime) {
+                const elapsed = currentTime - startTime;
+                const prog = Math.min(elapsed / dur, 1);
+                const easeOut = prog === 1 ? 1 : 1 - Math.pow(2, -10 * prog);
+                currentCounterValue = Math.round(startC + (targetC - startC) * easeOut);
+                
+                cEl.textContent = currentCounterValue;
+
+                if (prog < 1) {
+                    animFrameId = requestAnimationFrame(step);
+                } else {
+                    currentCounterValue = targetC;
+                    cEl.textContent = targetC;
+                    if(targetC === universeTotal || universeTotal === 0) { pEl.textContent = ""; } 
+                    else { const pct = (targetC / universeTotal * 100).toFixed(1); pEl.textContent = `(${pct}%)`; }
+                }
             }
-            requestAnimationFrame(step);
+            animFrameId = requestAnimationFrame(step);
         }
 
         function clearAllFilters() { 
