@@ -170,7 +170,6 @@
         }
         .marker-pulse { animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) forwards; }
 
-
         /* MÓVIL RESPONSIVE */
         #mobile-open-btn, #mobile-close-btn, #filter-badge { display: none; }
 
@@ -216,7 +215,7 @@
                 <h2>1950 - 2021</h2>
                 
                 <div class="counter-section">
-                    <span class="counter-label">Activos en <span id="label-year" style="color:var(--highlight)">2021</span></span>
+                    <span class="counter-label">Activos en <span id="label-year" style="color:var(--highlight)">1950</span></span>
                     <div style="display:flex; align-items:baseline; justify-content: center;">
                         <span id="total-count" class="total-counter">0</span>
                         <span id="pct-count" class="pct-count"></span>
@@ -252,10 +251,10 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 19 22 12 13 5 13 19"></polygon><polygon points="2 19 11 12 2 5 2 19"></polygon></svg>
                 </button>
                 
-                <div id="year-focus">2021</div>
+                <div id="year-focus">1950</div>
                 
                 <div class="slider-container">
-                    <input type="range" id="time-slider" min="1950" max="2021" value="2021" oninput="handleTimeChange(this.value)">
+                    <input type="range" id="time-slider" min="1950" max="2021" value="1950" oninput="handleTimeChange(this.value)">
                     <div class="speed-ctrl">
                         <span>Evolución Histórica</span>
                         <div class="speed-toggles">
@@ -302,11 +301,11 @@
         let searchQuery = "";
         let isFirstRender = true; 
         
-        // Variables Timelapse
-        let currentYear = 2021;
+        // Variables Timelapse: INICIA EN 1950
+        let currentYear = 1950;
         let isPlaying = false;
         let animationTimer = null;
-        let playSpeed = 350; // Default 2x
+        let playSpeed = 350;
 
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
         L.control.zoom({ position: 'topright' }).addTo(map);
@@ -359,10 +358,17 @@
                         lng = f.properties.longitud || f.properties.lng || null;
                         lat = f.properties.latitud || f.properties.lat || null;
                     }
+                    
+                    // Parseo seguro de la columna 'ano_ap'
+                    let yearAp = 0;
+                    if(f.properties.ano_ap) {
+                        let parsed = parseInt(String(f.properties.ano_ap).trim());
+                        if(!isNaN(parsed)) { yearAp = parsed; }
+                    }
+
                     return { 
                         lat: lat, longitud: lng, 
-                        _apertura: parseInt(f.properties.ano_ap) || 0,
-                        _clausura: parseInt(f.properties.ano_cl) || 0,
+                        _apertura: yearAp, // Se elimina por completo _clausura
                         ...f.properties 
                     };
                 });
@@ -398,7 +404,7 @@
             playSpeed = ms;
             document.querySelectorAll('.speed-toggles span').forEach(el => el.classList.remove('active'));
             document.getElementById('sp-'+id).classList.add('active');
-            if(isPlaying) { togglePlayback(); togglePlayback(); } // Reinicia con nueva velocidad
+            if(isPlaying) { togglePlayback(); togglePlayback(); } 
         }
 
         function togglePlayback() {
@@ -408,11 +414,18 @@
             
             if(isPlaying) {
                 btn.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
-                if(parseInt(slider.value) >= parseInt(slider.max)) { slider.value = slider.min; handleTimeChange(slider.min); }
+                
+                if(parseInt(slider.value) >= parseInt(slider.max)) { 
+                    slider.value = slider.min; 
+                    handleTimeChange(slider.min); 
+                }
                 
                 animationTimer = setInterval(() => {
                     let nextVal = parseInt(slider.value) + 1;
-                    if(nextVal > parseInt(slider.max)) { togglePlayback(); return; }
+                    if(nextVal > parseInt(slider.max)) { 
+                        togglePlayback(); 
+                        return; 
+                    }
                     slider.value = nextVal;
                     handleTimeChange(nextVal);
                 }, playSpeed);
@@ -424,7 +437,6 @@
 
         function updateView() {
             const filtered = allData.filter(d => {
-                // 1. Filtros de Widgets
                 const matchesFilters = Object.entries(activeFilters).every(([col, selecteds]) => {
                     if (selecteds.length === 0) return true;
                     let val = d[col];
@@ -432,25 +444,19 @@
                     return selecteds.includes(String(val));
                 });
                 
-                // 2. Buscador
                 const nombre = d.nombre || ""; 
                 const matchesSearch = nombre.toLowerCase().includes(searchQuery.toLowerCase());
                 
-                // 3. Lógica Temporal (1950 - 2021)
-                // Se muestra si abrió antes/en el año actual, o si es un espacio "legado" (ano_ap 0 o menor a 1950)
-                const isOpened = d._apertura <= currentYear || d._apertura === 0 || d._apertura < 1950;
-                // No se muestra si ya clausuró
-                const isAlive = d._clausura === 0 || d._clausura > currentYear;
+                // Lógica Estricta de Acumulación (Nacen y se quedan. Clausura se ignora)
+                // Se muestra si abrió ANTES o en el año actual. O si el año es 0 (legado sin dato)
+                const isOpened = d._apertura <= currentYear || d._apertura === 0;
 
-                return matchesFilters && matchesSearch && isOpened && isAlive;
+                return matchesFilters && matchesSearch && isOpened;
             });
 
-            // Consideramos el "Universe Total" dinámico según el año, no el histórico absoluto.
-            // Esto permite que el porcentaje tenga sentido en el tiempo.
+            // Conteo total para el año actual
             const universeThisYear = allData.filter(d => {
-                const isOpened = d._apertura <= currentYear || d._apertura === 0 || d._apertura < 1950;
-                const isAlive = d._clausura === 0 || d._clausura > currentYear;
-                return isOpened && isAlive;
+                return d._apertura <= currentYear || d._apertura === 0;
             }).length;
 
             animateCounters(filtered.length, universeThisYear);
@@ -465,7 +471,7 @@
                 const lng = parseFloat(p.longitud); 
                 
                 if (!isNaN(lat) && !isNaN(lng)) {
-                    // Si el espacio abrió exactamente este año de la animación, le damos la clase "marker-pulse"
+                    // Pulso cuando acaba de nacer ese año
                     const justBorn = (p._apertura === currentYear);
                     const pulseClass = (justBorn && isPlaying) ? 'marker-pulse' : '';
 
@@ -522,10 +528,9 @@
                         return selecteds.includes(String(val));
                     });
                     const nombre = d.nombre || "";
-                    const isOpened = d._apertura <= currentYear || d._apertura === 0 || d._apertura < 1950;
-                    const isAlive = d._clausura === 0 || d._clausura > currentYear;
+                    const isOpened = d._apertura <= currentYear || d._apertura === 0;
                     
-                    return matchesOther && nombre.toLowerCase().includes(searchQuery.toLowerCase()) && isOpened && isAlive;
+                    return matchesOther && nombre.toLowerCase().includes(searchQuery.toLowerCase()) && isOpened;
                 });
 
                 const counts = {};
