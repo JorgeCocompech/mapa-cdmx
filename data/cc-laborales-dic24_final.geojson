@@ -28,28 +28,6 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.28168269,
-          19.34230229
-        ]
-      },
-      "properties": {
-        "geom": "POINT(-99.28168269 19.34230229)",
-        "nombre_del_espacio": "CineRgia IEMS Plantel Iztapalapa II \"Benito Juárez\"",
-        "alcaldia": "Iztapalapa",
-        "equipo_humano": "Otro",
-        "trabajo_remunerado_alterno": "Sí",
-        "horas_de_trabajo": "Otro",
-        "perfiles": "Especializado",
-        "sueldo_retribucion_economica": "No",
-        "sostenibilidad": "Mixtos",
-        "tipo_de_figura_legal": "No aplica"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
           -99.1567171,
           19.441993
         ]
@@ -600,12 +578,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.03668032,
-          19.30053907
+          -99.10079319,
+          19.35961915
         ]
       },
       "properties": {
-        "geom": "POINT(-99.03668032 19.30053907)",
+        "geom": "POINT(-99.10079319 19.35961915)",
         "nombre_del_espacio": "Cine club de la Casa de Cultura Guillermo Bonfil Batalla ",
         "alcaldia": "Azcapotzalco",
         "equipo_humano": "De 3 a 5 personas",
@@ -1722,12 +1700,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.13082252,
-          19.43392748
+          -98.99667551,
+          19.34211554
         ]
       },
       "properties": {
-        "geom": "POINT(-99.13082252 19.43392748)",
+        "geom": "POINT(-98.99667551 19.34211554)",
         "nombre_del_espacio": "Centro Comunitario",
         "alcaldia": "Iztapalapa",
         "equipo_humano": "De 3 a 5 personas",
@@ -1766,12 +1744,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.1847318,
-          19.3316664
+          -98.99615052,
+          19.34220798
         ]
       },
       "properties": {
-        "geom": "POINT(-99.1847318 19.3316664)",
+        "geom": "POINT(-98.99615052 19.34220798)",
         "nombre_del_espacio": "La Sabana de filmes",
         "alcaldia": "Iztapalapa",
         "equipo_humano": "De 3 a 5 personas",
@@ -2030,12 +2008,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.17206567,
-          19.41618715
+          -98.99316352,
+          19.21845994
         ]
       },
       "properties": {
-        "geom": "POINT(-99.17206567 19.41618715)",
+        "geom": "POINT(-98.99316352 19.21845994)",
         "nombre_del_espacio": "Cine Club Comunitario Metzli",
         "alcaldia": "Milpa Alta",
         "equipo_humano": "De 3 a 5 personas",
@@ -2052,12 +2030,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.1346883,
-          19.4276917
+          -99.1030546,
+          19.44576011
         ]
       },
       "properties": {
-        "geom": "POINT(-99.1346883 19.4276917)",
+        "geom": "POINT(-99.1030546 19.44576011)",
         "nombre_del_espacio": "Colectivo Cultural Semilleros",
         "alcaldia": "Venustiano Carranza",
         "equipo_humano": "De 3 a 5 personas",
@@ -2162,12 +2140,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.19650548,
-          19.33221916
+          -98.9952483,
+          19.22133218
         ]
       },
       "properties": {
-        "geom": "POINT(-99.19650548 19.33221916)",
+        "geom": "POINT(-98.9952483 19.22133218)",
         "nombre_del_espacio": "Cine Club Olla de Piedra",
         "alcaldia": "Milpa Alta",
         "equipo_humano": "De 3 a 5 personas",
@@ -2866,12 +2844,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.163468,
-          19.4311935
+          -99.20239461,
+          19.40429699
         ]
       },
       "properties": {
-        "geom": "POINT(-99.163468 19.4311935)",
+        "geom": "POINT(-99.20239461 19.40429699)",
         "nombre_del_espacio": "Serdán Alatriste",
         "alcaldia": "Miguel Hidalgo",
         "equipo_humano": "Dos personas",
@@ -2888,12 +2866,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.24884729,
-          19.315441
+          -98.98769497,
+          19.34388334
         ]
       },
       "properties": {
-        "geom": "POINT(-99.24884729 19.315441)",
+        "geom": "POINT(-98.98769497 19.34388334)",
         "nombre_del_espacio": "Museo comunitario de San Miguel Teotongo",
         "alcaldia": "Iztapalapa",
         "equipo_humano": "De 3 a 5 personas",
@@ -3240,12 +3218,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.14386054,
-          19.4298562
+          -98.9985620222641,
+          19.1917656896669
         ]
       },
       "properties": {
-        "geom": "POINT(-99.14386054 19.4298562)",
+        "geom": "POINT(-98.9985620222641 19.1917656896669)",
         "nombre_del_espacio": "Cine Club Rosario Castellanos Unidad Académica \"Santa Ana\"",
         "alcaldia": "Milpa Alta",
         "equipo_humano": "De 3 a 5 personas",
@@ -3636,12 +3614,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.19548555,
-          19.41038912
+          -98.99523363,
+          19.22146943
         ]
       },
       "properties": {
-        "geom": "POINT(-99.19548555 19.41038912)",
+        "geom": "POINT(-98.99523363 19.22146943)",
         "nombre_del_espacio": "FARO Tecómitl",
         "alcaldia": "Milpa Alta",
         "equipo_humano": "De 3 a 5 personas",
@@ -3746,12 +3724,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.16191517,
-          19.42388292
+          -99.13082252,
+          19.43392748
         ]
       },
       "properties": {
-        "geom": "POINT(-99.16191517 19.42388292)",
+        "geom": "POINT(-99.13082252 19.43392748)",
         "nombre_del_espacio": "Casa de la Primera Imprenta de América ",
         "alcaldia": "Cuauhtémoc",
         "equipo_humano": "De 3 a 5 personas",
@@ -4076,12 +4054,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.15222923,
-          19.5273862
+          -99.19548555,
+          19.41038912
         ]
       },
       "properties": {
-        "geom": "POINT(-99.15222923 19.5273862)",
+        "geom": "POINT(-99.19548555 19.41038912)",
         "nombre_del_espacio": "Cine sillita en el Pabellón",
         "alcaldia": "Miguel Hidalgo",
         "equipo_humano": "De 3 a 5 personas",
@@ -4450,12 +4428,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.16201875,
-          19.40919134
+          -98.9649115,
+          19.2253299
         ]
       },
       "properties": {
-        "geom": "POINT(-99.16201875 19.40919134)",
+        "geom": "POINT(-98.9649115 19.2253299)",
         "nombre_del_espacio": "Museo Andrés Quintana Roo",
         "alcaldia": "Tláhuac",
         "equipo_humano": "Una persona",
@@ -4472,12 +4450,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.10079319,
-          19.35961915
+          -98.9966946,
+          19.2695542
         ]
       },
       "properties": {
-        "geom": "POINT(-99.10079319 19.35961915)",
+        "geom": "POINT(-98.9966946 19.2695542)",
         "nombre_del_espacio": "Biblioteca \"José Martí\"",
         "alcaldia": "Tláhuac",
         "equipo_humano": "Una persona",
@@ -4736,12 +4714,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.144297,
-          19.433207
+          -99.0310684,
+          19.1980852
         ]
       },
       "properties": {
-        "geom": "POINT(-99.144297 19.433207)",
+        "geom": "POINT(-99.0310684 19.1980852)",
         "nombre_del_espacio": "LUNA 2 Cihual In Calli",
         "alcaldia": "Milpa Alta",
         "equipo_humano": "Sin información",
@@ -4934,12 +4912,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.1030546,
-          19.44576011
+          -98.99931625,
+          19.28510269
         ]
       },
       "properties": {
-        "geom": "POINT(-99.1030546 19.44576011)",
+        "geom": "POINT(-98.99931625 19.28510269)",
         "nombre_del_espacio": "Los olvidados",
         "alcaldia": "Magdalena Contreras",
         "equipo_humano": "De 3 a 5 personas",
@@ -5000,12 +4978,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.1647339,
-          19.3606529
+          -98.96859735,
+          19.30908772
         ]
       },
       "properties": {
-        "geom": "POINT(-99.1647339 19.3606529)",
+        "geom": "POINT(-98.96859735 19.30908772)",
         "nombre_del_espacio": "Cine Club Santa (Centro Cultural Santa Catarina)",
         "alcaldia": "Cuauhtémoc",
         "equipo_humano": "Una persona",
@@ -5418,12 +5396,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.1438167,
-          19.46145999
+          -99.24884729,
+          19.315441
         ]
       },
       "properties": {
-        "geom": "POINT(-99.1438167 19.46145999)",
+        "geom": "POINT(-99.24884729 19.315441)",
         "nombre_del_espacio": "LUNA \"Cristina Pacheco\"",
         "alcaldia": "Magdalena Contreras",
         "equipo_humano": "Sin información",
@@ -5682,12 +5660,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.1448287,
-          19.4229482
+          -99.19650548,
+          19.33221916
         ]
       },
       "properties": {
-        "geom": "POINT(-99.1448287 19.4229482)",
+        "geom": "POINT(-99.19650548 19.33221916)",
         "nombre_del_espacio": "Cine club Filosofía y Letras",
         "alcaldia": "Coyoacán",
         "equipo_humano": "Una persona",
@@ -6320,12 +6298,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.20239461,
-          19.40429699
+          -98.99683822,
+          19.33528883
         ]
       },
       "properties": {
-        "geom": "POINT(-99.20239461 19.40429699)",
+        "geom": "POINT(-98.99683822 19.33528883)",
         "nombre_del_espacio": "ENCUENTRO CINECLUB",
         "alcaldia": "Iztapalapa",
         "equipo_humano": "De 3 a 5 personas",
@@ -7178,12 +7156,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.05576468,
-          19.25577417
+          -99.1847318,
+          19.3316664
         ]
       },
       "properties": {
-        "geom": "POINT(-99.05576468 19.25577417)",
+        "geom": "POINT(-99.1847318 19.3316664)",
         "nombre_del_espacio": "Facultad de Ingeniería",
         "alcaldia": "Coyoacán",
         "equipo_humano": "Sin información",
@@ -7222,12 +7200,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.13924915,
-          19.40070333
+          -99.1647339,
+          19.3606529
         ]
       },
       "properties": {
-        "geom": "POINT(-99.13924915 19.40070333)",
+        "geom": "POINT(-99.1647339 19.3606529)",
         "nombre_del_espacio": "Cineclub Cineteca 43",
         "alcaldia": "Coyoacán",
         "equipo_humano": "Sin información",
@@ -7618,12 +7596,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.13598468,
-          19.43629339
+          -99.17206567,
+          19.41618715
         ]
       },
       "properties": {
-        "geom": "POINT(-99.13598468 19.43629339)",
+        "geom": "POINT(-99.17206567 19.41618715)",
         "nombre_del_espacio": "Cine Club Condesa ",
         "alcaldia": "Cuauhtémoc",
         "equipo_humano": "Sin información",
@@ -8014,12 +7992,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.16360556,
-          19.23537812
+          -99.0310684,
+          19.1980852
         ]
       },
       "properties": {
-        "geom": "POINT(-99.16360556 19.23537812)",
+        "geom": "POINT(-99.0310684 19.1980852)",
         "nombre_del_espacio": "Casa de Cultura Calmecac",
         "alcaldia": "Milpa Alta",
         "equipo_humano": "Sin información",
@@ -8102,12 +8080,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.16010835,
-          19.46035291
+          -99.06510406,
+          19.3146872
         ]
       },
       "properties": {
-        "geom": "POINT(-99.16010835 19.46035291)",
+        "geom": "POINT(-99.06510406 19.3146872)",
         "nombre_del_espacio": "IEMS Plantel Iztapalapa II \"Benito Juárez\"",
         "alcaldia": "Iztapalapa",
         "equipo_humano": "Sin información",
@@ -8388,12 +8366,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -99.02590557,
-          19.25849862
+          -99.16201875,
+          19.40919134
         ]
       },
       "properties": {
-        "geom": "POINT(-99.02590557 19.25849862)",
+        "geom": "POINT(-99.16201875 19.40919134)",
         "nombre_del_espacio": "ReverdeSer",
         "alcaldia": "Cuauhtémoc",
         "equipo_humano": "Sin información",
