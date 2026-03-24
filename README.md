@@ -1,9 +1,10 @@
-# 🗺️ Cartografía Cultural CDMX | Observatorio UACM
+# 🗺️ Cartografía Cultural CDMX | Observatorio de Políticas Culturales UACM
+
 
 Bienvenido al repositorio del ecosistema de mapas interactivos del **Observatorio de Políticas Culturales de la UACM**. Este proyecto visualiza y analiza la infraestructura, condiciones laborales y el impacto histórico/pandémico de los espacios culturales independientes en la Ciudad de México.
 
 ## 🚀 Características del Ecosistema
-Todos los mapas de este proyecto fueron desarrollados con una arquitectura *Vanilla* (HTML, CSS, JS) utilizando **Leaflet.js** y datos en formato **GeoJSON**. Se diseñaron con un enfoque estricto en la Experiencia de Usuario (UX/UI) y la limpieza de datos:
+Todos los mapas de este proyecto fueron desarrollados con una arquitectura pura y ligera (**Vanilla Web**), sin el uso de frameworks pesados (como React o Angular). Esto garantiza una carga ultra rápida, compatibilidad universal y máxima facilidad para alojarse directamente en cualquier servidor (como GitHub Pages).
 
 * 🌓 **Motor de Temas Dinámico:** Interfaz responsiva con *Dark Mode* y *Light Mode* que adapta automáticamente los mapas base de CARTO.
 * 🛡️ **Escudo Anti-Coordenadas Invertidas:** Algoritmo que detecta y corrige automáticamente errores de exportación en los GeoJSON (ej. coordenadas invertidas o uso de comas decimales) para evitar que los marcadores caigan en el océano.
@@ -45,3 +46,13 @@ Al estar construido íntegramente del lado del cliente (Frontend), este proyecto
 1. Clona este repositorio:
    ```bash
    git clone [https://github.com/JorgeCocompech/mapa-cdmx.git](https://github.com/JorgeCocompech/mapa-cdmx.git)
+
+2. ¡Disfruta de los mapas!
+
+## ✒️ Autoría y Créditos
+* **Desarrollo y Diseño UI/UX:** Jorge Cocompech(https://jorgecocompech.rocks)
+* **Investigación y Datos:** Observatorio de Políticas Culturales - UACM.(https://politicasculturales.mx)
+* **Tecnologías Aplicadas:** * [HTML5](https://developer.mozilla.org/es/docs/Web/HTML) y [CSS3](https://developer.mozilla.org/es/docs/Web/CSS) (Estructura y diseño)
+  * [Vanilla JavaScript](https://developer.mozilla.org/es/docs/Web/JavaScript) (Lógica nativa, sin frameworks)
+  * [Leaflet.js](https://leafletjs.com/) (Motor cartográfico)
+  * [CARTO Basemaps](https://carto.com/basemaps) (Mapas base)
