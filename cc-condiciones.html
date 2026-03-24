@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Condiciones de Cineclubes | CDMX</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* MOTOR DE TEMAS */
+        :root { --accent: #ff4757; }
+
+        [data-theme="dark"] {
+            --bg-color: #0d0d0d; --panel-bg: #141414; --text-main: #ffffff;
+            --text-muted: #8a8f93; --highlight: #1785FB; --border-color: #262626;
+            --input-bg: #1f1f1f; --card-bg: #1c1c1e; --row-hover: rgba(255,255,255,0.05);
+            --row-active: rgba(23, 133, 251, 0.15); --bar-bg: #333333;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f5f5f5; --panel-bg: #ffffff; --text-main: #2C2C2C;
+            --text-muted: #747d82; --highlight: #1785FB; --border-color: #e2e6e9;
+            --input-bg: #f9f9f9; --card-bg: #ffffff; --row-hover: rgba(0,0,0,0.03);
+            --row-active: rgba(23, 133, 251, 0.1); --bar-bg: #e2e6e9;
+        }
+        
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; height: 100vh; overflow: hidden; transition: background-color 0.3s, color 0.3s; }
+        #main-wrapper { display: flex; flex-grow: 1; height: calc(100vh - 75px); width: 100%; position: relative; }
+        
+        #dashboard { width: 380px; height: 100%; z-index: 3000; background: var(--panel-bg); display: flex; flex-direction: column; flex-shrink: 0; border-right: 1px solid var(--border-color); transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s, border-color 0.3s; }
+        .dashboard-header { padding: 24px 20px 10px 20px; flex-shrink: 0; border-bottom: 1px solid var(--border-color); z-index: 10; }
+        .header-logo { display: block; width: 90%; max-width: 250px; margin: 0 auto 20px auto; height: auto; transition: opacity 0.3s; }
+        h1 { font-size: 1.5rem; font-weight: 900; margin: 0 0 16px 0; text-align: center; color: var(--text-main); letter-spacing: -0.5px; }
+        h2 { font-size: 0.85rem; font-weight: 600; margin: 0 0 16px 0;  text-align: center; color: var(--text-main); }
+        
+        #stats-container { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        #stats-container::-webkit-scrollbar { width: 5px; }
+        #stats-container::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+        
+        #map { flex-grow: 1; height: 100%; position: relative; background: var(--bg-color); transition: background-color 0.3s; z-index: 100; }
+        
+        .theme-toggle-btn { position: absolute; top: 20px; right: 20px; z-index: 2000; background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border-color); width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: 0.2s; }
+        .theme-toggle-btn:hover { border-color: var(--highlight); color: var(--highlight); }
+        path.leaflet-interactive:focus { outline: none !important; }
+        
+        .search-box { padding: 12px 14px; width: 100%; border: 1px solid var(--border-color); border-radius: 8px; background: var(--input-bg); color: var(--text-main); font-family: inherit; font-size: 0.85rem; outline: none; transition: 0.2s; margin-top: 15px; }
+        .search-box:focus { border-color: var(--highlight); }
+
+        .counter-section { display: flex; flex-direction: column; align-items: center; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .counter-label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; text-align: center;}
+        .total-counter { font-size: 2.8rem; font-weight: 800; color: var(--highlight); line-height: 1; display: inline-block; transition: color 0.3s; }
+
+        #clear-btn { display: none; padding: 10px 12px; margin-top: 15px; background: rgba(255, 71, 87, 0.1); color: var(--accent); border: 1px solid var(--accent); border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.75rem; transition: 0.2s; width: 100%; text-align: center; text-transform: uppercase; }
+        #clear-btn:hover { background: var(--accent); color: #fff; }
+
+        .data-alert-minimal { display: none; align-items: center; justify-content: space-between; background: rgba(255, 71, 87, 0.08); border: 1px solid rgba(255, 71, 87, 0.2); color: var(--text-main); padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; margin-top: 10px; width: 100%; }
+        .data-alert-text { display: flex; align-items: center; gap: 6px; font-weight: 500; }
+        .data-alert-btn { background: var(--accent); color: white; border: none; border-radius: 6px; padding: 6px 10px; font-size: 0.65rem; font-weight: 700; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+        .data-alert-btn:hover { background: #ff3344; }
+
+        /* WIDGETS */
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .card-header { padding: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; color: var(--text-muted); transition: color 0.2s; }
+        .card-header:hover { color: var(--text-main); }
+        .chevron { transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); stroke: currentColor; }
+        .card.open .chevron { transform: rotate(180deg); }
+        .card-content-wrapper { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card.open .card-content-wrapper { grid-template-rows: 1fr; }
+        .card-content { overflow: hidden; padding: 0 16px; }
+        .card.open .card-content { padding-bottom: 16px; }
+        .stat-row { margin-bottom: 8px; cursor: pointer; border-radius: 6px; padding: 6px 8px; border: 1px solid transparent; transition: 0.2s; }
+        .stat-row:last-child { margin-bottom: 0; }
+        .stat-row:hover { background: var(--row-hover); }
+        .stat-row.active { background: var(--row-active); border-color: transparent; }
+        .stat-row.active .stat-info { color: var(--highlight); font-weight: 600; }
+        .stat-info { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; color: var(--text-main); transition: 0.2s; }
+        .stat-bar-bg { background: var(--bar-bg); height: 4px; border-radius: 4px; overflow: hidden; transition: background-color 0.3s; }
+        .stat-bar-fill { height: 100%; transition: width 0.4s ease; border-radius: 4px; }
+
+        /* POPUPS */
+        .leaflet-popup-content-wrapper { background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .leaflet-popup-tip { background: var(--panel-bg); border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
+        .popup-container { max-height: 340px; overflow-y: auto; font-size: 11px; width: 250px; padding-right: 5px; }
+        .popup-container::-webkit-scrollbar { width: 4px; }
+        .popup-container::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+        
+        .p-title { color: var(--highlight); font-weight: 800; font-size: 14px; display: block; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; line-height: 1.3;}
+        .p-row { border-bottom: 1px solid var(--border-color); padding: 6px 0; display: flex; flex-direction: column; gap: 3px;}
+        .p-row:last-child { border-bottom: none; }
+        .p-label { font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px; }
+        .p-value { font-weight: 500; font-size: 11px; color: var(--text-main); }
+        
+        /* UI PARA REDES SOCIALES / CONTACTO */
+        .social-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
+        .social-pill { 
+            display: inline-flex; align-items: center; gap: 5px; 
+            padding: 4px 8px; border-radius: 4px; 
+            background: var(--row-hover); color: var(--text-main); 
+            text-decoration: none; font-size: 10px; font-weight: 600; 
+            transition: 0.2s; border: 1px solid var(--border-color); 
+        }
+        .social-pill:hover { background: var(--highlight); color: #fff; border-color: var(--highlight); }
+        .social-pill svg { width: 12px; height: 12px; fill: currentColor; }
+
+        /* FOOTER */
+        #app-footer { height: 75px; width: 100%; flex-shrink: 0; background: var(--panel-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 4000; transition: background-color 0.3s, border-color 0.3s; }
+        .footer-logo img { max-height: 40px; width: auto; object-fit: contain; transition: opacity 0.3s; }
+        .footer-actions { display: flex; align-items: center; gap: 12px; }
+        .footer-btn { display: flex; align-items: center; gap: 8px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; height: 38px; padding: 0 16px; border-radius: 20px; cursor: pointer; text-decoration: none; transition: 0.2s; }
+        .footer-btn.icon-only { width: 38px; padding: 0; justify-content: center; border-radius: 50%; }
+        .footer-btn:hover { border-color: var(--highlight); color: var(--highlight); }
+        .footer-btn svg { width: 16px; height: 16px; fill: currentColor; }
+        .footer-btn.dl-btn svg { fill: none; stroke: currentColor; }
+
+        /* MODAL DE AUDITORÍA */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 24px; width: 90%; max-width: 500px; box-shadow: 0 15px 40px rgba(0,0,0,0.3); transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); max-height: 80vh; display: flex; flex-direction: column; }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; }
+        .modal-title { font-size: 1.1rem; font-weight: 800; color: var(--accent); margin: 0; display:flex; align-items:center; gap:8px;}
+        .close-modal-btn { background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-muted); cursor: pointer; padding: 6px; border-radius: 6px; transition: 0.2s; display:flex; align-items:center;}
+        .close-modal-btn:hover { background: var(--row-hover); color: var(--text-main); border-color: var(--text-muted); }
+        .modal-body { overflow-y: auto; padding-right: 8px; }
+        .modal-body::-webkit-scrollbar { width: 5px; }
+        .modal-body::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+        .excluded-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .excluded-table th { text-align: left; padding: 10px 8px; border-bottom: 2px solid var(--border-color); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.7rem; }
+        .excluded-table td { padding: 12px 8px; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
+        .excluded-table tr:last-child td { border-bottom: none; }
+        
+        .reason-badge { display: inline-block; padding: 4px 8px; background: rgba(255, 71, 87, 0.1); color: var(--accent); border-radius: 4px; font-size: 0.7rem; font-weight: 700; }
+        .reason-badge.warning { background: rgba(245, 158, 11, 0.1); color: #F59E0B; } 
+
+        /* Efecto de carga inicial */
+        @keyframes pop-in {
+            0% { transform: scale(0); opacity: 0; }
+            70% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.95; }
+        }
+        .marker-loaded { transform-origin: center; transform-box: fill-box; animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+        /* MÓVIL RESPONSIVE */
+        #mobile-open-btn, #mobile-close-btn, #filter-badge { display: none; }
+        @media (max-width: 768px) {
+            #main-wrapper { height: calc(100vh - 65px); } 
+            #dashboard { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; border-right: none; }
+            #dashboard.mobile-active { left: 0; } 
+            #mobile-open-btn { display: flex; position: absolute; top: 20px; left: 20px; z-index: 2000; background: var(--highlight); color: #fff; border: none; padding: 10px 18px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; cursor: pointer; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+            #filter-badge { display: none; background: #fff; color: var(--highlight); border-radius: 50%; width: 20px; height: 20px; font-size: 0.7rem; align-items: center; justify-content: center; font-weight: 800; }
+            #mobile-close-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(23, 133, 251, 0.1); color: var(--highlight); border: 1px solid var(--highlight); font-size: 0.85rem; font-weight: 700; cursor: pointer; margin-bottom: 15px; padding: 12px; border-radius: 8px; width: 100%; text-transform: uppercase; }
+            .dashboard-header { padding: 20px 15px 10px 15px; }
+            .header-logo { max-width: 180px; margin-bottom: 15px; }
+            .total-counter { font-size: 2.2rem; }
+            #app-footer { padding: 0 15px; height: 65px; }
+            .footer-logo img { max-height: 30px; }
+            .footer-btn.dl-btn .btn-text { display: none; } 
+            .footer-btn.dl-btn { width: 38px; padding: 0; justify-content: center; border-radius: 50%; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <div id="main-wrapper">
+        <div id="dashboard">
+            <div class="dashboard-header">
+                <button id="mobile-close-btn" onclick="toggleMobileDashboard()">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Volver al Mapa
+                </button>
+
+                <img src="https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm.svg" class="header-logo theme-logo" alt="Logo Observatorio UACM">
+                <h1>CINECLUBES CDMX</h1>
+                <h2>Condiciones Generales</h2>
+                
+                <div class="counter-section">
+                    <span class="counter-label">Total de Cineclubes</span>
+                    <div style="display:flex; align-items:baseline; justify-content: center;">
+                        <span id="total-count" class="total-counter">0</span>
+                    </div>
+                    <button id="clear-btn" onclick="clearAllFilters()">✕ Limpiar Selección</button>
+                </div>
+                
+                <div id="data-alert" class="data-alert-minimal">
+                    <div class="data-alert-text">
+                        <span style="font-size:1rem">⚠️</span> 
+                        <span id="excluded-count-text">0 excluidos</span>
+                    </div>
+                    <button class="data-alert-btn" onclick="openExcludedModal()">Ver detalles</button>
+                </div>
+
+                <input type="text" class="search-box" id="search-input" placeholder="🔍 Buscar cineclub..." oninput="updateSearch()">
+            </div>
+            
+            <div id="stats-container">
+                <div id="dynamic-widgets" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            </div>
+        </div>
+
+        <div id="map">
+            <button id="mobile-open-btn" onclick="toggleMobileDashboard()">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                Filtros
+                <span id="filter-badge">0</span>
+            </button>
+
+            <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Cambiar Tema">🌙</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="excluded-modal" onclick="closeExcludedModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    Auditoría de Datos
+                </h3>
+                <button class="close-modal-btn" onclick="closeExcludedModal()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0; line-height: 1.4;">Los siguientes espacios fueron excluidos del análisis por problemas en sus coordenadas geográficas:</p>
+                <table class="excluded-table">
+                    <thead><tr><th>Nombre del Espacio</th><th>Motivo de Exclusión</th></tr></thead>
+                    <tbody id="excluded-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer id="app-footer">
+        <div class="footer-logo">
+            <p align="center" style="margin: 0;">
+                <img src="https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm.svg" class="theme-logo" alt="Logo Observatorio UACM">
+            </p>
+        </div>
+        <div class="footer-actions">
+            <button class="footer-btn icon-only" title="Compartir en X" onclick="window.open('https://twitter.com/intent/tweet?text=Explora las condiciones de los Cineclubes en la CDMX&url='+encodeURIComponent(window.location.href), '_blank')">
+                <svg viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
+            </button>
+            <button class="footer-btn icon-only" title="Compartir en Facebook" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(window.location.href), '_blank')">
+                <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+            </button>
+            <a href="https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/data/cc-condiciones-dic24.geojson" target="_blank" download="cc-condiciones-dic24.geojson" class="footer-btn dl-btn">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span class="btn-text">Descargar GeoJSON</span>
+            </a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // CONFIGURACIÓN DE WIDGETS
+        const labelMap = { 
+            '_alcaldia': 'Alcaldías', 
+            '_espacio_fisico': 'Espacio Físico Permanente', 
+            '_espacio_especializado': 'Espacio Especializado', 
+            '_tipo_espacio': 'Tipo de Espacio Físico', 
+            '_tipo_equipamiento': 'Tipo de Equipamiento', 
+            '_archivo_filmico': 'Archivo Fílmico',
+            '_videoteca': 'Videoteca',
+            '_tipo_archivo': 'Tipo de Archivo'
+        };
+        
+        const colsConfig = ['_alcaldia', '_espacio_fisico', '_espacio_especializado', '_tipo_espacio', '_tipo_equipamiento', '_archivo_filmico', '_videoteca', '_tipo_archivo'];
+
+        const alcPalette = { "Azcapotzalco": "#00CED1", "Coyoacán": "#FF1493", "Cuajimalpa de Morelos": "#7FFF00", "Gustavo A. Madero": "#00FA9A", "Iztacalco": "#FF00FF", "Iztapalapa": "#00BFFF", "La Magdalena Contreras": "#D2691E", "Milpa Alta": "#BDB76B", "Álvaro Obregón": "#20B2AA", "Tláhuac": "#EE82EE", "Tlalpan": "#CD853F", "Xochimilco": "#40E0D0", "Benito Juárez": "#BA55D3", "Cuauhtémoc": "#F08080", "Miguel Hidalgo": "#7B68EE", "Venustiano Carranza": "#FF69B4" };
+        const chevronIcon = `<svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+
+        let allData = [];
+        let activeFilters = { _alcaldia: [], _espacio_fisico: [], _espacio_especializado: [], _tipo_espacio: [], _tipo_equipamiento: [], _archivo_filmico: [], _videoteca: [], _tipo_archivo: [] }; 
+        let searchQuery = "";
+        let isFirstRender = true; 
+
+        const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+        
+        const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
+        const lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
+        lightTiles.addTo(map); 
+        
+        map.createPane('alcPane').style.zIndex = 200;
+        map.createPane('markerPane').style.zIndex = 650;
+        const markersLayer = L.layerGroup().addTo(map);
+
+        function toggleMobileDashboard() { document.getElementById('dashboard').classList.toggle('mobile-active'); }
+
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('theme-btn');
+            const themeLogos = document.querySelectorAll('.theme-logo');
+            const darkLogoUrl = 'https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm-inv.svg';
+            const lightLogoUrl = 'https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm.svg';
+            
+            if (body.getAttribute('data-theme') === 'light') {
+                body.setAttribute('data-theme', 'dark'); map.removeLayer(lightTiles); darkTiles.addTo(map);
+                btn.textContent = '🌞'; themeLogos.forEach(img => img.src = darkLogoUrl);
+            } else {
+                body.setAttribute('data-theme', 'light'); map.removeLayer(darkTiles); lightTiles.addTo(map);
+                btn.textContent = '🌙'; themeLogos.forEach(img => img.src = lightLogoUrl);
+            }
+            updateView(); 
+        }
+
+        function openExcludedModal() { document.getElementById('excluded-modal').classList.add('active'); }
+        function closeExcludedModal(e) { if(e && e.target !== e.currentTarget) return; document.getElementById('excluded-modal').classList.remove('active'); }
+
+        // Función "Red de Captura" Universal
+        function getProp(properties, possibleKeys) {
+            const normalize = (str) => str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+            
+            for (let k of possibleKeys) {
+                let normK = normalize(k);
+                let foundKey = Object.keys(properties).find(key => normalize(key) === normK);
+                if (foundKey && properties[foundKey] !== null && properties[foundKey] !== undefined && String(properties[foundKey]).trim() !== "") {
+                    return String(properties[foundKey]).trim();
+                }
+            }
+            return "Sin información";
+        }
+
+        fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/cdmx-alcaldias.geojson')
+            .then(res => res.json())
+            .then(data => {
+                L.geoJSON(data, {
+                    pane: 'alcPane',
+                    style: (f) => ({ fillColor: alcPalette[f.properties.NOMGEO] || "#333", weight: 1.5, color: "white", fillOpacity: 0.25, opacity: 0.6 }),
+                    onEachFeature: (f, l) => l.bindTooltip(f.properties.NOMGEO)
+                }).addTo(map);
+            });
+
+        // CARGA DE DATOS PRINCIPALES
+        fetch('https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/data/cc-condiciones-dic24.geojson')
+            .then(res => res.json())
+            .then(data => {
+                let perdidosArr = [];
+                
+                allData = data.features.reduce((acc, f) => {
+                    let p = f.properties;
+                    let lng = null, lat = null;
+                    if (f.geometry && f.geometry.coordinates) { lng = f.geometry.coordinates[0]; lat = f.geometry.coordinates[1]; } 
+                    else if (p) { lng = p.longitud || p.lng || null; lat = p.latitud || p.lat || null; }
+                    
+                    if(isNaN(parseFloat(lat)) || isNaN(parseFloat(lng))) {
+                        perdidosArr.push({ nombre: p.nombre_del_espacio || p.nombre || p.Nombre || "Espacio desconocido", motivo: "Faltan coordenadas" });
+                        return acc; 
+                    }
+
+                    acc.push({ 
+                        lat: lat, longitud: lng, 
+                        _alcaldia: getProp(p, ['alcaldia', 'alcaldias']),
+                        _espacio_fisico: getProp(p, ['espacio fisico permanente', 'espacio_fisico_permanente', 'permanente']),
+                        _espacio_especializado: getProp(p, ['espacio especializado', 'espacio_especializado', 'especializado']),
+                        _tipo_espacio: getProp(p, ['tipo de espacio fisico', 'tipo_espacio_fisico', 'tipo de espacio', 'tipo espacio']),
+                        _tipo_equipamiento: getProp(p, ['tipo de equipamiento', 'tipo_equipamiento', 'equipamiento']),
+                        _archivo_filmico: getProp(p, ['archivo filmico', 'archivo_filmico', 'filmico']),
+                        _videoteca: getProp(p, ['videoteca']),
+                        _tipo_archivo: getProp(p, ['tipo de archivo', 'tipo_archivo', 'tipo archivo']),
+                        ...p 
+                    });
+                    return acc;
+                }, []);
+
+                if(perdidosArr.length > 0) {
+                    const alertBox = document.getElementById('data-alert');
+                    const countText = document.getElementById('excluded-count-text');
+                    const tableBody = document.getElementById('excluded-table-body');
+                    
+                    alertBox.style.display = 'flex'; countText.textContent = `${perdidosArr.length} excluidos`;
+                    tableBody.innerHTML = perdidosArr.map(p => `<tr><td><strong>${p.nombre}</strong></td><td><span class="reason-badge">${p.motivo}</span></td></tr>`).join('');
+                }
+
+                updateView();
+            });
+
+        function updateFilterBadge() {
+            let count = 0; Object.values(activeFilters).forEach(arr => { count += arr.length; });
+            const badge = document.getElementById('filter-badge');
+            if (count > 0 || searchQuery !== "") { badge.style.display = 'flex'; badge.textContent = count + (searchQuery ? 1 : 0); } 
+            else { badge.style.display = 'none'; }
+        }
+
+        function updateView() {
+            const filtered = allData.filter(d => {
+                const matchesFilters = Object.entries(activeFilters).every(([col, selecteds]) => {
+                    if (selecteds.length === 0) return true;
+                    let val = d[col];
+                    if (val === undefined || val === null) return false;
+                    return selecteds.includes(String(val));
+                });
+                
+                let nombreSpace = getProp(d, ['nombre_del_espacio', 'nombre', 'cineclub']).toLowerCase();
+                const matchesSearch = nombreSpace.includes(searchQuery.toLowerCase());
+                
+                return matchesFilters && matchesSearch;
+            });
+
+            animateCounters(filtered.length);
+            updateFilterBadge(); 
+
+            markersLayer.clearLayers();
+            const activeHex = document.body.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#111111';
+            const borderHex = document.body.getAttribute('data-theme') === 'dark' ? '#262626' : '#ffffff';
+
+            filtered.forEach(p => {
+                const lat = parseFloat(p.lat);
+                const lng = parseFloat(p.longitud); 
+                
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    
+                    // Todo se pinta con el color institucional por defecto
+                    let mColor = 'var(--highlight)'; 
+
+                    const marker = L.circleMarker([lat, lng], {
+                        pane: 'markerPane', radius: 6, 
+                        fillColor: mColor,
+                        color: borderHex, weight: 1.5, fillOpacity: 0.95,
+                        className: 'marker-loaded' 
+                    });
+
+                    marker.bindPopup(createPopup(p), { autoPan: false });
+
+                    marker.on('mouseover', function() { if(!this._pinned) { this.openPopup(); this.setStyle({color: activeHex, weight: 3, radius: 8}); } });
+                    marker.on('mouseout', function() { if(!this._pinned) { this.closePopup(); this.setStyle({color: borderHex, weight: 1.5, radius: 6}); } });
+                    marker.on('click', function() {
+                        markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: borderHex, weight: 1.5, radius: 6}); });
+                        this._pinned = true; this.setStyle({color: activeHex, weight: 4, radius: 9}); this.openPopup();
+                    });
+                    marker.addTo(markersLayer);
+                }
+            });
+
+            document.getElementById('clear-btn').style.display = isAnyFilterActive() ? 'block' : 'none';
+            renderAllWidgets(filtered);
+        }
+
+        map.on('click', function() {
+            const borderHex = document.body.getAttribute('data-theme') === 'dark' ? '#262626' : '#ffffff';
+            markersLayer.eachLayer(m => { m._pinned = false; m.setStyle({color: borderHex, weight: 1.5, radius: 6}); });
+            updateView(); 
+        });
+
+        function isAnyFilterActive() { return Object.values(activeFilters).some(arr => arr.length > 0) || searchQuery !== ""; }
+
+        function renderAllWidgets(filteredData) {
+            const container = document.getElementById('dynamic-widgets');
+            const openWidgets = Array.from(document.querySelectorAll('.card.open')).map(w => w.dataset.col);
+            container.innerHTML = '';
+
+            colsConfig.forEach((col, index) => {
+                const otherFilters = {...activeFilters};
+                delete otherFilters[col];
+
+                const baseForThisWidget = allData.filter(d => {
+                    const matchesOther = Object.entries(otherFilters).every(([c, selecteds]) => {
+                        if (selecteds.length === 0) return true;
+                        let val = d[c];
+                        if(val === undefined || val === null) return false;
+                        return selecteds.includes(String(val));
+                    });
+                    let nombreSpace = getProp(d, ['nombre_del_espacio', 'nombre', 'cineclub']).toLowerCase();
+                    return matchesOther && nombreSpace.includes(searchQuery.toLowerCase());
+                });
+
+                const counts = {};
+                baseForThisWidget.forEach(d => {
+                    let v = d[col];
+                    if (v === 0 || v === "0" || v === "" || v === null || v === undefined) v = "Sin información";
+                    counts[v] = (counts[v] || 0) + 1;
+                });
+
+                if (Object.keys(counts).length === 0) return;
+
+                let isOpen = false;
+                if (isFirstRender) { isOpen = (index === 0); } 
+                else { isOpen = openWidgets.includes(col); }
+
+                const widget = document.createElement('div');
+                widget.className = `card ${isOpen ? 'open' : ''}`; 
+                widget.dataset.col = col;
+
+                let html = `
+                    <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+                        <h2 style="margin:0; text-align:left;">${labelMap[col]}</h2>
+                        ${chevronIcon}
+                    </div>
+                    <div class="card-content-wrapper">
+                        <div class="card-content">
+                `;
+                
+                Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([val, count]) => {
+                    const isActive = activeFilters[col].includes(String(val));
+                    const barP = (count / baseForThisWidget.length * 100).toFixed(0);
+                    let barC = 'var(--highlight)';
+
+                    html += `
+                        <div class="stat-row ${isActive ? 'active' : ''}" onclick="toggleMultiFilter('${col}', '${val}')">
+                            <div class="stat-info"><span>${val}</span><span>${count}</span></div>
+                            <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${barP}%; background:${barC}"></div></div>
+                        </div>`;
+                });
+                
+                html += `</div></div>`;
+                widget.innerHTML = html;
+                container.appendChild(widget);
+            });
+
+            isFirstRender = false;
+        }
+
+        function toggleMultiFilter(col, val) {
+            const index = activeFilters[col].indexOf(val);
+            if (index > -1) activeFilters[col].splice(index, 1);
+            else activeFilters[col].push(val);
+            updateView();
+        }
+
+        // ====== POPUP MAESTRO ======
+        function createPopup(p) {
+            let nombre = getProp(p, ['nombre_del_espacio', 'nombre', 'cineclub']);
+            let html = `<div class="popup-container"><span class="p-title">${nombre}</span>`;
+            
+            // Atributos de texto solicitados exactamente en este orden
+            const popupMap = [
+                { key: ['alcaldia', 'alcaldias'], label: 'Alcaldía' },
+                { key: ['espacio fisico permanente', 'permanente'], label: 'Espacio Físico Permanente' },
+                { key: ['tipo de espacio fisico', 'tipo espacio', 'tipo_espacio_fisico'], label: 'Tipo de Espacio Físico' },
+                { key: ['espacio especializado', 'especializado'], label: 'Espacio Especializado' },
+                { key: ['tipo de equipamiento', 'equipamiento'], label: 'Tipo de Equipamiento' },
+                { key: ['archivo filmico', 'filmico'], label: 'Archivo Fílmico' },
+                { key: ['videoteca'], label: 'Videoteca' },
+                { key: ['tipo de archivo', 'archivo'], label: 'Tipo de Archivo' }
+            ];
+            
+            popupMap.forEach(({key, label}) => {
+                let val = getProp(p, key);
+                if (val !== "Sin información" && val.toLowerCase() !== "na" && val !== "0" && val !== "-") { 
+                    html += `<div class="p-row"><span class="p-label">${label}</span><span class="p-value">${val}</span></div>`; 
+                }
+            });
+
+            // --- REDES SOCIALES Y CONTACTOS ---
+            const getVal = (keys) => {
+                let val = getProp(p, keys);
+                return (val !== "Sin información" && val.toLowerCase() !== "na" && val !== "0" && val !== "-") ? val : null;
+            };
+
+            const fb = getVal(['facebook', 'fb']);
+            const xApp = getVal(['x', 'twitter']);
+            const ig = getVal(['instagram', 'ig']);
+            const tk = getVal(['tiktok', 'tik tok']);
+            const web = getVal(['pagina web', 'sitio web', 'web']);
+
+            if (fb || xApp || ig || tk || web) {
+                html += `<div class="p-row" style="margin-top: 5px;"><div class="social-container">`;
+                
+                if (fb) {
+                    let link = fb.startsWith('http') ? fb : 'https://' + fb;
+                    html += `<a href="${link}" target="_blank" class="social-pill" title="Facebook">
+                        <svg viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg> Facebook
+                    </a>`;
+                }
+                if (xApp) {
+                    let link = xApp.startsWith('http') ? xApp : 'https://' + xApp;
+                    html += `<a href="${link}" target="_blank" class="social-pill" title="X (Twitter)">
+                        <svg viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg> X
+                    </a>`;
+                }
+                if (ig) {
+                    let link = ig.startsWith('http') ? ig : 'https://' + ig;
+                    html += `<a href="${link}" target="_blank" class="social-pill" title="Instagram">
+                        <svg viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2zm-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6zm9.65 1.5a1.25 1.25 0 0 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg> Instagram
+                    </a>`;
+                }
+                if (tk) {
+                    let link = tk.startsWith('http') ? tk : 'https://' + tk;
+                    html += `<a href="${link}" target="_blank" class="social-pill" title="TikTok">
+                        <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg> TikTok
+                    </a>`;
+                }
+                if (web) {
+                    let link = web.startsWith('http') ? web : 'https://' + web;
+                    html += `<a href="${link}" target="_blank" class="social-pill" title="Página Web">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg> Web
+                    </a>`;
+                }
+
+                html += `</div></div>`;
+            }
+
+            return html + `</div>`;
+        }
+
+        function updateSearch() { searchQuery = document.getElementById('search-input').value; updateView(); }
+        
+        let animFrameId = null;
+        let currentCounterValue = 0;
+
+        function animateCounters(targetC) {
+            const cEl = document.getElementById('total-count');
+            if (animFrameId) cancelAnimationFrame(animFrameId);
+
+            const startC = currentCounterValue;
+            const dur = 350; 
+            const startTime = performance.now();
+
+            function step(currentTime) {
+                const elapsed = currentTime - startTime;
+                const prog = Math.min(elapsed / dur, 1);
+                const easeOut = prog === 1 ? 1 : 1 - Math.pow(2, -10 * prog);
+                currentCounterValue = Math.round(startC + (targetC - startC) * easeOut);
+                
+                cEl.textContent = currentCounterValue;
+
+                if (prog < 1) {
+                    animFrameId = requestAnimationFrame(step);
+                } else {
+                    currentCounterValue = targetC;
+                    cEl.textContent = targetC;
+                }
+            }
+            animFrameId = requestAnimationFrame(step);
+        }
+
+        function clearAllFilters() { 
+            Object.keys(activeFilters).forEach(k => activeFilters[k] = []);
+            document.getElementById('search-input').value = ""; searchQuery = ""; 
+            updateView(); 
+        }
+    </script>
+</body>
+</html>
