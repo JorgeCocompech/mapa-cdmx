@@ -20,6 +20,7 @@ Todos los mapas de este proyecto fueron desarrollados con una arquitectura pura 
 
 ### 🎭 Artes Vivas
 Visualización de espacios dedicados a las artes escénicas, su estatus actual y su comportamiento durante la pandemia de COVID-19.
+*  `index.html` - Radiografía de las condiciiones mobiliarias de los Espacios de Artes Vivas
 * `av-estatuspostpandemia.html` - Radiografía del estatus actual (abiertos, cerrados, en riesgo).
 * `av-aperturas-pandemia.html` - Análisis de aperturas durante la crisis sanitaria.
 * `cierre-covid-timelapse.html` / `cierre-av.html` - Timelapses del impacto mensual de cierres.
@@ -50,8 +51,8 @@ Al estar construido íntegramente del lado del cliente (Frontend), este proyecto
 2. ¡Disfruta de los mapas!
 
 ## ✒️ Autoría y Créditos
-* **Desarrollo y Diseño UI/UX:** Jorge Cocompech(https://jorgecocompech.rocks)
-* **Investigación y Datos:** Observatorio de Políticas Culturales - UACM.(https://politicasculturales.mx)
+* **Desarrollo y Diseño UI/UX:** [Jorge Cocompech](https://jorgecocompech.rocks)
+* **Investigación y Datos:** [Observatorio de Políticas Culturales - UACM](https://politicasculturales.mx)
 * **Tecnologías Aplicadas:** * [HTML5](https://developer.mozilla.org/es/docs/Web/HTML) y [CSS3](https://developer.mozilla.org/es/docs/Web/CSS) (Estructura y diseño)
   * [Vanilla JavaScript](https://developer.mozilla.org/es/docs/Web/JavaScript) (Lógica nativa, sin frameworks)
   * [Leaflet.js](https://leafletjs.com/) (Motor cartográfico)
