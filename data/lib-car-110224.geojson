@@ -17,7 +17,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/LibreriaPollux\" target=\"_blank\">https://www.facebook.com/LibreriaPollux</a>"
+                "facebook": "https://www.facebook.com/LibreriaPollux"
             },
             "geometry": {
                 "type": "Point",
@@ -43,7 +43,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Ambos",
                 "sucursales": "Sin sucursales",
-                "sitio_web": "<a href=\"https://polilla.mx/\" target=\"_blank\">https://polilla.mx/</a>"
+                "sitio_web": "https://polilla.mx/"
             },
             "geometry": {
                 "type": "Point",
@@ -69,7 +69,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/volcanalugarcomun\" target=\"_blank\">https://www.facebook.com/volcanalugarcomun</a>"
+                "facebook": "https://www.facebook.com/volcanalugarcomun"
             },
             "geometry": {
                 "type": "Point",
@@ -95,7 +95,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "sitio_web": "<a href=\"https://www.somosvoces.com.mx/\" target=\"_blank\">https://www.somosvoces.com.mx/</a>"
+                "sitio_web": "https://www.somosvoces.com.mx/"
             },
             "geometry": {
                 "type": "Point",
@@ -121,7 +121,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Sin información",
                 "sucursales": "Dos sucursales",
-                "sitio_web": "<a href=\"https://casabosques.net/\" target=\"_blank\">https://casabosques.net/</a>"
+                "sitio_web": "https://casabosques.net/"
             },
             "geometry": {
                 "type": "Point",
@@ -147,7 +147,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librera",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/LibreriaUtopicas\" target=\"_blank\">https://www.facebook.com/LibreriaUtopicas</a>"
+                "facebook": "https://www.facebook.com/LibreriaUtopicas"
             },
             "geometry": {
                 "type": "Point",
@@ -173,7 +173,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librera",
                 "sucursales": "Sin sucursales",
-                "sitio_web": "<a href=\"http://www.libreria-morgana.com/\" target=\"_blank\">http://www.libreria-morgana.com/</a>"
+                "sitio_web": "http://www.libreria-morgana.com/"
             },
             "geometry": {
                 "type": "Point",
@@ -224,7 +224,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librera",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/LibreriaErmitano\" target=\"_blank\">https://www.facebook.com/LibreriaErmitano</a>"
+                "facebook": "https://www.facebook.com/LibreriaErmitano"
             },
             "geometry": {
                 "type": "Point",
@@ -250,7 +250,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librera",
                 "sucursales": "Sin sucursales",
-                "sitio_web": "<a href=\"https://www.casatomada.com.mx/\" target=\"_blank\">https://www.casatomada.com.mx/</a>"
+                "sitio_web": "https://www.casatomada.com.mx/"
             },
             "geometry": {
                 "type": "Point",
@@ -276,7 +276,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/ElDesastreCafeYLibros\" target=\"_blank\">https://www.facebook.com/ElDesastreCafeYLibros</a>"
+                "facebook": "https://www.facebook.com/ElDesastreCafeYLibros"
             },
             "geometry": {
                 "type": "Point",
@@ -302,7 +302,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/people/Librer%C3%ADa-La-Moraleja/100063654053846/?locale=lt_LT&paipv=0&eav=AfZ17MAyr3VpMMZh5Bf1SguuFltCFIuDKdnrzM92XLUXDCsQP92ovx6OmmOETv-AEK4&_rdr\" target=\"_blank\">https://www.facebook.com/people/Librer%C3%ADa-La-Moraleja/100063654053846/?locale=lt_LT&paipv=0&eav=AfZ17MAyr3VpMMZh5Bf1SguuFltCFIuDKdnrzM92XLUXDCsQP92ovx6OmmOETv-AEK4&_rdr</a>"
+                "facebook": "https://www.facebook.com/people/Librer%C3%ADa-La-Moraleja/100063654053846/?locale=lt_LT&paipv=0&eav=AfZ17MAyr3VpMMZh5Bf1SguuFltCFIuDKdnrzM92XLUXDCsQP92ovx6OmmOETv-AEK4&_rdr"
             },
             "geometry": {
                 "type": "Point",
@@ -328,7 +328,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/marabuntacafe/?locale=es_LA\" target=\"_blank\">https://www.facebook.com/marabuntacafe/?locale=es_LA</a>"
+                "facebook": "https://www.facebook.com/marabuntacafe/?locale=es_LA"
             },
             "geometry": {
                 "type": "Point",
@@ -354,7 +354,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librera",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/people/Querida-Librer%C3%ADa/100086685253916/?locale=hi_IN&paipv=0&eav=AfatajppQ6yJqFvcMajqF8VL9lWzoV1zoQ5y_0_Hv6EfiGagL9gyotG9vXSvFa_yce8&_rdr\" target=\"_blank\">https://www.facebook.com/people/Querida-Librer%C3%ADa/100086685253916/?locale=hi_IN&paipv=0&eav=AfatajppQ6yJqFvcMajqF8VL9lWzoV1zoQ5y_0_Hv6EfiGagL9gyotG9vXSvFa_yce8&_rdr</a>"
+                "facebook": "https://www.facebook.com/people/Querida-Librer%C3%ADa/100086685253916/?locale=hi_IN&paipv=0&eav=AfatajppQ6yJqFvcMajqF8VL9lWzoV1zoQ5y_0_Hv6EfiGagL9gyotG9vXSvFa_yce8&_rdr"
             },
             "geometry": {
                 "type": "Point",
@@ -380,7 +380,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/Escandalar/?locale=es_LA\" target=\"_blank\">https://www.facebook.com/Escandalar/?locale=es_LA</a>"
+                "facebook": "https://www.facebook.com/Escandalar/?locale=es_LA"
             },
             "geometry": {
                 "type": "Point",
@@ -406,7 +406,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librera",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/libreriaatravesdelespejo/\" target=\"_blank\">https://www.facebook.com/libreriaatravesdelespejo/</a>"
+                "facebook": "https://www.facebook.com/libreriaatravesdelespejo/"
             },
             "geometry": {
                 "type": "Point",
@@ -457,7 +457,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/libreriaelrincondemacondo\" target=\"_blank\">https://www.facebook.com/libreriaelrincondemacondo</a>"
+                "facebook": "https://www.facebook.com/libreriaelrincondemacondo"
             },
             "geometry": {
                 "type": "Point",
@@ -483,7 +483,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librera",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/amoxtli.escandon/videos_by\" target=\"_blank\">https://www.facebook.com/amoxtli.escandon/videos_by</a>"
+                "facebook": "https://www.facebook.com/amoxtli.escandon/videos_by"
             },
             "geometry": {
                 "type": "Point",
@@ -509,7 +509,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/laodellibro\" target=\"_blank\">https://www.facebook.com/laodellibro</a>"
+                "facebook": "https://www.facebook.com/laodellibro"
             },
             "geometry": {
                 "type": "Point",
@@ -535,7 +535,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "sitio_web": "<a href=\"https://mercaditodelibros.librantida.com/\" target=\"_blank\">https://mercaditodelibros.librantida.com/</a>"
+                "sitio_web": "https://mercaditodelibros.librantida.com/"
             },
             "geometry": {
                 "type": "Point",
@@ -561,7 +561,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/RinconZapatistaDF\" target=\"_blank\">https://www.facebook.com/RinconZapatistaDF</a>"
+                "facebook": "https://www.facebook.com/RinconZapatistaDF"
             },
             "geometry": {
                 "type": "Point",
@@ -587,7 +587,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Ambos",
                 "sucursales": "Sin sucursales",
-                "instagram": "<a href=\"https://www.instagram.com/_rinoceronte/\" target=\"_blank\">https://www.instagram.com/_rinoceronte/</a>"
+                "instagram": "https://www.instagram.com/_rinoceronte/"
             },
             "geometry": {
                 "type": "Point",
@@ -613,7 +613,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "sitio_web": "<a href=\"http://www.facebook.com/EllibrerodeConstanza\" target=\"_blank\">www.facebook.com/EllibrerodeConstanza</a>"
+                "sitio_web": "http://www.facebook.com/EllibrerodeConstanza"
             },
             "geometry": {
                 "type": "Point",
@@ -639,7 +639,7 @@
                 "editoriales_independientes": "Con venta",
                 "librero_librera": "Librera",
                 "sucursales": "Sin sucursales",
-                "sitio_web": "<a href=\"https://www.laincreible.lat/\" target=\"_blank\">https://www.laincreible.lat/</a>"
+                "sitio_web": "https://www.laincreible.lat/"
             },
             "geometry": {
                 "type": "Point",
@@ -715,7 +715,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Librero",
                 "sucursales": "Más de 3 sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/Hallazgo13/?locale=es_LA\" target=\"_blank\">https://www.facebook.com/Hallazgo13/?locale=es_LA</a>"
+                "facebook": "https://www.facebook.com/Hallazgo13/?locale=es_LA"
             },
             "geometry": {
                 "type": "Point",
@@ -816,7 +816,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/p/Librer%C3%ADa-Bibliofilia-100064034617781/?paipv=0&eav=AfbreWkQiAzATMixqNUneSVFTmlR7cHeUeiOlxbWBvb7aELX3jqMaRiyUML1oTLlOVw&_rdr\" target=\"_blank\">https://www.facebook.com/p/Librer%C3%ADa-Bibliofilia-100064034617781/?paipv=0&eav=AfbreWkQiAzATMixqNUneSVFTmlR7cHeUeiOlxbWBvb7aELX3jqMaRiyUML1oTLlOVw&_rdr</a>"
+                "facebook": "https://www.facebook.com/p/Librer%C3%ADa-Bibliofilia-100064034617781/?paipv=0&eav=AfbreWkQiAzATMixqNUneSVFTmlR7cHeUeiOlxbWBvb7aELX3jqMaRiyUML1oTLlOVw&_rdr"
             },
             "geometry": {
                 "type": "Point",
@@ -917,7 +917,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/libreriacontemporaneos/?locale=es_LA\" target=\"_blank\">https://www.facebook.com/libreriacontemporaneos/?locale=es_LA</a>"
+                "facebook": "https://www.facebook.com/libreriacontemporaneos/?locale=es_LA"
             },
             "geometry": {
                 "type": "Point",
@@ -968,7 +968,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Sin información",
                 "sucursales": "Dos sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/people/Libreria-Selecta/100057502208058/\" target=\"_blank\">https://www.facebook.com/people/Libreria-Selecta/100057502208058/</a>"
+                "facebook": "https://www.facebook.com/people/Libreria-Selecta/100057502208058/"
             },
             "geometry": {
                 "type": "Point",
@@ -994,7 +994,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/libreriaurbe/?locale=es_LA\" target=\"_blank\">https://www.facebook.com/libreriaurbe/?locale=es_LA</a>"
+                "facebook": "https://www.facebook.com/libreriaurbe/?locale=es_LA"
             },
             "geometry": {
                 "type": "Point",
@@ -1070,7 +1070,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Librero",
                 "sucursales": "Dos sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/eltomosuelto\" target=\"_blank\">https://www.facebook.com/eltomosuelto</a>"
+                "facebook": "https://www.facebook.com/eltomosuelto"
             },
             "geometry": {
                 "type": "Point",
@@ -1096,7 +1096,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Librera",
                 "sucursales": "Sin sucursales",
-                "sitio_web": "<a href=\"https://antiqua.mx/\" target=\"_blank\">https://antiqua.mx/</a>"
+                "sitio_web": "https://antiqua.mx/"
             },
             "geometry": {
                 "type": "Point",
@@ -1122,7 +1122,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Librero",
                 "sucursales": "Dos sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/eltomosuelto\" target=\"_blank\">https://www.facebook.com/eltomosuelto</a>"
+                "facebook": "https://www.facebook.com/eltomosuelto"
             },
             "geometry": {
                 "type": "Point",
@@ -1148,7 +1148,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Sin información",
                 "sucursales": "Tres sucursales",
-                "sitio_web": "<a href=\"https://libreriasdeocasion.com.mx/quienes-somos\" target=\"_blank\">https://libreriasdeocasion.com.mx/quienes-somos</a>"
+                "sitio_web": "https://libreriasdeocasion.com.mx/quienes-somos"
             },
             "geometry": {
                 "type": "Point",
@@ -1224,7 +1224,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/CasillasOtelojunior66/\" target=\"_blank\">https://www.facebook.com/CasillasOtelojunior66/</a>"
+                "facebook": "https://www.facebook.com/CasillasOtelojunior66/"
             },
             "geometry": {
                 "type": "Point",
@@ -1250,7 +1250,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Librero",
                 "sucursales": "Más de 3 sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/libreriajorgecuesta?locale=es_LA\" target=\"_blank\">https://www.facebook.com/libreriajorgecuesta?locale=es_LA</a>"
+                "facebook": "https://www.facebook.com/libreriajorgecuesta?locale=es_LA"
             },
             "geometry": {
                 "type": "Point",
@@ -1301,7 +1301,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/salgarilibreria\" target=\"_blank\">https://www.facebook.com/salgarilibreria</a>"
+                "facebook": "https://www.facebook.com/salgarilibreria"
             },
             "geometry": {
                 "type": "Point",
@@ -1327,7 +1327,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/librerialatorredeviejo/\" target=\"_blank\">https://www.facebook.com/librerialatorredeviejo/</a>"
+                "facebook": "https://www.facebook.com/librerialatorredeviejo/"
             },
             "geometry": {
                 "type": "Point",
@@ -1353,7 +1353,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Librera",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/librerianovo/?locale=es_LA\" target=\"_blank\">https://www.facebook.com/librerianovo/?locale=es_LA</a>"
+                "facebook": "https://www.facebook.com/librerianovo/?locale=es_LA"
             },
             "geometry": {
                 "type": "Point",
@@ -1379,7 +1379,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "sitio_web": "<a href=\"https://libreriaintlilliintlapalli.com/\" target=\"_blank\">https://libreriaintlilliintlapalli.com/</a>"
+                "sitio_web": "https://libreriaintlilliintlapalli.com/"
             },
             "geometry": {
                 "type": "Point",
@@ -1405,7 +1405,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/libreriaelregalomx/\" target=\"_blank\">https://www.facebook.com/libreriaelregalomx/</a>"
+                "facebook": "https://www.facebook.com/libreriaelregalomx/"
             },
             "geometry": {
                 "type": "Point",
@@ -1431,7 +1431,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "sitio_web": "<a href=\"https://www.libreriafimadero.com/\" target=\"_blank\">https://www.libreriafimadero.com/</a>"
+                "sitio_web": "https://www.libreriafimadero.com/"
             },
             "geometry": {
                 "type": "Point",
@@ -1457,7 +1457,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/PuntoLiterario/\" target=\"_blank\">https://www.facebook.com/PuntoLiterario/</a>"
+                "facebook": "https://www.facebook.com/PuntoLiterario/"
             },
             "geometry": {
                 "type": "Point",
@@ -1483,7 +1483,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": null,
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/profile.php?id=100086483976305\" target=\"_blank\">https://www.facebook.com/profile.php?id=100086483976305</a>"
+                "facebook": "https://www.facebook.com/profile.php?id=100086483976305"
             },
             "geometry": {
                 "type": "Point",
@@ -1659,7 +1659,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Librero",
                 "sucursales": "Tres sucursales",
-                "sitio_web": "<a href=\"https://libreriasdeocasion.com.mx/quienes-somos\" target=\"_blank\">https://libreriasdeocasion.com.mx/quienes-somos</a>"
+                "sitio_web": "https://libreriasdeocasion.com.mx/quienes-somos"
             },
             "geometry": {
                 "type": "Point",
@@ -1685,7 +1685,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Sin información",
                 "sucursales": "Dos sucursales",
-                "sitio_web": "<a href=\"https://libreriasdeocasion.com.mx/quienes-somos\" target=\"_blank\">https://libreriasdeocasion.com.mx/quienes-somos</a>"
+                "sitio_web": "https://libreriasdeocasion.com.mx/quienes-somos"
             },
             "geometry": {
                 "type": "Point",
@@ -1786,7 +1786,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/sirandalibros/\" target=\"_blank\">https://www.facebook.com/sirandalibros/</a>"
+                "facebook": "https://www.facebook.com/sirandalibros/"
             },
             "geometry": {
                 "type": "Point",
@@ -1812,7 +1812,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "instagram": "<a href=\"https://www.instagram.com/lamurcielaga\" target=\"_blank\">https://www.instagram.com/lamurcielaga</a>"
+                "instagram": "https://www.instagram.com/lamurcielaga"
             },
             "geometry": {
                 "type": "Point",
@@ -1863,7 +1863,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/Raylulio/\" target=\"_blank\">https://www.facebook.com/Raylulio/</a>"
+                "facebook": "https://www.facebook.com/Raylulio/"
             },
             "geometry": {
                 "type": "Point",
@@ -1914,7 +1914,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Ambos",
                 "sucursales": "Más de 3 sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/bodegalibrera/?locale=es_LA\" target=\"_blank\">https://www.facebook.com/bodegalibrera/?locale=es_LA</a>"
+                "facebook": "https://www.facebook.com/bodegalibrera/?locale=es_LA"
             },
             "geometry": {
                 "type": "Point",
@@ -1940,7 +1940,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Librero",
                 "sucursales": "Más de 3 sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/profile.php?id=100093433729959\" target=\"_blank\">https://www.facebook.com/profile.php?id=100093433729959</a>"
+                "facebook": "https://www.facebook.com/profile.php?id=100093433729959"
             },
             "geometry": {
                 "type": "Point",
@@ -1966,7 +1966,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/people/Librer%C3%ADa-Caligrama/100063707507388/?locale=hi_IN&paipv=0&eav=AfZpWVAB8zbcwQZfXciE81QICcaU0JW2sRyqhqWDIsA3265mKEJkZr_N-48cw1Zp5-0&_rdr\" target=\"_blank\">https://www.facebook.com/people/Librer%C3%ADa-Caligrama/100063707507388/?locale=hi_IN&paipv=0&eav=AfZpWVAB8zbcwQZfXciE81QICcaU0JW2sRyqhqWDIsA3265mKEJkZr_N-48cw1Zp5-0&_rdr</a>"
+                "facebook": "https://www.facebook.com/people/Librer%C3%ADa-Caligrama/100063707507388/?locale=hi_IN&paipv=0&eav=AfZpWVAB8zbcwQZfXciE81QICcaU0JW2sRyqhqWDIsA3265mKEJkZr_N-48cw1Zp5-0&_rdr"
             },
             "geometry": {
                 "type": "Point",
@@ -1992,7 +1992,7 @@
                 "editoriales_independientes": "No aplica",
                 "librero_librera": "Sin información",
                 "sucursales": "Más de 3 sucursales",
-                "x": "<a href=\"https://x.com/MulaSabia\" target=\"_blank\">https://x.com/MulaSabia</a>"
+                "x": "https://x.com/MulaSabia"
             },
             "geometry": {
                 "type": "Point",
@@ -2043,7 +2043,7 @@
                 "editoriales_independientes": "Sin información",
                 "librero_librera": "Librera",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/libreriaorionkids/\" target=\"_blank\">https://www.facebook.com/libreriaorionkids/</a>"
+                "facebook": "https://www.facebook.com/libreriaorionkids/"
             },
             "geometry": {
                 "type": "Point",
@@ -2094,7 +2094,7 @@
                 "editoriales_independientes": "Sin información",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "sitio_web": "<a href=\"https://libreriaelgatolector.com/\" target=\"_blank\">https://libreriaelgatolector.com/</a>"
+                "sitio_web": "https://libreriaelgatolector.com/"
             },
             "geometry": {
                 "type": "Point",
@@ -2145,7 +2145,7 @@
                 "editoriales_independientes": "Sin información",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "sitio_web": "<a href=\"https://cafeleeria.org/\" target=\"_blank\">https://cafeleeria.org/</a>"
+                "sitio_web": "https://cafeleeria.org/"
             },
             "geometry": {
                 "type": "Point",
@@ -2171,7 +2171,7 @@
                 "editoriales_independientes": "Sin información",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/editorialherdermexico/?locale=es_LA\" target=\"_blank\">https://www.facebook.com/editorialherdermexico/?locale=es_LA</a>"
+                "facebook": "https://www.facebook.com/editorialherdermexico/?locale=es_LA"
             },
             "geometry": {
                 "type": "Point",
@@ -2222,7 +2222,7 @@
                 "editoriales_independientes": "Sin información",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/clandestinalibros/?locale=es_LA\" target=\"_blank\">https://www.facebook.com/clandestinalibros/?locale=es_LA</a>"
+                "facebook": "https://www.facebook.com/clandestinalibros/?locale=es_LA"
             },
             "geometry": {
                 "type": "Point",
@@ -2248,7 +2248,7 @@
                 "editoriales_independientes": "Sin información",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/p/Bibliopola-Librer%C3%ADa-Mx-100053104307175/?paipv=0&eav=Afa1l6DG7Y8M2LPLcriwRKmOqnp6aN-mmP5dwGULlRol-faJjeO9Tvpr2IOa6bDbrV0&_rdr\" target=\"_blank\">https://www.facebook.com/p/Bibliopola-Librer%C3%ADa-Mx-100053104307175/?paipv=0&eav=Afa1l6DG7Y8M2LPLcriwRKmOqnp6aN-mmP5dwGULlRol-faJjeO9Tvpr2IOa6bDbrV0&_rdr</a>"
+                "facebook": "https://www.facebook.com/p/Bibliopola-Librer%C3%ADa-Mx-100053104307175/?paipv=0&eav=Afa1l6DG7Y8M2LPLcriwRKmOqnp6aN-mmP5dwGULlRol-faJjeO9Tvpr2IOa6bDbrV0&_rdr"
             },
             "geometry": {
                 "type": "Point",
@@ -2274,7 +2274,7 @@
                 "editoriales_independientes": "Sin información",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/ranzocafe/?locale=es_LA\" target=\"_blank\">https://www.facebook.com/ranzocafe/?locale=es_LA</a>"
+                "facebook": "https://www.facebook.com/ranzocafe/?locale=es_LA"
             },
             "geometry": {
                 "type": "Point",
@@ -2300,7 +2300,7 @@
                 "editoriales_independientes": "Sin información",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/LibreriaPasoDeGato/?locale=es_LA\" target=\"_blank\">https://www.facebook.com/LibreriaPasoDeGato/?locale=es_LA</a>"
+                "facebook": "https://www.facebook.com/LibreriaPasoDeGato/?locale=es_LA"
             },
             "geometry": {
                 "type": "Point",
@@ -2326,7 +2326,7 @@
                 "editoriales_independientes": "Sin información",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/centroculturaleljuglar\" target=\"_blank\">https://www.facebook.com/centroculturaleljuglar</a>"
+                "facebook": "https://www.facebook.com/centroculturaleljuglar"
             },
             "geometry": {
                 "type": "Point",
@@ -2377,7 +2377,7 @@
                 "editoriales_independientes": "Sin información",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "sitio_web": "<a href=\"https://www.exitlalibreria.com/\" target=\"_blank\">https://www.exitlalibreria.com/</a>"
+                "sitio_web": "https://www.exitlalibreria.com/"
             },
             "geometry": {
                 "type": "Point",
@@ -2403,7 +2403,7 @@
                 "editoriales_independientes": "Sin información",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "instagram": "<a href=\"https://www.instagram.com/libreria_el_amate/?hl=es\" target=\"_blank\">https://www.instagram.com/libreria_el_amate/?hl=es</a>"
+                "instagram": "https://www.instagram.com/libreria_el_amate/?hl=es"
             },
             "geometry": {
                 "type": "Point",
@@ -2429,7 +2429,7 @@
                 "editoriales_independientes": "Sin información",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/libreria.atico/?locale=es_LA\" target=\"_blank\">https://www.facebook.com/libreria.atico/?locale=es_LA</a>"
+                "facebook": "https://www.facebook.com/libreria.atico/?locale=es_LA"
             },
             "geometry": {
                 "type": "Point",
@@ -2455,7 +2455,7 @@
                 "editoriales_independientes": "Sin información",
                 "librero_librera": "Librero",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/AlternativaAvalon\" target=\"_blank\">https://www.facebook.com/AlternativaAvalon</a>"
+                "facebook": "https://www.facebook.com/AlternativaAvalon"
             },
             "geometry": {
                 "type": "Point",
@@ -2481,7 +2481,7 @@
                 "editoriales_independientes": "Sin información",
                 "librero_librera": "Sin información",
                 "sucursales": "Sin sucursales",
-                "facebook": "<a href=\"https://www.facebook.com/bodet.libreria/\" target=\"_blank\">https://www.facebook.com/bodet.libreria/</a>"
+                "facebook": "https://www.facebook.com/bodet.libreria/"
             },
             "geometry": {
                 "type": "Point",
@@ -2507,7 +2507,7 @@
                 "editoriales_independientes": "Sin información",
                 "librero_librera": "Librera",
                 "sucursales": "Sin sucursales",
-                "sitio_web": "<a href=\"http://clarice.mx/\" target=\"_blank\">http://clarice.mx/</a>"
+                "sitio_web": "http://clarice.mx/"
             },
             "geometry": {
                 "type": "Point",
