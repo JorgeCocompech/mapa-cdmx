@@ -1,0 +1,1583 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Laberinto del Gato Culto",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": 2020,
+                "estrategias_en_pandemia": "Venta en redes y descuentos"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15010962,
+                    19.4383397
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Casa Tomada",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": 2020,
+                "estrategias_en_pandemia": "Multiestrategias"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.17748,
+                    19.41499
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Exit La Librería",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": 2020,
+                "estrategias_en_pandemia": "Venta en línea y micromecenazgo"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16991,
+                    19.42945
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "La Moraleja",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": 2020,
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16055485,
+                    19.40898121
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "A través del Espejo",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": 2020,
+                "estrategias_en_pandemia": "Venta en redes y descuentos"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16002659,
+                    19.41801913
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Rincón de Macondo",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": 2020,
+                "estrategias_en_pandemia": "Multiestrategias"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15772714,
+                    19.40662641
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Antonia. La oficina del libro",
+                "cierre_en_pandemia": "No aplica",
+                "apertura_en_pandemia": 2020,
+                "estrategias_en_pandemia": "Venta en línea y micromecenazgo"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.17526954,
+                    19.41597577
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Polilla Librería",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": 2020,
+                "estrategias_en_pandemia": "Venta en línea"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15533199,
+                    19.41750128
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "U-Tópicas: Librería y Galería de Mujeres",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": 2021,
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16371383,
+                    19.34724958
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Gato Lector",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": 2021,
+                "estrategias_en_pandemia": "Ninguna"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.18163711,
+                    19.4602209
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Salgari",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": 2021,
+                "estrategias_en_pandemia": "Multiestrategias"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.11046676,
+                    19.35120436
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Avalon librería",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": 2021,
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16045746,
+                    19.41749928
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "La Murciélaga ",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": 2022,
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15672,
+                    19.3881
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Bibliopola Librería Mx",
+                "cierre_en_pandemia": "No aplica",
+                "apertura_en_pandemia": "No aplica",
+                "estrategias_en_pandemia": "No aplica"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.10200314,
+                    19.44619752
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El librero de Constanza",
+                "cierre_en_pandemia": "No aplica",
+                "apertura_en_pandemia": "No aplica",
+                "estrategias_en_pandemia": "Venta en línea"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.29374219,
+                    19.3678307
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Querida Librería",
+                "cierre_en_pandemia": "No aplica",
+                "apertura_en_pandemia": "No aplica",
+                "estrategias_en_pandemia": "No aplica"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13524833,
+                    19.43784861
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Mercadito de Libro",
+                "cierre_en_pandemia": "No aplica",
+                "apertura_en_pandemia": "No aplica",
+                "estrategias_en_pandemia": "No aplica"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.17339108,
+                    19.45696127
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Mercader de Libros",
+                "cierre_en_pandemia": "No aplica",
+                "apertura_en_pandemia": "No aplica",
+                "estrategias_en_pandemia": "No aplica"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.1346463,
+                    19.43608866
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Navegantes Librería de Ilustración",
+                "cierre_en_pandemia": "No aplica",
+                "apertura_en_pandemia": "No aplica",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16252689,
+                    19.41175399
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Los Clásicos",
+                "cierre_en_pandemia": "No aplica",
+                "apertura_en_pandemia": "No aplica",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13677,
+                    19.43733
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El tambor de Hojalata ",
+                "cierre_en_pandemia": "No aplica",
+                "apertura_en_pandemia": "No aplica",
+                "estrategias_en_pandemia": "No aplica"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.12657102,
+                    19.47835702
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Pollux",
+                "cierre_en_pandemia": "No aplica",
+                "apertura_en_pandemia": "No aplica",
+                "estrategias_en_pandemia": "No aplica"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13662134,
+                    19.43208772
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Librería Coyoacán",
+                "cierre_en_pandemia": "No aplica",
+                "apertura_en_pandemia": "No aplica",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16347,
+                    19.34829
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Librería Sala Margolín",
+                "cierre_en_pandemia": "No aplica",
+                "apertura_en_pandemia": "No aplica",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15849,
+                    19.41906
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Volcana Lugar Común",
+                "cierre_en_pandemia": "No aplica",
+                "apertura_en_pandemia": "No aplica",
+                "estrategias_en_pandemia": "No aplica"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15720873,
+                    19.45078178
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Desastre",
+                "cierre_en_pandemia": "No aplica",
+                "apertura_en_pandemia": "No aplica",
+                "estrategias_en_pandemia": "No aplica"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.17134372,
+                    19.39153367
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "La Torre de Viejo",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": "Sin apertura",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.18331368,
+                    19.34765418
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Del Ermitaño",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": "Sin apertura",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.18678274,
+                    19.39231349
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "La Torre de Lulio",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.17434498,
+                    19.41269417
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Morgana",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15869,
+                    19.42038
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Marconi",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13980733,
+                    19.43690209
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Hallazgo Librería de Paso",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.17562,
+                    19.41652
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Jorge Cuesta",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15639128,
+                    19.42785523
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "La Fábula",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16968338,
+                    19.40298053
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Librería Otelo Junior",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.14966099,
+                    19.43776592
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Orion Kids",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16070127,
+                    19.40899709
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Rinoceronte",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Venta en redes y reducción de renta"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15641124,
+                    19.29317388
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "La última y nos vamos",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13964344,
+                    19.4369395
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Ahuizote",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.18331368,
+                    19.34765418
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Mercenario de la Lectura",
+                "cierre_en_pandemia": 2020,
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13787688,
+                    19.43702917
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": " Las Tres Cruces",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16498943,
+                    19.34611425
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Librería Madero",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13737,
+                    19.42714
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": " El Amate",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.11876,
+                    19.26892
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Alfa Teorema",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16194,
+                    19.41807
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Travesías Media",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.1748,
+                    19.41351
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Clandestina",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15709564,
+                    19.44619542
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Librería Herder",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15806872,
+                    19.40591519
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Juglar",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.18763,
+                    19.35705
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Bajos pensamientos, librería de paso",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13948575,
+                    19.38649879
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Cafeleería",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.12129778,
+                    19.33767802
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "La Increíble librería",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16761702,
+                    19.41213574
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Tomo Suelto, Sucursal Coyoacán",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15392674,
+                    19.42393835
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Siranda Librería Anticuaria",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.1642,
+                    19.40599
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Regalo",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.10439129,
+                    19.42873827
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Inframundo",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13420977,
+                    19.43610092
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Casa Bosques",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15978074,
+                    19.42317976
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Librería de Viejo",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13461449,
+                    19.43609473
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Urbe",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15937338,
+                    19.41424367
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El laberinto. De las utopías posibles",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13452349,
+                    19.43620218
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Marabunta",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.17019261,
+                    19.34534017
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Libreria Paso de Gato",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.17651,
+                    19.41926
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Papelitas, Librería del Paso",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15595655,
+                    19.41395364
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Selecta",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13445066,
+                    19.43602049
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Rincón Zapatista",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13853,
+                    19.42201
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Cicerón Libros Económicos",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13181647,
+                    19.43427337
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Novo",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Venta en línea"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.18117433,
+                    19.34334719
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Librería In Tlilli In Tlapalli",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16127,
+                    19.42331
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Punto Literario ",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "No aplica"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16306493,
+                    19.34820004
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Bodet libros y regalos",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15805,
+                    19.44659
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "La Mula Sabia",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15936286,
+                    19.44929048
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Ranzö, cafetería y librería",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15848066,
+                    19.44875581
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Gran Remate",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13433,
+                    19.43597
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "La Casona de Aura",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.1396337,
+                    19.43694556
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Contemporáneos",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.11938996,
+                    19.47858949
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": " La Torre de Papel",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13898,
+                    19.43541
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "La Aventura de Leer",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15849,
+                    19.41905
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Niña Oscura",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15936286,
+                    19.44929048
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Atico",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16003,
+                    19.41803
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Regia",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13647928,
+                    19.43639202
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Las Moscas ",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15715914,
+                    19.38716997
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Hermanos de la Hoja",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13425134,
+                    19.43612463
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Bibliofilia",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13417351,
+                    19.43610447
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Escandalar",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15727652,
+                    19.4051474
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Somos Voces",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16312,
+                    19.42728
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": " Los Argonautas",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13619151,
+                    19.34126436
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Odisea",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13756195,
+                    19.400087
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Librería Amoxtli",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.18447735,
+                    19.40368379
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Hypatia",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.17165,
+                    19.40921
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Clarice Café y Literatura",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.16827956,
+                    19.41081546
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Teorema",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15415696,
+                    19.42208442
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Callejón de los Milagros",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.1367152,
+                    19.43643518
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Jimena",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.14109373,
+                    19.3749827
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Burro Culto",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.15936286,
+                    19.44929048
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Librería Anáhuac",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.29799,
+                    19.35661
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Universal",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13534018,
+                    19.43614141
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "El Tomo Suelto, Casa Matriz",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.13674,
+                    19.43644
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "Caligrama",
+                "cierre_en_pandemia": "Sin información",
+                "apertura_en_pandemia": "Sin información",
+                "estrategias_en_pandemia": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.17323982,
+                    19.32639909
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "nombre_de_la_libreria": "LibrArte",
+                "fecha_de_fundacion": "Sin información",
+                "estatus_actual": "Sin información",
+                "cierre_permamente": "No aplica",
+                "tipo_mercantil": "Persona física ",
+                "venta": "Sin información",
+                "denominacion": "Autogestiva",
+                "tipo_de_libro": "Novedades",
+                "editorial_propia": "Sin editorial",
+                "editoriales_comerciales": "Sin información",
+                "editoriales_independientes": "Con venta",
+                "librero_librera": "Librera",
+                "sucursales": "Sin sucursales",
+                "pagina_web": "Sin información"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -99.17247986,
+                    19.3067473
+                ]
+            }
+        }
+    ]
+}
