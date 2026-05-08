@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartografía de la Distopía: Volumen y Estatus</title>
+    
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/scrollama"></script>
+    <script src="https://unpkg.com/flubber"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap');
+
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #2d3436;
+            --step-bg: rgba(255, 255, 255, 0.96);
+            --danger-color: #d63031;
+            --safe-color: #00b894;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Atkinson Hyperlegible', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* HUD Narrativo Superior */
+        .header-hud {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 1000;
+            max-width: 400px;
+            pointer-events: none;
+        }
+
+        .header-hud h1 {
+            font-size: 1rem;
+            margin: 0;
+            text-transform: uppercase;
+            color: var(--danger-color);
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .header-hud p {
+            font-size: 0.8rem;
+            margin: 5px 0 15px 0;
+            color: #636e72;
+            line-height: 1.4;
+        }
+
+        /* Leyenda Minimalista */
+        .legend {
+            display: flex;
+            gap: 15px;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        #scrolly { position: relative; }
+
+        .sticky-map {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 0;
+        }
+
+        #map-svg { width: 90vw; height: 90vh; }
+
+        /* Narrativa */
+        article {
+            position: relative;
+            padding: 0 1rem;
+            margin: 0 auto;
+            width: 35%;
+            max-width: 480px;
+            z-index: 1;
+        }
+
+        .step {
+            margin: 0 auto 90vh auto;
+            background: var(--step-bg);
+            padding: 2.5rem;
+            border: 1px solid #dfe6e9;
+            border-radius: 4px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+        }
+
+        .step:last-child { margin-bottom: 70vh; }
+
+        h2 { font-size: 1rem; color: #1d1d1f; text-transform: uppercase; margin-top: 0; font-weight: 700; }
+        p { line-height: 1.6; font-size: 1rem; color: #444; }
+
+        .alcaldia { stroke: #fff; stroke-width: 1.5px; }
+
+        .label {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+            fill: #1d1d1f;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-hud">
+        <h1>Cartografía de la Distopía</h1>
+        <p>Impacto COVID-19 en la Red de Artes Vivas: Centralización y Supervivencia.</p>
+        <div class="legend">
+            <div class="legend-item"><span class="dot" style="background:#dfe6e9"></span> Menos Volumen</div>
+            <div class="legend-item"><span class="dot" style="background:#636e72"></span> Más Volumen</div>
+        </div>
+        <div class="legend" style="margin-top: 5px; border-left: 2px solid var(--danger-color); padding-left: 10px;">
+            <div class="legend-item"><span class="dot" style="background:var(--safe-color)"></span> Abiertos</div>
+            <div class="legend-item"><span class="dot" style="background:var(--danger-color)"></span> Cerrados</div>
+        </div>
+    </header>
+
+    <main id="scrolly">
+        <section class="sticky-map">
+            <svg id="map-svg"></svg>
+        </section>
+
+        <article>
+            <div class="step" data-step="0">
+                <h2>I. Geografía Orgánica</h2>
+                <p>Artes Vivas CDMX. Antes de la sistematización, el territorio se presenta como una mancha orgánica. La geografía dicta la proximidad cultural.</p>
+            </div>
+            <div class="step" data-step="1">
+                <h2>II. El Cartograma Proporcional</h2>
+                <p>Mediante <em>morphing</em> geométrico (Flubber), el territorio colapsa. El <strong>tamaño</strong> de cada bloque representa el volumen total de recintos culturales (públicos y privados) por alcaldía.</p>
+            </div>
+            <div class="step" data-step="2">
+                <h2>III. Índice de Supervivencia</h2>
+                <p>El color revela el estatus post-pandemia. Los tonos <strong>rojos</strong> indican alcaldías con alta tasa de cierres definitivos. Los <strong>verdes</strong> muestran zonas donde los espacios resistieron o abrieron durante la crisis.</p>
+            </div>
+        </article>
+    </main>
+
+    <script>
+        // Función de normalización radical para coincidencias robustas
+        const normalize = (str) => 
+            str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim() : "";
+
+        // Posiciones relativas de memoria espacial para el grid de 4x4
+        const gridConfig = {
+            baseSize: 110, padding: 15,
+            mapping: {
+                "AZCAPOTZALCO": { r: 0, c: 0 }, "GUSTAVO A. MADERO": { r: 0, c: 1 }, "VENUSTIANO CARRANZA": { r: 0, c: 2 }, "IZTACALCO": { r: 0, c: 3 },
+                "MIGUEL HIDALGO": { r: 1, c: 0 }, "CUAUHTEMOC": { r: 1, c: 1 }, "BENITO JUAREZ": { r: 1, c: 2 }, "IZTAPALAPA": { r: 1, c: 3 },
+                "CUAJIMALPA DE MORELOS": { r: 2, c: 0 }, "ALVARO OBREGON": { r: 2, c: 1 }, "COYOACAN": { r: 2, c: 2 }, "TLAHUAC": { r: 2, c: 3 },
+                "LA MAGDALENA CONTRERAS": { r: 3, c: 0 }, "TLALPAN": { r: 3, c: 1 }, "XOCHIMILCO": { r: 3, c: 2 }, "MILPA ALTA": { r: 3, c: 3 }
+            }
+        };
+
+        const svg = d3.select("#map-svg");
+        const width = window.innerWidth * 0.9, height = window.innerHeight * 0.9;
+
+        // URLs de tus GeoJSONs Raw
+        const geoUrl = "https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/main/cdmx-alcaldias.geojson";
+        const dataUrl = "https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/main/data/av-data-cdmx-20230122.geojson";
+
+        Promise.all([d3.json(geoUrl), d3.json(dataUrl)]).then(([geoData, data]) => {
+            
+            // 1. Storytelling Data Processing
+            const stats = d3.rollup(data.features, 
+                v => {
+                    const total = v.length;
+                    const abiertos = v.filter(d => d.properties.estatus === "Abierto").length;
+                    const cerrados = v.filter(d => d.properties.estatus === "Cerrado" || d.properties.estatus === "Riesgo").length;
+                    const ratio = (abiertos - cerrados) / total;
+                    return { total, ratio };
+                },
+                d => normalize(d.properties.alcaldia || d.properties.NOMGEO)
+            );
+
+            // Escalas Proporcionales
+            const maxVolume = d3.max(Array.from(stats.values()), d => d.total);
+            const sizeScale = d3.scaleSqrt().domain([0, maxVolume]).range([30, 140]);
+            const colorScale = d3.scaleDiverging().domain([-0.8, 0, 0.8]).interpolator(d3.interpolateRdYlGn);
+
+            // 2. Proyección Geográfica y Mapa
+            const projection = d3.geoMercator().fitSize([width, height], geoData);
+            const geoPath = d3.geoPath().projection(projection);
+
+            function getSquare(row, col, size) {
+                const s = gridConfig.baseSize, p = gridConfig.padding;
+                const totalGridWidth = (s * 4) + (p * 3), totalGridHeight = (s * 4) + (p * 3);
+                const startX = (width - totalGridWidth) / 2, startY = (height - totalGridHeight) / 2;
+                // Centrado dinámico del cuadrado variable dentro de su celda teórica
+                const cellCenter = s / 2; 
+                const x = startX + col * (s + p) + (cellCenter - size / 2);
+                const y = startY + row * (s + p) + (cellCenter - size / 2);
+                return `M${x},${y} h${size} v${size} h-${size} Z`;
+            }
+
+            // 3. Dibujar Paths
+            const paths = svg.selectAll(".alcaldia")
+                .data(geoData.features)
+                .enter().append("path")
+                .attr("class", "alcaldia")
+                .attr("d", d => geoPath(d))
+                .attr("fill", "#f5f5f7") // Color neutro inicial
+                .each(function(d) {
+                    const rawName = d.properties.NOMGEO || d.properties.nomgeo || d.properties.alcaldia || "";
+                    const name = normalize(rawName);
+                    const pos = gridConfig.mapping[name];
+                    
+                    if(pos) {
+                        const sData = stats.get(name) || { total: 0, ratio: 0 };
+                        const dynamicSize = sizeScale(sData.total);
+                        
+                        const start = geoPath(d);
+                        const end = getSquare(pos.r, pos.c, dynamicSize);
+                        
+                        // Validación crítica para Flubber (Evita TypeError)
+                        if (start && end) {
+                            d.interpolator = flubber.interpolate(start, end);
+                            d.targetColor = colorScale(sData.ratio);
+                            
+                            // Centros del grid para etiquetas
+                            const s = 110, p = 15;
+                            d.gridX = ((width - (110*4+15*3))/2) + pos.c*125 + 55;
+                            d.gridY = ((height - (110*4+15*3))/2) + pos.r*125 + 55;
+                            d.fontSize = Math.max(8, dynamicSize / 9);
+                        }
+                    } else {
+                        console.warn(`No se encontró coincidencia para: ${rawName}`);
+                    }
+                });
+
+            // 4. Etiquetas estilo Flickr
+            const labels = svg.selectAll(".label")
+                .data(geoData.features).enter().append("text")
+                .attr("class", "label")
+                .attr("x", d => d.gridX).attr("y", d => d.gridY)
+                .attr("text-anchor", "middle").style("opacity", 0)
+                .style("font-size", d => `${d.fontSize}px`)
+                .text(d => {
+                    const rawName = d.properties.NOMGEO || d.properties.nomgeo || d.properties.alcaldia || "";
+                    return rawName.split(" ").pop(); // Última palabra para el grid
+                });
+
+            // 5. Scrollama Engine
+            const scroller = scrollama();
+            scroller.setup({ step: ".step", offset: 0.5, progress: true })
+            .onStepProgress(response => {
+                const step = response.index;
+                const t = response.progress;
+
+                if (step === 1) { // Transición Morphing y Color
+                    paths.attr("d", d => d.interpolator ? d.interpolator(t) : geoPath(d))
+                         .attr("fill", d => d3.interpolateRgb("#f5f5f7", d.targetColor)(t));
+                    labels.style("opacity", t > 0.8 ? (t - 0.8) * 5 : 0);
+                }
+                
+                if (step === 0 && t < 1) { // Asegurar reset a mapa gris
+                    paths.attr("d", d => geoPath(d)).attr("fill", "#f5f5f7");
+                    labels.style("opacity", 0);
+                }
+            });
+
+            window.addEventListener("resize", () => scroller.resize());
+        });
+    </script>
+</body>
+</html>
