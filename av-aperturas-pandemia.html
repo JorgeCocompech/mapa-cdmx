@@ -21,7 +21,7 @@
 
         /* Simulación Dark Matter (CARTO) sobre OpenStreetMap */
         [data-theme="dark"] .leaflet-tile-pane {
-            filter: brightness(0.6) invert(1) grayscale(100%) contrast(300%);
+            filter: brightness(0.9) invert(1) grayscale(100%) contrast(300%);
         }
 
         [data-theme="light"] {
@@ -415,7 +415,7 @@
             .then(data => {
                 L.geoJSON(data, {
                     pane: 'alcPane',
-                    style: (f) => ({ fillColor: alcPalette[f.properties.NOMGEO] || "#333", weight: 1.5, color: "white", fillOpacity: 0.25, opacity: 0.6 }),
+                    style: (f) => ({ fillColor: alcPalette[f.properties.NOMGEO] || "#333", weight: 1.5, color: "white", fillOpacity: 0.40, opacity: 0.75 }),
                     onEachFeature: (f, l) => l.bindTooltip(f.properties.NOMGEO)
                 }).addTo(map);
             });
