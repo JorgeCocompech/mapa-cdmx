@@ -19,6 +19,11 @@
             --row-active: rgba(23, 133, 251, 0.15); --bar-bg: #333333;
         }
 
+        /* Inversión cromática para OpenStreetMap en Dark Mode */
+        [data-theme="dark"] .leaflet-tile-pane {
+            filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3);
+        }
+
         [data-theme="light"] {
             --bg-color: #f5f5f5; --panel-bg: #ffffff; --text-main: #2C2C2C;
             --text-muted: #747d82; --highlight: #1785FB; --border-color: #e2e6e9;
@@ -137,8 +142,8 @@
         .reason-badge.warning { background: rgba(245, 158, 11, 0.1); color: #F59E0B; } 
 
         /* =========================================
-           TIMELINE UI (BARRA FLOTANTE INFERIOR)
-           ========================================= */
+            TIMELINE UI (BARRA FLOTANTE INFERIOR)
+            ========================================= */
         #timeline-ui { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--panel-bg); border: 1px solid var(--border-color); padding: 15px 25px; border-radius: 50px; z-index: 2000; display: flex; align-items: center; gap: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); backdrop-filter: blur(10px); width: 90%; max-width: 650px; transition: background-color 0.3s, border-color 0.3s; }
         .playback-controls { display: flex; align-items: center; gap: 10px; }
         .ctrl-btn { background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
@@ -162,28 +167,23 @@
 
         /* MÓVIL RESPONSIVE */
         #mobile-open-btn, #mobile-close-btn, #filter-badge { display: none; }
-       @media (max-width: 1024px) { 
-    #main-wrapper { height: calc(100vh - 65px); }
-    /* El dashboard se oculta y espera a ser invocado */
-    #dashboard { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; border-right: none; }
-    #dashboard.mobile-active { left: 0; } 
-    /* Aparece el botón de "Filtros" */
-    #mobile-open-btn { display: flex; position: absolute; top: 20px; left: 20px; z-index: 2000; background: var(--highlight); color: #fff; border: none; padding: 10px 18px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; cursor: pointer; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-    #filter-badge { display: none; background: #fff; color: var(--highlight); border-radius: 50%; width: 20px; height: 20px; font-size: 0.7rem; align-items: center; justify-content: center; font-weight: 800; }
-    #mobile-close-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(23, 133, 251, 0.1); color: var(--highlight); border: 1px solid var(--highlight); font-size: 0.85rem; font-weight: 700; cursor: pointer; margin-bottom: 15px; padding: 12px; border-radius: 8px; width: 100%; text-transform: uppercase; }
-    /* Ajustes de Timeline (si el mapa tiene timelapse) */
-    #timeline-ui { bottom: 20px; padding: 15px; flex-direction: column; border-radius: 25px; gap: 10px; width: 95%; }
-    /* Compactación de textos y logos */
-    .dashboard-header { padding: 20px 15px 10px 15px; }
-    .header-logo { max-width: 180px; margin-bottom: 15px; }
-    .total-counter { font-size: 2.2rem; }
-    /* Footer responsivo */
-    #app-footer { padding: 0 15px; height: 65px; }
-    .footer-logo img { max-height: 30px; }
-    .footer-btn.dl-btn .btn-text { display: none; } 
-    .footer-btn.dl-btn { width: 38px; padding: 0; justify-content: center; border-radius: 50%; }
-    #year-focus { font-size: 1.2rem; min-width: 100px; }
-}
+        @media (max-width: 1024px) { 
+            #main-wrapper { height: calc(100vh - 65px); }
+            #dashboard { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; border-right: none; }
+            #dashboard.mobile-active { left: 0; } 
+            #mobile-open-btn { display: flex; position: absolute; top: 20px; left: 20px; z-index: 2000; background: var(--highlight); color: #fff; border: none; padding: 10px 18px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; cursor: pointer; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+            #filter-badge { display: none; background: #fff; color: var(--highlight); border-radius: 50%; width: 20px; height: 20px; font-size: 0.7rem; align-items: center; justify-content: center; font-weight: 800; }
+            #mobile-close-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(23, 133, 251, 0.1); color: var(--highlight); border: 1px solid var(--highlight); font-size: 0.85rem; font-weight: 700; cursor: pointer; margin-bottom: 15px; padding: 12px; border-radius: 8px; width: 100%; text-transform: uppercase; }
+            #timeline-ui { bottom: 20px; padding: 15px; flex-direction: column; border-radius: 25px; gap: 10px; width: 95%; }
+            .dashboard-header { padding: 20px 15px 10px 15px; }
+            .header-logo { max-width: 180px; margin-bottom: 15px; }
+            .total-counter { font-size: 2.2rem; }
+            #app-footer { padding: 0 15px; height: 65px; }
+            .footer-logo img { max-height: 30px; }
+            .footer-btn.dl-btn .btn-text { display: none; } 
+            .footer-btn.dl-btn { width: 38px; padding: 0; justify-content: center; border-radius: 50%; }
+            #year-focus { font-size: 1.2rem; min-width: 100px; }
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -343,9 +343,11 @@
         L.control.zoom({ position: 'bottomright' }).addTo(map);
         L.DomEvent.disableClickPropagation(document.getElementById('timeline-ui'));
         
-        const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
-        const lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
-        lightTiles.addTo(map); 
+        // Capa base universal OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
         
         map.createPane('alcPane').style.zIndex = 200;
         map.createPane('markerPane').style.zIndex = 650;
@@ -361,11 +363,13 @@
             const lightLogoUrl = 'https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm.svg';
             
             if (body.getAttribute('data-theme') === 'light') {
-                body.setAttribute('data-theme', 'dark'); map.removeLayer(lightTiles); darkTiles.addTo(map);
-                btn.textContent = '🌞'; themeLogos.forEach(img => img.src = darkLogoUrl);
+                body.setAttribute('data-theme', 'dark');
+                btn.textContent = '🌞';
+                themeLogos.forEach(img => img.src = darkLogoUrl);
             } else {
-                body.setAttribute('data-theme', 'light'); map.removeLayer(darkTiles); lightTiles.addTo(map);
-                btn.textContent = '🌙'; themeLogos.forEach(img => img.src = lightLogoUrl);
+                body.setAttribute('data-theme', 'light');
+                btn.textContent = '🌙';
+                themeLogos.forEach(img => img.src = lightLogoUrl);
             }
             updateView(); 
         }
@@ -751,7 +755,6 @@
             });
 
             // ESCANEO MÚLTIPLE DE REDES/CONTACTO
-            // Función auxiliar para validar que el campo exista y no sea basura
             const getVal = (v) => (v !== undefined && v !== null && v !== 0 && String(v).trim().toLowerCase() !== "na" && String(v).trim() !== "") ? String(v).trim() : null;
 
             const web = getVal(p.sitio_web);
@@ -783,14 +786,14 @@
                         <svg viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2zm-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6zm9.65 1.5a1.25 1.25 0 0 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg> Instagram
                     </a>`;
                 }
-
+                
                 if (xApp) {
                     let link = xApp.startsWith('http') ? xApp : 'https://' + xApp;
                     html += `<a href="${link}" target="_blank" class="social-pill" title="X (Twitter)">
                         <svg viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg> X
                     </a>`;
                 }
-
+                
                 if (mail) {
                     html += `<a href="mailto:${mail}" class="social-pill" title="Enviar correo">
                         <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> Correo
