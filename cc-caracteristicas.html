@@ -12,7 +12,7 @@
         /* MOTOR DE TEMAS */
         :root { 
             --accent: #ff4757; 
-            --highlight: #1785FB; /* Solución: Definida global para evitar fallos de renderizado inicial */
+            --highlight: #1785FB;
         }
         [data-theme="dark"] {
             --bg-color: #0d0d0d; --panel-bg: #141414; --text-main: #ffffff;
@@ -20,11 +20,22 @@
             --input-bg: #1f1f1f; --card-bg: #1c1c1e; --row-hover: rgba(255,255,255,0.05);
             --row-active: rgba(23, 133, 251, 0.15); --bar-bg: #333333;
         }
+
+        /* Simulación Dark Matter (CARTO) sobre OpenStreetMap */
+        [data-theme="dark"] .leaflet-tile-pane {
+            filter: brightness(0.75) invert(1) grayscale(100%) contrast(150%);
+        }
+
         [data-theme="light"] {
             --bg-color: #f5f5f5; --panel-bg: #ffffff; --text-main: #2C2C2C;
             --text-muted: #747d82; --highlight: #1785FB; --border-color: #e2e6e9;
             --input-bg: #f9f9f9; --card-bg: #ffffff; --row-hover: rgba(0,0,0,0.03);
             --row-active: rgba(23, 133, 251, 0.1); --bar-bg: #e2e6e9;
+        }
+
+        /* Simulación Positron (CARTO) sobre OpenStreetMap */
+        [data-theme="light"] .leaflet-tile-pane {
+            filter: grayscale(100%) brightness(110%) contrast(90%) opacity(0.7);
         }
                 
         * { box-sizing: border-box; }
@@ -138,7 +149,7 @@
         }
         .marker-loaded { transform-origin: center; transform-box: fill-box; animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
          
-        /* MÓVIL RESPONSIVE CORREGIDO (Sin comentarios HTML rotos) */
+        /* MÓVIL RESPONSIVE */
         #mobile-open-btn, #mobile-close-btn, #filter-badge { display: none; }       
         @media (max-width: 1024px) {     
             #main-wrapper { height: calc(100vh - 65px); }    
@@ -269,9 +280,11 @@
         const map = L.map('map', { center: [19.38, -99.13], zoom: 11, zoomControl: false });
         L.control.zoom({ position: 'bottomright' }).addTo(map);
         
-        const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
-        const lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' });
-        lightTiles.addTo(map); 
+        // Capa base universal OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
         
         map.createPane('alcPane').style.zIndex = 200;
         map.createPane('markerPane').style.zIndex = 650;
@@ -287,11 +300,13 @@
             const lightLogoUrl = 'https://raw.githubusercontent.com/JorgeCocompech/mapa-cdmx/refs/heads/main/misc/logo-opc-uacm.svg';
             
             if (body.getAttribute('data-theme') === 'light') {
-                body.setAttribute('data-theme', 'dark'); map.removeLayer(lightTiles); darkTiles.addTo(map);
-                btn.textContent = '🌞'; themeLogos.forEach(img => img.src = darkLogoUrl);
+                body.setAttribute('data-theme', 'dark');
+                btn.textContent = '🌞';
+                themeLogos.forEach(img => img.src = darkLogoUrl);
             } else {
-                body.setAttribute('data-theme', 'light'); map.removeLayer(darkTiles); lightTiles.addTo(map);
-                btn.textContent = '🌙'; themeLogos.forEach(img => img.src = lightLogoUrl);
+                body.setAttribute('data-theme', 'light');
+                btn.textContent = '🌙';
+                themeLogos.forEach(img => img.src = lightLogoUrl);
             }
             updateView(); 
         }
@@ -317,7 +332,7 @@
             .then(data => {
                 L.geoJSON(data, {
                     pane: 'alcPane',
-                    style: (f) => ({ fillColor: alcPalette[f.properties.NOMGEO] || "#333", weight: 1.5, color: "white", fillOpacity: 0.25, opacity: 0.6 }),
+                    style: (f) => ({ fillColor: alcPalette[f.properties.NOMGEO] || "#333", weight: 1.5, color: "white", fillOpacity: 0.40, opacity: 0.75 }),
                     onEachFeature: (f, l) => l.bindTooltip(f.properties.NOMGEO)
                 }).addTo(map);
             });
