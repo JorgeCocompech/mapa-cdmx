@@ -1,54 +1,64 @@
-# 🗺️ Cartografía Cultural CDMX | Observatorio de Políticas Culturales UACM
+# Cartografía Cultural CDMX | Observatorio de Políticas Culturales UACM
 
+Repositorio del ecosistema de mapas interactivos del Observatorio de Políticas Culturales de la Universidad Autónoma de la Ciudad de México (UACM). Este proyecto documenta y analiza la distribución territorial, infraestructura material, dinámicas laborales y el impacto temporal de la contingencia sanitaria en espacios culturales independientes de la capital.
 
-Bienvenido al repositorio del ecosistema de mapas interactivos del **Observatorio de Políticas Culturales de la UACM**. Este proyecto visualiza y analiza la infraestructura, condiciones laborales y el impacto histórico/pandémico de los espacios culturales independientes en la Ciudad de México.
+## Arquitectura y Métodos Técnicos
+El proyecto opera sobre una arquitectura del lado del cliente en JavaScript nativo (Vanilla), sin dependencias de frameworks externos. Las decisiones de diseño y procesamiento responden a criterios de compatibilidad universal, carga directa en GitHub Pages y desacoplamiento de servicios propietarios.
 
-## 🚀 Características del Ecosistema
-Todos los mapas de este proyecto fueron desarrollados con una arquitectura pura y ligera (**Vanilla Web**), sin el uso de frameworks pesados (como React o Angular). Esto garantiza una carga ultra rápida, compatibilidad universal y máxima facilidad para alojarse directamente en cualquier servidor (como GitHub Pages).
-
-* 🌓 **Motor de Temas Dinámico:** Interfaz responsiva con *Dark Mode* y *Light Mode* que adapta automáticamente los mapas base de CARTO.
-* 🛡️ **Escudo Anti-Coordenadas Invertidas:** Algoritmo que detecta y corrige automáticamente errores de exportación en los GeoJSON (ej. coordenadas invertidas o uso de comas decimales) para evitar que los marcadores caigan en el océano.
-* 🧹 **Normalizador Radical:** Motor de búsqueda de propiedades que ignora mayúsculas, acentos y variaciones de sintaxis para renderizar Pop-ups dinámicos sin importar cómo venga estructurada la base de datos.
-* 📱 **UI de Redes Sociales (Pills):** Analizador universal que escanea las columnas de contacto, separa enlaces mezclados y genera botones interactivos limpios con iconografía SVG en los pop-ups.
-* ⏳ **Timelapses Históricos:** Motor de animación temporal acumulativa e histórica para visualizar el nacimiento y muerte de espacios a lo largo de décadas o meses.
-* 📊 **Widgets Dinámicos:** Panel lateral con contadores y gráficos de barras que se actualizan en tiempo real al hacer *pan/zoom* o al aplicar filtros combinados.
-* 🔍 **Auditoría de Datos:** Modal inteligente que atrapa y enlista todos los espacios excluidos del mapa (por falta de coordenadas o fechas) para mantener total transparencia.
-
----
-
-## 📂 Directorio de Mapas
-
-### 🎭 Artes Vivas
-Visualización de espacios dedicados a las artes escénicas, su estatus actual y su comportamiento durante la pandemia de COVID-19.
-*  `index.html` - Radiografía de las condiciiones mobiliarias de los Espacios de Artes Vivas
-* `av-estatuspostpandemia.html` - Radiografía del estatus actual (abiertos, cerrados, en riesgo).
-* `av-aperturas-pandemia.html` - Análisis de aperturas durante la crisis sanitaria.
-* `cierre-covid-timelapse.html` / `cierre-av.html` - Timelapses del impacto mensual de cierres.
-* `timelapse-av.html` - Evolución histórica general.
-
-### 🎬 Cineclubes
-Análisis de la infraestructura y sostenibilidad de los espacios de exhibición cinematográfica alternativa.
-* `cc-caracteristicas.html` - Perfiles, aforos, objetivos y frecuencia de exhibición.
-* `cc-caracteristicas-timelapse.html` - Evolución histórica (Año de apertura) de los cineclubes.
-* `cc-condiciones.html` - Infraestructura técnica (proyectores, archivo fílmico, espacios).
-* `cc-laborales.html` - Radiografía de sostenibilidad y condiciones de trabajo (sueldos, horas, figuras legales).
-
-### 📚 Librerías
-Mapeo del circuito de librerías independientes y comerciales en la capital.
-* `lib-car-110224.html` - Características comerciales, tipo de libros y modelos de venta.
-* `lib-cond-110224.html` - Condiciones inmobiliarias, metros cuadrados y equipamiento.
-* `lib-pand-110224.html` - Impacto, cierres y estrategias adoptadas durante la pandemia.
+* **Capa Cartográfica Monocromática Nativa:** Capa base universal de OpenStreetMap procesada dinámicamente mediante filtros CSS directos (`brightness`, `invert`, `grayscale` y `contrast` al 150% en modo oscuro; escala de grises al 100% y opacidad regulada en modo claro), emulando los entornos Positron y Dark Matter sin requerir llaves de acceso o tokens externos.
+* **Motor de Temas:** Conmutación de interfaz clara y oscura a través de atributos de datos en el DOM (`data-theme`), sincronizando variables CSS, capas base e iconografía institucional vectorial.
+* **Normalización de Geometrías y Escudo de Coordenadas:** Filtro de parsing numérico que resuelve problemas de comas decimales, invierte asignaciones latitud/longitud invertidas y valida coordenadas dentro del rango geográfico de la cuenca de México antes del renderizado.
+* **Normalizador de Propiedades:** Rutina que procesa las propiedades del GeoJSON eliminando diacríticos, caracteres especiales y mayúsculas, permitiendo indexar datos con nombres de clave heterogéneos.
+* **Estructura Unificada de Contacto:** Parser de cadenas de texto que desglosa registros múltiples de contacto, identifica protocolos web, correos y redes sociales, y los formatea como accesos directos con iconografía SVG en las ventanas emergentes (*pop-ups*).
+* **Motores Temporales y Scrollytelling:** Módulos de filtrado cronológico acumulativo basados en sliders de control temporal con playback interactivo, además de visualizaciones vectoriales con interpolación poligonal (Flubber.js y D3.js) acopladas al desplazamiento vertical mediante Scrollama.
+* **Widgets de Filtrado Dinámico:** Paneles interactivos con barras proporcionales y contadores numéricos animados que recalculan la distribución del universo visible en función de los filtros activos y la búsqueda textual.
+* **Auditoría de Datos:** Modal accesible que documenta y lista las entidades excluidas del renderizado cartográfico por inconsistencias en coordenadas o datos temporales.
 
 ---
 
-## 🛠️ Instalación y Uso
-Al estar construido íntegramente del lado del cliente (Frontend), este proyecto no requiere dependencias de Node.js ni bases de datos complejas.
+## Directorio de Mapas
 
-1. Clona este repositorio:
+### Artes Vivas
+Espacios enfocados en artes escénicas, música y danza; condiciones de equipamiento, estatus operativo y registros temporales de cierre y reapertura.
+* `index.html`: Condiciones de equipamiento y estatus general de espacios de Artes Vivas.
+* `av-estatuspostpandemia.html`: Clasificación del estatus operativo tras la contingencia (abierto, cerrado, riesgo).
+* `av-aperturas-pandemia.html`: Registro cronológico mensual de reaperturas durante 2020 y 2021.
+* `cierre-covid-timelapse.html` / `cierre-av.html`: Evolución mensual del impacto de cierres a lo largo de 2020.
+* `timelapse-av.html`: Línea de tiempo histórica de aperturas registradas desde 1950 hasta 2021.
+* `scrollytelling-cierres.html`: Cartografía deformada y transición proporcional del impacto de clausuras por alcaldía.
+
+### Cineclubes
+Infraestructura, equipamiento técnico y características de sostenibilidad de los espacios de exhibición cinematográfica comunitaria e independiente.
+* `cc-caracteristicas.html`: Objetivos, periodicidad de exhibición, tipos de espacio y poblaciones atendidas.
+* `cc-caracteristicas-timelapse.html`: Evolución histórica y temporal del surgimiento de cineclubes por año de apertura.
+* `cc-condiciones.html`: Infraestructura técnica, condición inmobiliaria, videotecas y acervos fílmicos.
+* `cc-laborales.html`: Retribución económica, carga horaria semanal, perfiles del equipo y esquemas de sostenibilidad.
+
+### Librerías
+Distribución y características estructurales del circuito de librerías en la Ciudad de México.
+* `lib-car-110224.html`: Tipología mercantil, perfil de acervo editorial, venta y modelos de operación.
+* `lib-cond-110224.html`: Superficie en metros cuadrados, aforos, equipamiento y tenencia del espacio.
+* `lib-pand-110224.html`: Reporte de interrupciones de servicio, periodos de cierre y estrategias comerciales adoptadas durante la pandemia.
+
+---
+
+## Ejecución
+
+El proyecto no requiere procesos de compilación ni instalación de paquetes de Node.js. Para ejecutarlo en un entorno local:
+
+1. Clonar el repositorio:
    ```bash
    git clone [https://github.com/JorgeCocompech/mapa-cdmx.git](https://github.com/JorgeCocompech/mapa-cdmx.git)
 
-2. ¡Disfruta de los mapas!
+2. Servir los archivos mediante un servidor web local (por ejemplo, con Python):
+   ```bash
+   cd mapa-cdmx
+   python3 -m http.server 8000
+
+3. Acceder a http://localhost:8000 desde el navegador.
+
+
+
 
 ## ✒️ Autoría y Créditos
 * **Desarrollo y Diseño UI/UX:** [Jorge Cocompech](https://jorgecocompech.rocks)
@@ -56,4 +66,4 @@ Al estar construido íntegramente del lado del cliente (Frontend), este proyecto
 * **Tecnologías Aplicadas:** * [HTML5](https://developer.mozilla.org/es/docs/Web/HTML) y [CSS3](https://developer.mozilla.org/es/docs/Web/CSS) (Estructura y diseño)
   * [Vanilla JavaScript](https://developer.mozilla.org/es/docs/Web/JavaScript) (Lógica nativa, sin frameworks)
   * [Leaflet.js](https://leafletjs.com/) (Motor cartográfico)
-  * [CARTO Basemaps](https://carto.com/basemaps) (Mapas base)
+  * [OpenStreetMap](https://www.openstreetmap.org) (Mapas base)
